@@ -8,7 +8,9 @@ const HTML = `<!doctype html>
 <title>دردشة</title>
 
 <style>
-*{box-sizing:border-box}
+*{
+  box-sizing:border-box;
+}
 
 body{
   margin:0;
@@ -16,15 +18,15 @@ body{
   background:#e5ddd5;
 }
 
-.hidden{
-  display:none!important;
-}
-
 button,input{
   font-family:inherit;
 }
 
-/* تسجيل الدخول */
+.hidden{
+  display:none!important;
+}
+
+/* AUTH */
 
 #auth{
   min-height:100vh;
@@ -32,297 +34,237 @@ button,input{
   align-items:center;
   justify-content:center;
   padding:20px;
-  background:#128c7e;
+  background:#f0f2f5;
 }
 
 .auth-box{
   width:100%;
   max-width:400px;
   background:white;
-  padding:28px;
-  border-radius:18px;
-  box-shadow:0 8px 30px #0003;
+  padding:25px;
+  border-radius:15px;
+  box-shadow:0 4px 20px #0002;
 }
 
 .auth-box h1{
-  margin:0 0 25px;
-  text-align:center;
-  color:#128c7e;
   display:none;
+}
+
+.auth-box h2{
+  text-align:center;
+  margin-top:0;
 }
 
 .auth-box input{
   width:100%;
-  padding:14px;
-  margin-bottom:12px;
-  border:1px solid #ddd;
-  border-radius:10px;
-  outline:none;
+  padding:13px;
+  margin:7px 0;
+  border:1px solid #ccc;
+  border-radius:8px;
   font-size:16px;
-}
-
-.auth-box input:focus{
-  border-color:#128c7e;
 }
 
 .auth-box button{
   width:100%;
-  padding:14px;
+  padding:13px;
+  margin-top:10px;
   border:0;
-  border-radius:10px;
+  border-radius:8px;
   background:#128c7e;
   color:white;
   font-size:16px;
   cursor:pointer;
 }
 
-.auth-switch{
-  text-align:center;
-  margin-top:18px;
-  color:#128c7e;
-  cursor:pointer;
+.auth-box .secondary{
+  background:#eee;
+  color:#222;
 }
 
-#authError{
-  text-align:center;
+#error{
   color:#d00;
-  margin-top:12px;
+  margin-top:10px;
+  text-align:center;
 }
 
-/* التطبيق */
+/* APP */
 
 #app{
   height:100vh;
   display:flex;
-  background:white;
 }
 
-.sidebar{
-  width:330px;
+#sidebar{
+  width:300px;
   background:white;
   border-left:1px solid #ddd;
   display:flex;
   flex-direction:column;
 }
 
-.sidebar-header{
+#side-header{
+  padding:15px;
   background:#128c7e;
   color:white;
-  padding:15px;
   display:flex;
-  justify-content:space-between;
   align-items:center;
+  justify-content:space-between;
 }
 
-.my-name{
-  font-weight:bold;
-  font-size:18px;
-}
-
-.logout{
-  border:0;
+#side-header button{
   background:#ffffff22;
   color:white;
+  border:0;
   padding:8px 12px;
-  border-radius:8px;
+  border-radius:7px;
   cursor:pointer;
 }
 
-.search{
-  padding:10px;
-  background:#f5f5f5;
-}
-
-.search input{
-  width:100%;
-  border:0;
-  outline:0;
-  padding:11px;
-  border-radius:8px;
-}
-
-.users{
-  flex:1;
+#users{
   overflow-y:auto;
+  flex:1;
 }
 
 .user{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:13px;
+  padding:14px;
   border-bottom:1px solid #eee;
   cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:10px;
 }
 
 .user:hover{
   background:#f5f5f5;
 }
 
-.user.active{
-  background:#e8f5f3;
-}
-
-.avatar{
-  width:48px;
-  height:48px;
+.dot{
+  width:10px;
+  height:10px;
   border-radius:50%;
-  background:#128c7e;
-  color:white;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  position:relative;
-  flex-shrink:0;
+  background:#aaa;
+  flex:none;
 }
 
-.online{
-  position:absolute;
-  width:12px;
-  height:12px;
+.dot.online{
   background:#25d366;
-  border:2px solid white;
-  border-radius:50%;
-  left:0;
-  bottom:0;
-}
-
-.user-info{
-  flex:1;
 }
 
 .user-name{
   font-weight:bold;
 }
 
-.user-status{
-  font-size:12px;
-  color:#888;
-  margin-top:4px;
-}
+/* CHAT */
 
-.chat{
+#chat{
   flex:1;
   display:flex;
   flex-direction:column;
   min-width:0;
 }
 
-.chat-header{
-  height:65px;
+#chat-header{
+  height:60px;
   background:#128c7e;
   color:white;
   display:flex;
   align-items:center;
-  padding:10px 16px;
-  gap:12px;
+  padding:0 15px;
 }
 
-.chat-title{
-  font-size:18px;
+#chat-user{
   font-weight:bold;
 }
 
-.messages{
-  flex:1;
-  overflow-y:auto;
-  padding:20px;
-  background:#efeae2;
+#typing{
+  font-size:12px;
+  opacity:.8;
+  margin-right:10px;
 }
 
-.empty{
-  height:100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#777;
-  text-align:center;
+#messages{
+  flex:1;
+  overflow-y:auto;
+  padding:15px;
+  background:#efeae2;
 }
 
 .message{
   max-width:75%;
-  padding:9px 12px;
-  margin-bottom:8px;
-  border-radius:10px;
+  padding:8px 11px;
+  margin:6px 0;
+  border-radius:8px;
   word-wrap:break-word;
   clear:both;
 }
 
-.message.mine{
+.mine{
   float:right;
   background:#d9fdd3;
-  border-top-right-radius:2px;
 }
 
-.message.theirs{
+.theirs{
   float:left;
   background:white;
-  border-top-left-radius:2px;
 }
 
-.message-time{
+.time{
   font-size:10px;
-  color:#777;
+  opacity:.55;
   margin-top:4px;
-  text-align:left;
 }
 
-.composer{
-  min-height:65px;
-  background:#f0f0f0;
+#input-area{
   display:flex;
-  gap:8px;
   padding:10px;
+  background:#f0f2f5;
+  gap:8px;
 }
 
-.composer input{
+#messageInput{
   flex:1;
   border:0;
   outline:0;
-  border-radius:22px;
-  padding:12px 16px;
-  font-size:16px;
+  padding:12px;
+  border-radius:20px;
+  font-size:15px;
 }
 
-.send{
-  width:48px;
-  height:48px;
+#sendBtn{
   border:0;
+  width:45px;
+  height:45px;
   border-radius:50%;
   background:#128c7e;
   color:white;
-  font-size:20px;
   cursor:pointer;
 }
 
-.back{
-  display:none;
-  border:0;
-  background:none;
-  color:white;
-  font-size:22px;
+#empty{
+  height:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:#777;
 }
 
-@media(max-width:700px){
+/* MOBILE */
 
-  .sidebar{
+@media(max-width:700px){
+  #sidebar{
     width:100%;
   }
 
-  .chat{
+  #chat{
     display:none;
   }
 
-  #app.chat-open .sidebar{
+  #app.chat-open #sidebar{
     display:none;
   }
 
-  #app.chat-open .chat{
+  #app.chat-open #chat{
     display:flex;
-  }
-
-  .back{
-    display:block;
   }
 }
 </style>
@@ -330,11 +272,14 @@ button,input{
 
 <body>
 
+<!-- تسجيل الدخول -->
 <div id="auth">
 
   <div class="auth-box">
 
-    <h1>دردشة</h1>
+    <h1>Bola11</h1>
+
+    <h2 id="authTitle">تسجيل الدخول</h2>
 
     <input
       id="username"
@@ -350,120 +295,75 @@ button,input{
       autocomplete="current-password"
     >
 
-    <button id="authBtn" onclick="submitAuth()">
-      تسجيل الدخول
-    </button>
+    <button id="authBtn">دخول</button>
 
-    <div
-      id="authSwitch"
-      class="auth-switch"
-      onclick="toggleAuth()"
+    <button
+      id="switchBtn"
+      class="secondary"
     >
       إنشاء حساب جديد
-    </div>
+    </button>
 
-    <div id="authError"></div>
+    <div id="error"></div>
 
   </div>
 
 </div>
 
 
+<!-- التطبيق -->
 <div id="app" class="hidden">
 
-  <aside class="sidebar">
+  <aside id="sidebar">
 
-    <div class="sidebar-header">
+    <div id="side-header">
 
-      <div class="my-name" id="myName"></div>
+      <span>المستخدمون</span>
 
-      <button
-        class="logout"
-        onclick="logout()"
-      >
+      <button id="logoutBtn">
         خروج
       </button>
 
     </div>
 
-    <div class="search">
-
-      <input
-        id="search"
-        placeholder="بحث عن مستخدم..."
-        oninput="filterUsers()"
-      >
-
-    </div>
-
-    <div
-      class="users"
-      id="users"
-    ></div>
+    <div id="users"></div>
 
   </aside>
 
 
-  <main class="chat">
+  <main id="chat">
 
-    <div class="chat-header">
+    <div id="chat-header">
 
-      <button
-        class="back"
-        onclick="closeChat()"
-      >
-        ←
-      </button>
+      <span id="chat-user">
+        اختر مستخدمًا
+      </span>
 
-      <div
-        class="avatar"
-        id="chatAvatar"
-      >
-        ?
-      </div>
+      <span id="typing"></span>
 
-      <div>
+    </div>
 
-        <div
-          class="chat-title"
-          id="chatTitle"
-        >
-          اختر مستخدماً
-        </div>
+    <div id="messages">
 
-        <div
-          id="chatStatus"
-          style="font-size:12px"
-        ></div>
-
+      <div id="empty">
+        اختر مستخدمًا لبدء المحادثة
       </div>
 
     </div>
 
 
-    <div
-      class="messages"
-      id="messages"
-    >
-
-      <div class="empty">
-        اختر مستخدماً لبدء المحادثة
-      </div>
-
-    </div>
-
-
-    <div class="composer">
+    <div id="input-area">
 
       <input
         id="messageInput"
+        type="text"
         placeholder="اكتب رسالة..."
-        onkeydown="handleKey(event)"
+        disabled
       >
 
       <button
-        class="send"
-        onclick="sendMessage()"
+        id="sendBtn"
+        disabled
       >
         ➤
       </button>
@@ -477,430 +377,189 @@ button,input{
 
 <script>
 
-let token = localStorage.getItem("bola_token");
-let username = localStorage.getItem("bola_username");
-
-let registerMode = false;
+let token = localStorage.getItem("token") || "";
+let currentUser = "";
+let selectedUser = "";
 let socket = null;
-let users = [];
-let selectedUser = null;
+let reconnectTimer = null;
+let typingTimer = null;
+let registerMode = false;
 
 
-/* تبديل التسجيل والدخول */
+/* عناصر الصفحة */
 
-function toggleAuth(){
+const auth = document.getElementById("auth");
+const app = document.getElementById("app");
+
+const usernameInput = document.getElementById("username");
+const passwordInput = document.getElementById("password");
+
+const authTitle = document.getElementById("authTitle");
+const authBtn = document.getElementById("authBtn");
+const switchBtn = document.getElementById("switchBtn");
+const errorBox = document.getElementById("error");
+
+const usersBox = document.getElementById("users");
+
+const chatUser = document.getElementById("chat-user");
+const messagesBox = document.getElementById("messages");
+
+const messageInput = document.getElementById("messageInput");
+const sendBtn = document.getElementById("sendBtn");
+
+const typingBox = document.getElementById("typing");
+
+
+/* تبديل تسجيل / إنشاء حساب */
+
+switchBtn.onclick = () => {
 
   registerMode = !registerMode;
 
-  document.getElementById("authBtn").textContent =
-    registerMode
-      ? "إنشاء الحساب"
-      : "تسجيل الدخول";
+  errorBox.textContent = "";
 
-  document.getElementById("authSwitch").textContent =
-    registerMode
-      ? "لديك حساب بالفعل؟ تسجيل الدخول"
-      : "إنشاء حساب جديد";
+  if(registerMode){
 
-  document.getElementById("authError").textContent = "";
+    authTitle.textContent = "إنشاء حساب";
 
-}
+    authBtn.textContent = "إنشاء الحساب";
+
+    switchBtn.textContent = "لدي حساب بالفعل";
+
+  }else{
+
+    authTitle.textContent = "تسجيل الدخول";
+
+    authBtn.textContent = "دخول";
+
+    switchBtn.textContent = "إنشاء حساب جديد";
+
+  }
+
+};
 
 
-/* تسجيل / دخول */
+/* تسجيل الدخول / إنشاء الحساب */
 
-async function submitAuth(){
+authBtn.onclick = async () => {
 
-  const user =
-    document.getElementById("username")
-      .value
-      .trim();
+  const username = usernameInput.value.trim();
+  const password = passwordInput.value;
 
-  const pass =
-    document.getElementById("password")
-      .value;
+  errorBox.textContent = "";
 
-  const error =
-    document.getElementById("authError");
+  if(!username || !password){
 
-  error.textContent = "";
-
-  if(!user || !pass){
-
-    error.textContent =
+    errorBox.textContent =
       "اكتب اسم المستخدم وكلمة السر";
 
     return;
   }
 
-  if(user.length < 3){
+  authBtn.disabled = true;
 
-    error.textContent =
-      "اسم المستخدم يجب أن يكون 3 أحرف على الأقل";
+  try{
 
-    return;
-  }
-
-  if(pass.length < 4){
-
-    error.textContent =
-      "كلمة السر يجب أن تكون 4 أحرف على الأقل";
-
-    return;
-  }
-
-  const endpoint =
-    registerMode
+    const endpoint =
+      registerMode
       ? "/api/register"
       : "/api/login";
 
-  try{
+    const response = await fetch(endpoint,{
 
-    const response =
-      await fetch(endpoint,{
+      method:"POST",
 
-        method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
 
-        headers:{
-          "Content-Type":
-            "application/json"
-        },
-
-        body:JSON.stringify({
-          username:user,
-          password:pass
-        })
-
-      });
-
-
-    const data =
-      await response.json();
-
-
-    if(!response.ok){
-
-      error.textContent =
-        data.error ||
-        "حدث خطأ";
-
-      return;
-
-    }
-
-
-    token = data.token;
-    username = data.username;
-
-
-    localStorage.setItem(
-      "bola_token",
-      token
-    );
-
-    localStorage.setItem(
-      "bola_username",
-      username
-    );
-
-
-    openApp();
-
-
-  }catch(e){
-
-    console.error(e);
-
-    error.textContent =
-      "تعذر الاتصال بالسيرفر";
-
-  }
-
-}
-
-
-/* فتح التطبيق */
-
-function openApp(){
-
-  document.getElementById("auth")
-    .classList.add("hidden");
-
-  document.getElementById("app")
-    .classList.remove("hidden");
-
-  document.getElementById("myName")
-    .textContent = username;
-
-  loadUsers();
-  connectSocket();
-
-}
-
-
-/* تسجيل الخروج */
-
-async function logout(){
-
-  try{
-
-    await fetch(
-      "/api/logout",
-      {
-        method:"POST",
-        headers:{
-          "Authorization":
-            "Bearer " + token
-        }
-      }
-    );
-
-  }catch(e){}
-
-
-  if(socket){
-
-    socket.close();
-    socket = null;
-
-  }
-
-
-  localStorage.removeItem("bola_token");
-  localStorage.removeItem("bola_username");
-
-  token = null;
-  username = null;
-
-  document.getElementById("app")
-    .classList.add("hidden");
-
-  document.getElementById("auth")
-    .classList.remove("hidden");
-
-}
-
-
-/* المستخدمين */
-
-async function loadUsers(){
-
-  try{
-
-    const response =
-      await fetch(
-        "/api/users",
-        {
-          headers:{
-            "Authorization":
-              "Bearer " + token
-          }
-        }
-      );
-
-
-    if(response.status === 401){
-
-      logout();
-      return;
-
-    }
-
-
-    users =
-      await response.json();
-
-    renderUsers();
-
-
-  }catch(e){
-
-    console.error(e);
-
-  }
-
-}
-
-
-function renderUsers(){
-
-  const box =
-    document.getElementById("users");
-
-  const search =
-    document.getElementById("search")
-      .value
-      .toLowerCase();
-
-  box.innerHTML = "";
-
-
-  users
-    .filter(u =>
-      u.username
-        .toLowerCase()
-        .includes(search)
-    )
-    .forEach(u => {
-
-      const div =
-        document.createElement("div");
-
-      div.className =
-        "user" +
-        (
-          selectedUser === u.username
-            ? " active"
-            : ""
-        );
-
-
-      const avatar =
-        document.createElement("div");
-
-      avatar.className = "avatar";
-
-      avatar.textContent =
-        u.username
-          .charAt(0)
-          .toUpperCase();
-
-
-      if(u.online){
-
-        const dot =
-          document.createElement("span");
-
-        dot.className = "online";
-
-        avatar.appendChild(dot);
-
-      }
-
-
-      const info =
-        document.createElement("div");
-
-      info.className =
-        "user-info";
-
-
-      const name =
-        document.createElement("div");
-
-      name.className =
-        "user-name";
-
-      name.textContent =
-        u.username;
-
-
-      const status =
-        document.createElement("div");
-
-      status.className =
-        "user-status";
-
-      status.textContent =
-        u.online
-          ? "متصل الآن"
-          : "غير متصل";
-
-
-      info.appendChild(name);
-      info.appendChild(status);
-
-      div.appendChild(avatar);
-      div.appendChild(info);
-
-      div.onclick = () =>
-        selectUser(u.username);
-
-      box.appendChild(div);
+      body:JSON.stringify({
+        username,
+        password
+      })
 
     });
 
-}
+    const data = await response.json();
 
+    if(!response.ok){
 
-function filterUsers(){
+      throw new Error(
+        data.error || "حدث خطأ"
+      );
 
-  renderUsers();
+    }
 
-}
+    token = data.token;
 
-
-/* فتح محادثة */
-
-function selectUser(user){
-
-  selectedUser = user;
-
-  document.getElementById("app")
-    .classList.add("chat-open");
-
-  document.getElementById("chatTitle")
-    .textContent = user;
-
-  document.getElementById("chatAvatar")
-    .textContent =
-      user.charAt(0).toUpperCase();
-
-  document.getElementById("messages")
-    .innerHTML = "";
-
-  renderUsers();
-
-
-  if(
-    socket &&
-    socket.readyState === WebSocket.OPEN
-  ){
-
-    socket.send(
-      JSON.stringify({
-        type:"history",
-        with:user
-      })
+    localStorage.setItem(
+      "token",
+      token
     );
+
+    currentUser = data.username || username;
+
+    showApp();
+
+  }catch(err){
+
+    errorBox.textContent =
+      err.message ||
+      "حدث خطأ أثناء العملية";
+
+  }finally{
+
+    authBtn.disabled = false;
 
   }
 
+};
+
+
+/* عرض التطبيق */
+
+function showApp(){
+
+  auth.classList.add("hidden");
+  app.classList.remove("hidden");
+
+  connectSocket();
+  loadUsers();
+
 }
 
 
-function closeChat(){
-
-  document.getElementById("app")
-    .classList.remove("chat-open");
-
-}
-
-
-/* WebSocket */
+/* الاتصال بالـ WebSocket */
 
 function connectSocket(){
 
   if(!token) return;
 
+  if(socket){
+
+    try{
+      socket.close();
+    }catch(e){}
+
+  }
 
   const protocol =
     location.protocol === "https:"
-      ? "wss:"
-      : "ws:";
+    ? "wss:"
+    : "ws:";
 
-
-  socket =
-    new WebSocket(
-      protocol +
-      "//" +
-      location.host +
-      "/ws?token=" +
-      encodeURIComponent(token)
-    );
+  socket = new WebSocket(
+    protocol +
+    "//" +
+    location.host +
+    "/ws?token=" +
+    encodeURIComponent(token)
+  );
 
 
   socket.onopen = () => {
+
+    console.log("WebSocket connected");
 
     loadUsers();
 
@@ -909,66 +568,93 @@ function connectSocket(){
 
   socket.onmessage = event => {
 
-    let data;
-
     try{
 
-      data =
+      const data =
         JSON.parse(event.data);
+
+
+      /* رسالة جديدة */
+
+      if(data.type === "message"){
+
+        if(
+          data.from === selectedUser ||
+          data.to === selectedUser
+        ){
+
+          addMessage(
+            data.from,
+            data.text,
+            data.created_at
+          );
+
+        }
+
+        return;
+      }
+
+
+      /* تاريخ المحادثة */
+
+      if(data.type === "history"){
+
+        messagesBox.innerHTML = "";
+
+        if(!data.messages ||
+           data.messages.length === 0){
+
+          showEmptyMessages();
+
+          return;
+
+        }
+
+        for(const msg of data.messages){
+
+          addMessage(
+            msg.sender,
+            msg.text,
+            msg.created_at
+          );
+
+        }
+
+        scrollMessages();
+
+        return;
+      }
+
+
+      /* الكتابة */
+
+      if(data.type === "typing"){
+
+        if(data.from === selectedUser){
+
+          typingBox.textContent =
+            data.typing
+            ? "يكتب..."
+            : "";
+
+        }
+
+        return;
+      }
+
+
+      /* تحديث المستخدمين */
+
+      if(data.type === "users"){
+
+        loadUsers();
+
+        return;
+      }
 
     }catch(e){
 
-      return;
-
-    }
-
-
-    if(data.type === "users"){
-
-      users =
-        data.users || [];
-
-      renderUsers();
-
-      return;
-
-    }
-
-
-    if(data.type === "history"){
-
-      showHistory(
-        data.messages || []
-      );
-
-      return;
-
-    }
-
-
-    if(data.type === "message"){
-
-      receiveMessage(data);
-
-      return;
-
-    }
-
-
-    if(data.type === "typing"){
-
-      if(
-        data.from === selectedUser
-      ){
-
-        document.getElementById(
-          "chatStatus"
-        ).textContent =
-          data.typing
-            ? "يكتب الآن..."
-            : "";
-
-      }
+      console.error(e);
 
     }
 
@@ -977,16 +663,123 @@ function connectSocket(){
 
   socket.onclose = () => {
 
-    if(token){
+    console.log("WebSocket disconnected");
 
-      setTimeout(
-        connectSocket,
-        3000
+    clearTimeout(reconnectTimer);
+
+    reconnectTimer = setTimeout(
+      connectSocket,
+      2000
+    );
+
+  };
+
+
+  socket.onerror = () => {
+
+    try{
+      socket.close();
+    }catch(e){}
+
+  };
+
+}
+
+
+/* تحميل المستخدمين */
+
+async function loadUsers(){
+
+  if(!token) return;
+
+  try{
+
+    const response =
+      await fetch(
+        "/api/users?token=" +
+        encodeURIComponent(token)
       );
+
+    if(!response.ok) return;
+
+    const data =
+      await response.json();
+
+    usersBox.innerHTML = "";
+
+    for(const user of data.users){
+
+      if(user.username === currentUser){
+        continue;
+      }
+
+      const div =
+        document.createElement("div");
+
+      div.className = "user";
+
+      div.innerHTML = `
+
+        <span class="dot ${
+          user.online
+          ? "online"
+          : ""
+        }"></span>
+
+        <span class="user-name">
+          ${escapeHtml(user.username)}
+        </span>
+
+      `;
+
+      div.onclick = () => {
+
+        openChat(user.username);
+
+      };
+
+      usersBox.appendChild(div);
 
     }
 
-  };
+  }catch(e){
+
+    console.error(e);
+
+  }
+
+}
+
+
+/* فتح محادثة */
+
+function openChat(username){
+
+  selectedUser = username;
+
+  chatUser.textContent =
+    username;
+
+  typingBox.textContent = "";
+
+  messageInput.disabled = false;
+  sendBtn.disabled = false;
+
+  app.classList.add("chat-open");
+
+  messagesBox.innerHTML = "";
+
+  if(socket &&
+     socket.readyState === WebSocket.OPEN){
+
+    socket.send(
+      JSON.stringify({
+        type:"history",
+        with:username
+      })
+    );
+
+  }
 
 }
 
@@ -995,18 +788,12 @@ function connectSocket(){
 
 function sendMessage(){
 
-  if(!selectedUser) return;
-
-  const input =
-    document.getElementById(
-      "messageInput"
-    );
-
   const text =
-    input.value.trim();
+    messageInput.value.trim();
 
   if(!text) return;
 
+  if(!selectedUser) return;
 
   if(
     !socket ||
@@ -1016,7 +803,6 @@ function sendMessage(){
     return;
 
   }
-
 
   socket.send(
     JSON.stringify({
@@ -1030,80 +816,95 @@ function sendMessage(){
     })
   );
 
+  messageInput.value = "";
 
-  input.value = "";
+  sendTyping(false);
 
 }
 
 
-function handleKey(event){
+/* زر الإرسال */
 
-  if(event.key === "Enter"){
+sendBtn.onclick =
+  sendMessage;
 
-    event.preventDefault();
 
-    sendMessage();
+/* Enter */
+
+messageInput.addEventListener(
+  "keydown",
+  event => {
+
+    if(event.key === "Enter"){
+
+      event.preventDefault();
+
+      sendMessage();
+
+    }
 
   }
+);
 
-}
+
+/* مؤشر الكتابة */
+
+messageInput.addEventListener(
+  "input",
+  () => {
+
+    sendTyping(true);
+
+    clearTimeout(typingTimer);
+
+    typingTimer =
+      setTimeout(
+        () => sendTyping(false),
+        1200
+      );
+
+  }
+);
 
 
-/* استقبال */
+function sendTyping(value){
 
-function receiveMessage(data){
+  if(!selectedUser) return;
 
   if(
-    data.from !== selectedUser &&
-    data.to !== selectedUser
+    !socket ||
+    socket.readyState !== WebSocket.OPEN
   ){
 
     return;
 
   }
 
-  addMessage(data);
+  socket.send(
+    JSON.stringify({
 
-}
+      type:"typing",
 
+      to:selectedUser,
 
-function showHistory(messages){
+      typing:value
 
-  const box =
-    document.getElementById(
-      "messages"
-    );
-
-  box.innerHTML = "";
-
-
-  if(messages.length === 0){
-
-    box.innerHTML =
-      '<div class="empty">لا توجد رسائل بعد</div>';
-
-    return;
-
-  }
-
-
-  messages.forEach(
-    addMessage
+    })
   );
 
 }
 
 
-function addMessage(message){
+/* إضافة رسالة */
 
-  const box =
-    document.getElementById(
-      "messages"
-    );
-
+function addMessage(
+  sender,
+  text,
+  createdAt
+){
 
   const empty =
-    box.querySelector(".empty");
+    document.getElementById("empty");
 
   if(empty){
 
@@ -1111,54 +912,185 @@ function addMessage(message){
 
   }
 
-
   const div =
     document.createElement("div");
 
   div.className =
     "message " +
     (
-      message.from === username
-        ? "mine"
-        : "theirs"
+      sender === currentUser
+      ? "mine"
+      : "theirs"
     );
 
 
-  const text =
+  const textDiv =
     document.createElement("div");
 
-  text.textContent =
-    message.text;
+  textDiv.textContent = text;
 
 
-  const time =
+  const timeDiv =
     document.createElement("div");
 
-  time.className =
-    "message-time";
+  timeDiv.className = "time";
 
-  time.textContent =
-    message.time || "";
+  if(createdAt){
+
+    const date =
+      new Date(createdAt);
+
+    if(!isNaN(date.getTime())){
+
+      timeDiv.textContent =
+        date.toLocaleTimeString(
+          "ar-EG",
+          {
+            hour:"2-digit",
+            minute:"2-digit"
+          }
+        );
+
+    }
+
+  }
 
 
-  div.appendChild(text);
-  div.appendChild(time);
+  div.appendChild(textDiv);
+  div.appendChild(timeDiv);
 
-  box.appendChild(div);
+  messagesBox.appendChild(div);
 
-  box.scrollTop =
-    box.scrollHeight;
+  scrollMessages();
 
 }
 
 
-/* تشغيل تلقائي */
+function showEmptyMessages(){
 
-if(token && username){
+  messagesBox.innerHTML = `
 
-  openApp();
+    <div id="empty">
+      لا توجد رسائل بعد
+    </div>
+
+  `;
 
 }
+
+
+function scrollMessages(){
+
+  messagesBox.scrollTop =
+    messagesBox.scrollHeight;
+
+}
+
+
+/* تسجيل الخروج */
+
+document.getElementById(
+  "logoutBtn"
+).onclick = async () => {
+
+  try{
+
+    await fetch("/api/logout",{
+
+      method:"POST",
+
+      headers:{
+        "Content-Type":"application/json"
+      },
+
+      body:JSON.stringify({
+        token
+      })
+
+    });
+
+  }catch(e){}
+
+
+  token = "";
+
+  currentUser = "";
+  selectedUser = "";
+
+  localStorage.removeItem("token");
+
+  if(socket){
+
+    try{
+      socket.close();
+    }catch(e){}
+
+  }
+
+  app.classList.add("hidden");
+  auth.classList.remove("hidden");
+
+  usernameInput.value = "";
+  passwordInput.value = "";
+
+};
+
+
+/* حماية HTML */
+
+function escapeHtml(value){
+
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
+
+
+/* محاولة الدخول تلقائياً */
+
+async function checkSession(){
+
+  if(!token) return;
+
+  try{
+
+    const response =
+      await fetch(
+        "/api/me?token=" +
+        encodeURIComponent(token)
+      );
+
+    if(!response.ok){
+
+      localStorage.removeItem("token");
+      token = "";
+
+      return;
+
+    }
+
+    const data =
+      await response.json();
+
+    currentUser =
+      data.username;
+
+    showApp();
+
+  }catch(e){
+
+    console.error(e);
+
+  }
+
+}
+
+
+checkSession();
 
 </script>
 
@@ -1166,58 +1098,269 @@ if(token && username){
 </html>`;
 
 
-/* =====================================================
-   DURABLE OBJECT
-===================================================== */
+/* =========================
+   WORKER
+========================= */
 
-export class ChatRoom extends DurableObject {
+export default {
 
-  constructor(ctx, env){
+  async fetch(request, env){
 
-    super(ctx, env);
+    const url =
+      new URL(request.url);
 
-    this.ctx = ctx;
-    this.env = env;
+    if(
+      url.pathname === "/" &&
+      request.method === "GET"
+    ){
 
-    this.clients = new Map();
+      return new Response(
+        HTML,
+        {
+          headers:{
+            "Content-Type":
+              "text/html;charset=UTF-8"
+          }
+        }
+      );
 
-    this.ctx.blockConcurrencyWhile(
-      async () => {
+    }
 
-        this.ctx.storage.sql.exec(`
-          CREATE TABLE IF NOT EXISTS accounts (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT UNIQUE NOT NULL,
-            password_hash TEXT NOT NULL,
-            created_at INTEGER NOT NULL
-          )
-        `);
 
-        this.ctx.storage.sql.exec(`
-          CREATE TABLE IF NOT EXISTS sessions (
-            token TEXT PRIMARY KEY,
-            username TEXT NOT NULL,
-            created_at INTEGER NOT NULL
-          )
-        `);
+    /* تسجيل */
 
-        this.ctx.storage.sql.exec(`
-          CREATE TABLE IF NOT EXISTS messages (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            sender TEXT NOT NULL,
-            receiver TEXT NOT NULL,
-            text TEXT NOT NULL,
-            created_at INTEGER NOT NULL
-          )
-        `);
+    if(
+      url.pathname === "/api/register" &&
+      request.method === "POST"
+    ){
 
+      return handleRegister(
+        request,
+        env
+      );
+
+    }
+
+
+    /* دخول */
+
+    if(
+      url.pathname === "/api/login" &&
+      request.method === "POST"
+    ){
+
+      return handleLogin(
+        request,
+        env
+      );
+
+    }
+
+
+    /* خروج */
+
+    if(
+      url.pathname === "/api/logout" &&
+      request.method === "POST"
+    ){
+
+      return handleLogout(
+        request,
+        env
+      );
+
+    }
+
+
+    /* المستخدم الحالي */
+
+    if(
+      url.pathname === "/api/me" &&
+      request.method === "GET"
+    ){
+
+      return handleMe(
+        request,
+        env
+      );
+
+    }
+
+
+    /* المستخدمين */
+
+    if(
+      url.pathname === "/api/users" &&
+      request.method === "GET"
+    ){
+
+      return handleUsers(
+        request,
+        env
+      );
+
+    }
+
+
+    /* WebSocket */
+
+    if(
+      url.pathname === "/ws"
+    ){
+
+      if(
+        request.headers.get(
+          "Upgrade"
+        ) === "websocket"
+      ){
+
+        return websocket(
+          request,
+          env
+        );
+
+      }
+
+    }
+
+
+    return new Response(
+      "Not Found",
+      {
+        status:404
       }
     );
 
   }
 
+};
 
-  async hashPassword(password){
+
+/* =========================
+   HELPERS
+========================= */
+
+function json(data,status=200){
+
+  return new Response(
+    JSON.stringify(data),
+    {
+      status,
+      headers:{
+        "Content-Type":
+          "application/json"
+      }
+    }
+  );
+
+}
+
+
+/* =========================
+   DATABASE
+========================= */
+
+function initDB(sql){
+
+  /*
+    مهم:
+    لا نغيّر جدول accounts القديم
+    ولا نفترض وجود id فيه.
+  */
+
+  sql.exec(`
+    CREATE TABLE IF NOT EXISTS accounts (
+      username TEXT UNIQUE NOT NULL,
+      password_hash TEXT NOT NULL,
+      created_at INTEGER NOT NULL
+    )
+  `);
+
+  sql.exec(`
+    CREATE TABLE IF NOT EXISTS sessions (
+      token TEXT PRIMARY KEY,
+      username TEXT NOT NULL,
+      created_at INTEGER NOT NULL
+    )
+  `);
+
+  sql.exec(`
+    CREATE TABLE IF NOT EXISTS messages (
+      sender TEXT NOT NULL,
+      receiver TEXT NOT NULL,
+      text TEXT NOT NULL,
+      created_at INTEGER NOT NULL
+    )
+  `);
+
+}
+
+
+/* =========================
+   PASSWORD HASH
+========================= */
+
+async function hashPassword(password){
+
+  const encoder =
+    new TextEncoder();
+
+  const salt =
+    crypto.getRandomValues(
+      new Uint8Array(16)
+    );
+
+  const key =
+    await crypto.subtle.importKey(
+      "raw",
+      encoder.encode(password),
+      "PBKDF2",
+      false,
+      ["deriveBits"]
+    );
+
+  const bits =
+    await crypto.subtle.deriveBits(
+      {
+        name:"PBKDF2",
+        salt:salt,
+        iterations:100000,
+        hash:"SHA-256"
+      },
+      key,
+      256
+    );
+
+  return (
+    arrayBufferToBase64(salt) +
+    "." +
+    arrayBufferToBase64(bits)
+  );
+
+}
+
+
+async function verifyPassword(
+  password,
+  stored
+){
+
+  try{
+
+    const parts =
+      stored.split(".");
+
+    if(parts.length !== 2){
+      return false;
+    }
+
+    const salt =
+      base64ToUint8Array(
+        parts[0]
+      );
+
+    const expected =
+      parts[1];
 
     const encoder =
       new TextEncoder();
@@ -1226,21 +1369,16 @@ export class ChatRoom extends DurableObject {
       await crypto.subtle.importKey(
         "raw",
         encoder.encode(password),
-        {
-          name:"PBKDF2"
-        },
+        "PBKDF2",
         false,
         ["deriveBits"]
       );
-
 
     const bits =
       await crypto.subtle.deriveBits(
         {
           name:"PBKDF2",
-          salt:encoder.encode(
-            "BOLA11_PASSWORD_SALT"
-          ),
+          salt:salt,
           iterations:100000,
           hash:"SHA-256"
         },
@@ -1248,63 +1386,514 @@ export class ChatRoom extends DurableObject {
         256
       );
 
+    const actual =
+      arrayBufferToBase64(bits);
 
-    return Array
-      .from(new Uint8Array(bits))
-      .map(
-        b =>
-          b.toString(16)
-           .padStart(2,"0")
-      )
-      .join("");
+    return actual === expected;
 
-  }
+  }catch(e){
 
-
-  makeToken(){
-
-    const bytes =
-      new Uint8Array(32);
-
-    crypto.getRandomValues(bytes);
-
-    return Array
-      .from(bytes)
-      .map(
-        b =>
-          b.toString(16)
-           .padStart(2,"0")
-      )
-      .join("");
+    return false;
 
   }
 
-
-  getUserFromToken(token){
-
-    if(!token) return null;
+}
 
 
-    const rows =
-      this.ctx.storage.sql.exec(
-        `
-        SELECT username
-        FROM sessions
-        WHERE token = ?
-        LIMIT 1
-        `,
-        token
-      ).toArray();
+function arrayBufferToBase64(buffer){
+
+  const bytes =
+    new Uint8Array(buffer);
+
+  let binary = "";
+
+  for(
+    let i=0;
+    i<bytes.length;
+    i++
+  ){
+
+    binary +=
+      String.fromCharCode(
+        bytes[i]
+      );
+
+  }
+
+  return btoa(binary);
+
+}
 
 
-    if(rows.length === 0){
+function base64ToUint8Array(value){
 
-      return null;
+  const binary =
+    atob(value);
+
+  const bytes =
+    new Uint8Array(
+      binary.length
+    );
+
+  for(
+    let i=0;
+    i<binary.length;
+    i++
+  ){
+
+    bytes[i] =
+      binary.charCodeAt(i);
+
+  }
+
+  return bytes;
+
+}
+
+
+/* =========================
+   TOKEN
+========================= */
+
+function createToken(){
+
+  const bytes =
+    crypto.getRandomValues(
+      new Uint8Array(32)
+    );
+
+  return arrayBufferToBase64(bytes);
+
+}
+
+
+function getToken(request){
+
+  const url =
+    new URL(request.url);
+
+  return (
+    url.searchParams.get(
+      "token"
+    ) ||
+    request.headers.get(
+      "Authorization"
+    )?.replace(
+      /^Bearer\s+/i,
+      ""
+    ) ||
+    null
+  );
+
+}
+
+
+/* =========================
+   GET USER
+========================= */
+
+function getUserFromToken(
+  sql,
+  token
+){
+
+  if(!token){
+    return null;
+  }
+
+  const rows =
+    sql.exec(
+      `
+      SELECT username
+      FROM sessions
+      WHERE token = ?
+      LIMIT 1
+      `,
+      token
+    ).toArray();
+
+  if(
+    !rows ||
+    rows.length === 0
+  ){
+
+    return null;
+
+  }
+
+  return rows[0].username;
+
+}
+
+
+/* =========================
+   REGISTER
+========================= */
+
+async function handleRegister(
+  request,
+  env
+){
+
+  try{
+
+    const body =
+      await request.json();
+
+    const username =
+      String(
+        body.username || ""
+      ).trim();
+
+    const password =
+      String(
+        body.password || ""
+      );
+
+
+    if(
+      username.length < 3
+    ){
+
+      return json(
+        {
+          error:
+            "اسم المستخدم يجب أن يكون 3 أحرف على الأقل"
+        },
+        400
+      );
 
     }
 
 
-    return rows[0].username;
+    if(
+      password.length < 4
+    ){
+
+      return json(
+        {
+          error:
+            "كلمة السر يجب أن تكون 4 أحرف على الأقل"
+        },
+        400
+      );
+
+    }
+
+
+    const id =
+      env.CHAT_ROOM.idFromName(
+        "main"
+      );
+
+    const room =
+      env.CHAT_ROOM.get(id);
+
+
+    return room.fetch(
+      new Request(
+        "https://internal/register",
+        {
+          method:"POST",
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+          body:JSON.stringify({
+            username,
+            password
+          })
+        }
+      )
+    );
+
+  }catch(e){
+
+    return json(
+      {
+        error:
+          "حدث خطأ أثناء إنشاء الحساب: " +
+          e.message
+      },
+      500
+    );
+
+  }
+
+}
+
+
+/* =========================
+   LOGIN
+========================= */
+
+async function handleLogin(
+  request,
+  env
+){
+
+  try{
+
+    const body =
+      await request.json();
+
+    const username =
+      String(
+        body.username || ""
+      ).trim();
+
+    const password =
+      String(
+        body.password || ""
+      );
+
+
+    const id =
+      env.CHAT_ROOM.idFromName(
+        "main"
+      );
+
+    const room =
+      env.CHAT_ROOM.get(id);
+
+
+    return room.fetch(
+      new Request(
+        "https://internal/login",
+        {
+          method:"POST",
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+          body:JSON.stringify({
+            username,
+            password
+          })
+        }
+      )
+    );
+
+  }catch(e){
+
+    return json(
+      {
+        error:
+          "حدث خطأ أثناء تسجيل الدخول: " +
+          e.message
+      },
+      500
+    );
+
+  }
+
+}
+
+
+/* =========================
+   LOGOUT
+========================= */
+
+async function handleLogout(
+  request,
+  env
+){
+
+  try{
+
+    const body =
+      await request.json();
+
+    const token =
+      body.token;
+
+    if(!token){
+
+      return json({
+        ok:true
+      });
+
+    }
+
+
+    const id =
+      env.CHAT_ROOM.idFromName(
+        "main"
+      );
+
+    const room =
+      env.CHAT_ROOM.get(id);
+
+
+    return room.fetch(
+      new Request(
+        "https://internal/logout",
+        {
+          method:"POST",
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+          body:JSON.stringify({
+            token
+          })
+        }
+      )
+    );
+
+  }catch(e){
+
+    return json(
+      {
+        error:e.message
+      },
+      500
+    );
+
+  }
+
+}
+
+
+/* =========================
+   ME
+========================= */
+
+async function handleMe(
+  request,
+  env
+){
+
+  const token =
+    getToken(request);
+
+  const id =
+    env.CHAT_ROOM.idFromName(
+      "main"
+    );
+
+  const room =
+    env.CHAT_ROOM.get(id);
+
+  return room.fetch(
+    new Request(
+      "https://internal/me?token=" +
+      encodeURIComponent(
+        token || ""
+      )
+    )
+  );
+
+}
+
+
+/* =========================
+   USERS
+========================= */
+
+async function handleUsers(
+  request,
+  env
+){
+
+  const token =
+    getToken(request);
+
+  const id =
+    env.CHAT_ROOM.idFromName(
+      "main"
+    );
+
+  const room =
+    env.CHAT_ROOM.get(id);
+
+  return room.fetch(
+    new Request(
+      "https://internal/users?token=" +
+      encodeURIComponent(
+        token || ""
+      )
+    )
+  );
+
+}
+
+
+/* =========================
+   WEBSOCKET
+========================= */
+
+async function websocket(
+  request,
+  env
+){
+
+  const url =
+    new URL(request.url);
+
+  const token =
+    url.searchParams.get(
+      "token"
+    );
+
+  if(!token){
+
+    return new Response(
+      "Unauthorized",
+      {
+        status:401
+      }
+    );
+
+  }
+
+
+  const id =
+    env.CHAT_ROOM.idFromName(
+      "main"
+    );
+
+  const room =
+    env.CHAT_ROOM.get(id);
+
+
+  return room.fetch(
+    new Request(
+      "https://internal/ws?token=" +
+      encodeURIComponent(token),
+      {
+        headers:{
+          Upgrade:"websocket"
+        }
+      }
+    )
+  );
+
+}
+
+
+/* =========================
+   DURABLE OBJECT
+========================= */
+
+export class ChatRoom
+  extends DurableObject
+{
+
+  constructor(ctx,env){
+
+    super(ctx,env);
+
+    this.ctx = ctx;
+    this.env = env;
+
+    this.sql =
+      ctx.storage.sql;
+
+    initDB(this.sql);
+
+    this.connections =
+      new Map();
 
   }
 
@@ -1315,297 +1904,349 @@ export class ChatRoom extends DurableObject {
       new URL(request.url);
 
 
+    /* REGISTER */
+
     if(
-      request.method === "GET" &&
-      url.pathname === "/"
+      url.pathname === "/register" &&
+      request.method === "POST"
     ){
 
-      return new Response(
-        HTML,
-        {
-          headers:{
-            "Content-Type":
-              "text/html; charset=UTF-8"
-          }
-        }
+      return this.register(
+        request
       );
 
     }
 
 
-    /* إنشاء حساب */
+    /* LOGIN */
 
     if(
-      request.method === "POST" &&
-      url.pathname === "/api/register"
+      url.pathname === "/login" &&
+      request.method === "POST"
     ){
 
-      try{
-
-        const body =
-          await request.json();
-
-        const username =
-          String(
-            body.username || ""
-          ).trim();
-
-        const password =
-          String(
-            body.password || ""
-          );
-
-
-        if(username.length < 3){
-
-          return Response.json(
-            {
-              error:
-                "اسم المستخدم يجب أن يكون 3 أحرف على الأقل"
-            },
-            {status:400}
-          );
-
-        }
-
-
-        if(password.length < 4){
-
-          return Response.json(
-            {
-              error:
-                "كلمة السر يجب أن تكون 4 أحرف على الأقل"
-            },
-            {status:400}
-          );
-
-        }
-
-
-        const exists =
-          this.ctx.storage.sql.exec(
-            `
-            SELECT id
-            FROM accounts
-            WHERE username = ?
-            LIMIT 1
-            `,
-            username
-          ).toArray();
-
-
-        if(exists.length > 0){
-
-          return Response.json(
-            {
-              error:
-                "اسم المستخدم موجود بالفعل"
-            },
-            {status:409}
-          );
-
-        }
-
-
-        const hash =
-          await this.hashPassword(
-            password
-          );
-
-
-        this.ctx.storage.sql.exec(
-          `
-          INSERT INTO accounts
-          (username,password_hash,created_at)
-          VALUES (?,?,?)
-          `,
-          username,
-          hash,
-          Date.now()
-        );
-
-
-        const token =
-          this.makeToken();
-
-
-        this.ctx.storage.sql.exec(
-          `
-          INSERT INTO sessions
-          (token,username,created_at)
-          VALUES (?,?,?)
-          `,
-          token,
-          username,
-          Date.now()
-        );
-
-
-        return Response.json({
-          ok:true,
-          username:username,
-          token:token
-        });
-
-
-      }catch(error){
-
-        console.error(
-          "REGISTER ERROR:",
-          error
-        );
-
-
-        return Response.json(
-          {
-            error:
-              "حدث خطأ أثناء إنشاء الحساب: " +
-              String(error.message || error)
-          },
-          {status:500}
-        );
-
-      }
+      return this.login(
+        request
+      );
 
     }
 
 
-    /* تسجيل الدخول */
+    /* LOGOUT */
 
     if(
-      request.method === "POST" &&
-      url.pathname === "/api/login"
+      url.pathname === "/logout" &&
+      request.method === "POST"
     ){
 
-      try{
-
-        const body =
-          await request.json();
-
-        const username =
-          String(
-            body.username || ""
-          ).trim();
-
-        const password =
-          String(
-            body.password || ""
-          );
-
-
-        const rows =
-          this.ctx.storage.sql.exec(
-            `
-            SELECT username,password_hash
-            FROM accounts
-            WHERE username = ?
-            LIMIT 1
-            `,
-            username
-          ).toArray();
-
-
-        if(rows.length === 0){
-
-          return Response.json(
-            {
-              error:
-                "اسم المستخدم أو كلمة السر غير صحيحة"
-            },
-            {status:401}
-          );
-
-        }
-
-
-        const hash =
-          await this.hashPassword(
-            password
-          );
-
-
-        if(
-          hash !==
-          rows[0].password_hash
-        ){
-
-          return Response.json(
-            {
-              error:
-                "اسم المستخدم أو كلمة السر غير صحيحة"
-            },
-            {status:401}
-          );
-
-        }
-
-
-        const token =
-          this.makeToken();
-
-
-        this.ctx.storage.sql.exec(
-          `
-          INSERT INTO sessions
-          (token,username,created_at)
-          VALUES (?,?,?)
-          `,
-          token,
-          username,
-          Date.now()
-        );
-
-
-        return Response.json({
-          ok:true,
-          username:username,
-          token:token
-        });
-
-
-      }catch(error){
-
-        console.error(
-          "LOGIN ERROR:",
-          error
-        );
-
-
-        return Response.json(
-          {
-            error:
-              "حدث خطأ أثناء تسجيل الدخول"
-          },
-          {status:500}
-        );
-
-      }
+      return this.logout(
+        request
+      );
 
     }
 
 
-    /* تسجيل الخروج */
+    /* ME */
 
     if(
-      request.method === "POST" &&
-      url.pathname === "/api/logout"
+      url.pathname === "/me"
     ){
 
-      const auth =
-        request.headers.get(
-          "Authorization"
-        ) || "";
+      return this.me(
+        request
+      );
+
+    }
+
+
+    /* USERS */
+
+    if(
+      url.pathname === "/users"
+    ){
+
+      return this.users(
+        request
+      );
+
+    }
+
+
+    /* WS */
+
+    if(
+      url.pathname === "/ws" &&
+      request.headers.get(
+        "Upgrade"
+      ) === "websocket"
+    ){
+
+      return this.handleWebSocket(
+        request
+      );
+
+    }
+
+
+    return new Response(
+      "Not Found",
+      {
+        status:404
+      }
+    );
+
+  }
+
+
+  /* =====================
+     REGISTER
+  ===================== */
+
+  async register(request){
+
+    try{
+
+      const body =
+        await request.json();
+
+      const username =
+        String(
+          body.username || ""
+        ).trim();
+
+      const password =
+        String(
+          body.password || ""
+        );
+
+
+      /*
+        مهم جداً:
+        هنا لا نستخدم SELECT id
+        لأن جدول accounts القديم
+        لا يحتوي على id.
+      */
+
+      const exists =
+        this.sql.exec(
+          `
+          SELECT username
+          FROM accounts
+          WHERE username = ?
+          LIMIT 1
+          `,
+          username
+        ).toArray();
+
+
+      if(
+        exists &&
+        exists.length > 0
+      ){
+
+        return json(
+          {
+            error:
+              "اسم المستخدم موجود بالفعل"
+          },
+          400
+        );
+
+      }
+
+
+      const passwordHash =
+        await hashPassword(
+          password
+        );
+
+
+      const now =
+        Date.now();
+
+
+      this.sql.exec(
+        `
+        INSERT INTO accounts
+        (username,password_hash,created_at)
+        VALUES (?,?,?)
+        `,
+        username,
+        passwordHash,
+        now
+      );
 
 
       const token =
-        auth.startsWith("Bearer ")
-          ? auth.slice(7)
-          : null;
+        createToken();
+
+
+      this.sql.exec(
+        `
+        INSERT INTO sessions
+        (token,username,created_at)
+        VALUES (?,?,?)
+        `,
+        token,
+        username,
+        now
+      );
+
+
+      return json({
+        ok:true,
+        username,
+        token
+      });
+
+
+    }catch(e){
+
+      return json(
+        {
+          error:
+            "حدث خطأ أثناء إنشاء الحساب: " +
+            e.message
+        },
+        500
+      );
+
+    }
+
+  }
+
+
+  /* =====================
+     LOGIN
+  ===================== */
+
+  async login(request){
+
+    try{
+
+      const body =
+        await request.json();
+
+      const username =
+        String(
+          body.username || ""
+        ).trim();
+
+      const password =
+        String(
+          body.password || ""
+        );
+
+
+      const rows =
+        this.sql.exec(
+          `
+          SELECT username,password_hash
+          FROM accounts
+          WHERE username = ?
+          LIMIT 1
+          `,
+          username
+        ).toArray();
+
+
+      if(
+        !rows ||
+        rows.length === 0
+      ){
+
+        return json(
+          {
+            error:
+              "اسم المستخدم أو كلمة السر غير صحيحة"
+          },
+          401
+        );
+
+      }
+
+
+      const account =
+        rows[0];
+
+
+      const valid =
+        await verifyPassword(
+          password,
+          account.password_hash
+        );
+
+
+      if(!valid){
+
+        return json(
+          {
+            error:
+              "اسم المستخدم أو كلمة السر غير صحيحة"
+          },
+          401
+        );
+
+      }
+
+
+      const token =
+        createToken();
+
+
+      this.sql.exec(
+        `
+        INSERT INTO sessions
+        (token,username,created_at)
+        VALUES (?,?,?)
+        `,
+        token,
+        username,
+        Date.now()
+      );
+
+
+      return json({
+        ok:true,
+        username,
+        token
+      });
+
+
+    }catch(e){
+
+      return json(
+        {
+          error:
+            "حدث خطأ أثناء تسجيل الدخول: " +
+            e.message
+        },
+        500
+      );
+
+    }
+
+  }
+
+
+  /* =====================
+     LOGOUT
+  ===================== */
+
+  async logout(request){
+
+    try{
+
+      const body =
+        await request.json();
+
+      const token =
+        body.token;
 
 
       if(token){
 
-        this.ctx.storage.sql.exec(
+        this.sql.exec(
           `
           DELETE FROM sessions
           WHERE token = ?
@@ -1616,100 +2257,138 @@ export class ChatRoom extends DurableObject {
       }
 
 
-      return Response.json({
+      return json({
         ok:true
       });
 
-    }
 
+    }catch(e){
 
-    /* المستخدمين */
-
-    if(
-      request.method === "GET" &&
-      url.pathname === "/api/users"
-    ){
-
-      const auth =
-        request.headers.get(
-          "Authorization"
-        ) || "";
-
-
-      const token =
-        auth.startsWith("Bearer ")
-          ? auth.slice(7)
-          : null;
-
-
-      const current =
-        this.getUserFromToken(
-          token
-        );
-
-
-      if(!current){
-
-        return Response.json(
-          {
-            error:"غير مصرح"
-          },
-          {status:401}
-        );
-
-      }
-
-
-      const rows =
-        this.ctx.storage.sql.exec(
-          `
-          SELECT username
-          FROM accounts
-          ORDER BY username
-          `
-        ).toArray();
-
-
-      return Response.json(
-        rows
-          .filter(
-            u =>
-              u.username !== current
-          )
-          .map(
-            u => ({
-              username:u.username,
-              online:
-                this.clients.has(
-                  u.username
-                )
-            })
-          )
+      return json(
+        {
+          error:e.message
+        },
+        500
       );
 
     }
-
-
-    /* WebSocket */
-
-    if(url.pathname === "/ws"){
-
-      return this.websocket(
-        request
-      );
-
-    }
-
-
-    return new Response(
-      "Not Found",
-      {status:404}
-    );
 
   }
 
 
-  async websocket(request){
+  /* =====================
+     ME
+  ===================== */
+
+  async me(request){
+
+    const url =
+      new URL(request.url);
+
+    const token =
+      url.searchParams.get(
+        "token"
+      );
+
+    const username =
+      getUserFromToken(
+        this.sql,
+        token
+      );
+
+
+    if(!username){
+
+      return json(
+        {
+          error:"غير مسجل الدخول"
+        },
+        401
+      );
+
+    }
+
+
+    return json({
+      ok:true,
+      username
+    });
+
+  }
+
+
+  /* =====================
+     USERS
+  ===================== */
+
+  async users(request){
+
+    const url =
+      new URL(request.url);
+
+    const token =
+      url.searchParams.get(
+        "token"
+      );
+
+    const currentUser =
+      getUserFromToken(
+        this.sql,
+        token
+      );
+
+
+    if(!currentUser){
+
+      return json(
+        {
+          error:"غير مسجل الدخول"
+        },
+        401
+      );
+
+    }
+
+
+    const rows =
+      this.sql.exec(
+        `
+        SELECT username
+        FROM accounts
+        ORDER BY username
+        `
+      ).toArray();
+
+
+    const users =
+      rows
+        .filter(
+          user =>
+            user.username !== currentUser
+        )
+        .map(
+          user => ({
+            username:user.username,
+            online:
+              this.connections.has(
+                user.username
+              )
+          })
+        );
+
+
+    return json({
+      users
+    });
+
+  }
+
+
+  /* =====================
+     WEBSOCKET
+  ===================== */
+
+  async handleWebSocket(request){
 
     const url =
       new URL(request.url);
@@ -1721,7 +2400,8 @@ export class ChatRoom extends DurableObject {
 
 
     const username =
-      this.getUserFromToken(
+      getUserFromToken(
+        this.sql,
         token
       );
 
@@ -1730,7 +2410,9 @@ export class ChatRoom extends DurableObject {
 
       return new Response(
         "Unauthorized",
-        {status:401}
+        {
+          status:401
+        }
       );
 
     }
@@ -1739,7 +2421,6 @@ export class ChatRoom extends DurableObject {
     const pair =
       new WebSocketPair();
 
-
     const client =
       pair[0];
 
@@ -1747,12 +2428,10 @@ export class ChatRoom extends DurableObject {
       pair[1];
 
 
-    this.ctx.acceptWebSocket(
-      server
-    );
+    server.accept();
 
 
-    this.clients.set(
+    this.connections.set(
       username,
       server
     );
@@ -1762,9 +2441,9 @@ export class ChatRoom extends DurableObject {
       "message",
       event => {
 
-        this.webSocketMessage(
-          server,
+        this.handleMessage(
           username,
+          server,
           event.data
         );
 
@@ -1777,27 +2456,39 @@ export class ChatRoom extends DurableObject {
       () => {
 
         if(
-          this.clients.get(username)
-          === server
+          this.connections.get(
+            username
+          ) === server
         ){
 
-          this.clients.delete(
+          this.connections.delete(
             username
           );
 
         }
 
-        this.broadcastUsers();
-
       }
     );
 
 
-    this.sendUsersTo(
-      server
-    );
+    server.addEventListener(
+      "error",
+      () => {
 
-    this.broadcastUsers();
+        if(
+          this.connections.get(
+            username
+          ) === server
+        ){
+
+          this.connections.delete(
+            username
+          );
+
+        }
+
+      }
+    );
 
 
     return new Response(
@@ -1811,358 +2502,204 @@ export class ChatRoom extends DurableObject {
   }
 
 
-  async webSocketMessage(
-    socket,
+  /* =====================
+     WS MESSAGES
+  ===================== */
+
+  handleMessage(
     username,
+    socket,
     raw
   ){
 
-    let data;
-
     try{
 
-      data =
+      const data =
         JSON.parse(raw);
 
-    }catch(e){
 
-      return;
+      /* رسالة */
 
-    }
+      if(
+        data.type === "message"
+      ){
+
+        const to =
+          String(
+            data.to || ""
+          ).trim();
+
+        const text =
+          String(
+            data.text || ""
+          ).trim();
 
 
-    if(data.type === "history"){
+        if(!to || !text){
+          return;
+        }
 
-      const other =
-        String(
-          data.with || ""
+
+        const createdAt =
+          Date.now();
+
+
+        this.sql.exec(
+          `
+          INSERT INTO messages
+          (sender,receiver,text,created_at)
+          VALUES (?,?,?,?)
+          `,
+          username,
+          to,
+          text,
+          createdAt
         );
 
 
-      if(!other) return;
+        const receiverSocket =
+          this.connections.get(
+            to
+          );
 
 
-      const rows =
-        this.ctx.storage.sql.exec(
-          `
-          SELECT
-            id,
-            sender,
-            receiver,
+        const payload =
+          JSON.stringify({
+            type:"message",
+            from:username,
+            to,
             text,
-            created_at
-          FROM messages
-          WHERE
-            (sender = ? AND receiver = ?)
-            OR
-            (sender = ? AND receiver = ?)
-          ORDER BY id ASC
-          LIMIT 500
-          `,
-          username,
-          other,
-          other,
-          username
-        ).toArray();
+            created_at:createdAt
+          });
 
 
-      const messages =
-        rows.map(m => ({
+        if(receiverSocket){
 
-          id:m.id,
+          try{
 
-          from:m.sender,
+            receiverSocket.send(
+              payload
+            );
 
-          to:m.receiver,
+          }catch(e){}
 
-          text:m.text,
-
-          time:new Date(
-            m.created_at
-          ).toLocaleTimeString(
-            "ar-EG",
-            {
-              hour:"2-digit",
-              minute:"2-digit"
-            }
-          )
-
-        }));
+        }
 
 
-      socket.send(
-        JSON.stringify({
-          type:"history",
-          messages:messages
-        })
-      );
+        try{
 
-      return;
+          socket.send(
+            payload
+          );
 
-    }
+        }catch(e){}
 
-
-    if(data.type === "message"){
-
-      const to =
-        String(
-          data.to || ""
-        ).trim();
-
-      const text =
-        String(
-          data.text || ""
-        ).trim();
-
-
-      if(!to || !text) return;
-
-
-      const exists =
-        this.ctx.storage.sql.exec(
-          `
-          SELECT username
-          FROM accounts
-          WHERE username = ?
-          LIMIT 1
-          `,
-          to
-        ).toArray();
-
-
-      if(exists.length === 0){
 
         return;
 
       }
 
 
-      this.ctx.storage.sql.exec(
-        `
-        INSERT INTO messages
-        (sender,receiver,text,created_at)
-        VALUES (?,?,?,?)
-        `,
-        username,
-        to,
-        text,
-        Date.now()
-      );
+      /* تاريخ المحادثة */
+
+      if(
+        data.type === "history"
+      ){
+
+        const other =
+          String(
+            data.with || ""
+          ).trim();
 
 
-      const rows =
-        this.ctx.storage.sql.exec(
-          `
-          SELECT id
-          FROM messages
-          WHERE sender = ?
-          AND receiver = ?
-          ORDER BY id DESC
-          LIMIT 1
-          `,
-          username,
-          to
-        ).toArray();
+        if(!other){
+          return;
+        }
 
 
-      const message = {
+        const rows =
+          this.sql.exec(
+            `
+            SELECT
+              sender,
+              receiver,
+              text,
+              created_at
+            FROM messages
+            WHERE
+              (sender = ? AND receiver = ?)
+              OR
+              (sender = ? AND receiver = ?)
+            ORDER BY created_at ASC
+            `,
+            username,
+            other,
+            other,
+            username
+          ).toArray();
 
-        type:"message",
-
-        id:
-          rows.length
-            ? rows[0].id
-            : null,
-
-        from:username,
-
-        to:to,
-
-        text:text,
-
-        time:new Date()
-          .toLocaleTimeString(
-            "ar-EG",
-            {
-              hour:"2-digit",
-              minute:"2-digit"
-            }
-          )
-
-      };
-
-
-      try{
 
         socket.send(
-          JSON.stringify(message)
+          JSON.stringify({
+            type:"history",
+            with:other,
+            messages:rows
+          })
         );
 
-      }catch(e){}
+
+        return;
+
+      }
 
 
-      this.sendToUser(
-        to,
-        message
-      );
+      /* الكتابة */
 
-      return;
+      if(
+        data.type === "typing"
+      ){
 
-    }
-
-
-    if(data.type === "typing"){
-
-      if(!data.to) return;
+        const to =
+          String(
+            data.to || ""
+          ).trim();
 
 
-      this.sendToUser(
-        data.to,
-        {
-          type:"typing",
-          from:username,
-          typing:!!data.typing
+        const receiverSocket =
+          this.connections.get(
+            to
+          );
+
+
+        if(receiverSocket){
+
+          receiverSocket.send(
+            JSON.stringify({
+              type:"typing",
+              from:username,
+              typing:
+                Boolean(
+                  data.typing
+                )
+            })
+          );
+
         }
+
+
+        return;
+
+      }
+
+    }catch(e){
+
+      console.error(
+        "WS error:",
+        e
       );
 
     }
 
   }
 
-
-  sendToUser(
-    username,
-    data
-  ){
-
-    const socket =
-      this.clients.get(
-        username
-      );
-
-
-    if(!socket) return;
-
-
-    try{
-
-      socket.send(
-        JSON.stringify(data)
-      );
-
-    }catch(e){}
-
   }
-
-
-  sendUsersTo(socket){
-
-    const rows =
-      this.ctx.storage.sql.exec(
-        `
-        SELECT username
-        FROM accounts
-        ORDER BY username
-        `
-      ).toArray();
-
-
-    const users =
-      rows.map(
-        u => ({
-          username:u.username,
-          online:
-            this.clients.has(
-              u.username
-            )
-        })
-      );
-
-
-    try{
-
-      socket.send(
-        JSON.stringify({
-          type:"users",
-          users:users
-        })
-      );
-
-    }catch(e){}
-
-  }
-
-
-  broadcastUsers(){
-
-    const rows =
-      this.ctx.storage.sql.exec(
-        `
-        SELECT username
-        FROM accounts
-        ORDER BY username
-        `
-      ).toArray();
-
-
-    const users =
-      rows.map(
-        u => ({
-          username:u.username,
-          online:
-            this.clients.has(
-              u.username
-            )
-        })
-      );
-
-
-    const message =
-      JSON.stringify({
-        type:"users",
-        users:users
-      });
-
-
-    for(
-      const socket
-      of this.clients.values()
-    ){
-
-      try{
-
-        socket.send(message);
-
-      }catch(e){}
-
-    }
-
-  }
-
-}
-
-
-export default {
-
-  async fetch(
-    request,
-    env
-  ){
-
-    const id =
-      env.CHAT_ROOM.idFromName(
-        "main"
-      );
-
-
-    const room =
-      env.CHAT_ROOM.get(id);
-
-
-    return room.fetch(
-      request
-    );
-
-  }
-
-};
