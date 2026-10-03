@@ -5,7 +5,7 @@ const HTML = `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>دردشة</title>
+<title>الشات</title>
 
 <style>
 *{
@@ -22,32 +22,21 @@ button,input{
   font-family:inherit;
 }
 
-.hidden{
-  display:none!important;
-}
-
-/* تسجيل الدخول */
-
 #auth{
   min-height:100vh;
   display:flex;
-  align-items:center;
   justify-content:center;
+  align-items:center;
   padding:20px;
-  background:#f0f2f5;
 }
 
 .auth-box{
   width:100%;
-  max-width:400px;
+  max-width:380px;
   background:white;
   padding:25px;
-  border-radius:15px;
-  box-shadow:0 4px 20px #0002;
-}
-
-.auth-box h1{
-  display:none;
+  border-radius:18px;
+  box-shadow:0 8px 30px #0002;
 }
 
 .auth-box h2{
@@ -58,231 +47,301 @@ button,input{
 .auth-box input{
   width:100%;
   padding:13px;
-  margin:7px 0;
-  border:1px solid #ccc;
-  border-radius:8px;
-  font-size:16px;
+  border:1px solid #ddd;
+  border-radius:10px;
+  margin-bottom:12px;
+  outline:none;
 }
 
 .auth-box button{
   width:100%;
   padding:13px;
-  margin-top:10px;
   border:0;
-  border-radius:8px;
+  border-radius:10px;
   background:#128c7e;
   color:white;
-  font-size:16px;
   cursor:pointer;
+  font-size:16px;
 }
 
-.auth-box .secondary{
-  background:#eee;
-  color:#222;
+.auth-switch{
+  text-align:center;
+  margin-top:15px;
+  color:#128c7e;
+  cursor:pointer;
 }
 
 #error{
   color:#d00;
-  margin-top:10px;
   text-align:center;
+  margin-top:10px;
+  min-height:20px;
 }
 
-/* التطبيق */
-
 #app{
+  display:none;
   height:100vh;
+  overflow:hidden;
+}
+
+.layout{
+  height:100%;
   display:flex;
 }
 
-#sidebar{
-  width:300px;
-  background:white;
+.sidebar{
+  width:320px;
+  background:#fff;
   border-left:1px solid #ddd;
   display:flex;
   flex-direction:column;
 }
 
-#side-header{
-  padding:15px;
-  background:#128c7e;
+.sidebar-header{
+  background:#075e54;
   color:white;
+  padding:17px;
   display:flex;
-  align-items:center;
   justify-content:space-between;
+  align-items:center;
 }
 
-#side-header button{
+.sidebar-header button{
   background:#ffffff22;
   color:white;
   border:0;
-  padding:8px 12px;
-  border-radius:7px;
+  padding:7px 10px;
+  border-radius:8px;
   cursor:pointer;
 }
 
-#users{
+.users{
   overflow-y:auto;
   flex:1;
 }
 
 .user{
-  padding:14px;
+  padding:13px;
   border-bottom:1px solid #eee;
-  cursor:pointer;
   display:flex;
   align-items:center;
   gap:10px;
+  cursor:pointer;
 }
 
 .user:hover{
   background:#f5f5f5;
 }
 
-.dot{
+.user.active{
+  background:#e8f5f3;
+}
+
+.avatar{
+  width:43px;
+  height:43px;
+  border-radius:50%;
+  background:#128c7e;
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+  flex-shrink:0;
+}
+
+.user-info{
+  flex:1;
+  min-width:0;
+}
+
+.username{
+  font-weight:bold;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.status{
+  font-size:12px;
+  color:#999;
+  margin-top:3px;
+}
+
+.online-dot{
   width:10px;
   height:10px;
   border-radius:50%;
-  background:#aaa;
-  flex:none;
-}
-
-.dot.online{
   background:#25d366;
+  flex-shrink:0;
 }
 
-.user-name{
-  font-weight:bold;
-}
-
-/* المحادثة */
-
-#chat{
+.chat{
   flex:1;
   display:flex;
   flex-direction:column;
   min-width:0;
 }
 
-#chat-header{
-  height:60px;
-  background:#128c7e;
+.chat-header{
+  height:64px;
+  background:#075e54;
   color:white;
   display:flex;
   align-items:center;
-  padding:0 15px;
+  padding:10px 16px;
+  gap:10px;
 }
 
-#chat-user{
+.chat-title{
   font-weight:bold;
 }
 
-#typing{
+.chat-status{
   font-size:12px;
   opacity:.8;
-  margin-right:10px;
+  margin-top:3px;
 }
 
-#messages{
+.messages{
   flex:1;
   overflow-y:auto;
   padding:15px;
-  background:#efeae2;
+  background:#efe7dd;
 }
 
 .message{
   max-width:75%;
-  padding:8px 11px;
-  margin:6px 0;
-  border-radius:8px;
+  padding:9px 11px;
+  border-radius:10px;
+  margin-bottom:8px;
   word-wrap:break-word;
-  clear:both;
+  position:relative;
 }
 
-.mine{
-  float:right;
-  background:#d9fdd3;
+.message.mine{
+  background:#dcf8c6;
+  margin-right:auto;
 }
 
-.theirs{
-  float:left;
+.message.theirs{
   background:white;
+  margin-left:auto;
 }
 
-.time{
+.message-time{
   font-size:10px;
-  opacity:.55;
+  color:#777;
   margin-top:4px;
+  text-align:left;
 }
 
-#input-area{
-  display:flex;
-  padding:10px;
-  background:#f0f2f5;
-  gap:8px;
+.audio-message{
+  max-width:240px;
 }
 
-#messageInput{
-  flex:1;
-  border:0;
-  outline:0;
-  padding:12px;
-  border-radius:20px;
-  font-size:15px;
-}
-
-#sendBtn{
-  border:0;
-  width:45px;
-  height:45px;
-  border-radius:50%;
-  background:#128c7e;
-  color:white;
-  cursor:pointer;
+.audio-message audio{
+  width:220px;
+  max-width:100%;
 }
 
 #empty{
-  height:100%;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  color:#777;
+  text-align:center;
+  color:#888;
+  margin-top:40px;
 }
 
-/* الموبايل */
+.typing{
+  height:22px;
+  padding:0 15px;
+  color:#777;
+  font-size:12px;
+  background:#efe7dd;
+}
+
+.composer{
+  background:#f0f0f0;
+  padding:9px;
+  display:flex;
+  gap:7px;
+  align-items:center;
+}
+
+.composer input{
+  flex:1;
+  border:0;
+  outline:none;
+  padding:12px 14px;
+  border-radius:22px;
+  font-size:15px;
+}
+
+.icon-btn{
+  width:45px;
+  height:45px;
+  border:0;
+  border-radius:50%;
+  background:#128c7e;
+  color:white;
+  font-size:20px;
+  cursor:pointer;
+  flex-shrink:0;
+}
+
+.icon-btn.recording{
+  background:#d32f2f;
+  animation:pulse 1s infinite;
+}
+
+@keyframes pulse{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.08)}
+  100%{transform:scale(1)}
+}
 
 @media(max-width:700px){
-
-  #sidebar{
-    width:100%;
+  .sidebar{
+    width:90px;
   }
 
-  #chat{
+  .sidebar-header{
+    padding:10px;
+  }
+
+  .sidebar-header span{
     display:none;
   }
 
-  #app.chat-open #sidebar{
+  .user{
+    justify-content:center;
+    padding:10px 5px;
+  }
+
+  .user-info{
     display:none;
   }
 
-  #app.chat-open #chat{
-    display:flex;
+  .online-dot{
+    display:none;
   }
 
+  .avatar{
+    width:48px;
+    height:48px;
+  }
+
+  .message{
+    max-width:85%;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<!-- شاشة الدخول -->
-
 <div id="auth">
-
   <div class="auth-box">
-
-    <h1>دردشة</h1>
-
-    <h2 id="authTitle">تسجيل الدخول</h2>
+    <h2 id="authTitle">إنشاء حساب</h2>
 
     <input
       id="username"
@@ -298,1162 +357,1851 @@ button,input{
       autocomplete="current-password"
     >
 
-    <button id="authBtn">
-      دخول
-    </button>
+    <button id="authButton">إنشاء الحساب</button>
 
-    <button
-      id="switchBtn"
-      class="secondary"
-    >
-      إنشاء حساب جديد
-    </button>
+    <div class="auth-switch" id="switchAuth">
+      عندك حساب؟ تسجيل الدخول
+    </div>
 
     <div id="error"></div>
-
   </div>
-
 </div>
 
+<div id="app">
+  <div class="layout">
 
-<!-- التطبيق -->
-
-<div id="app" class="hidden">
-
-  <aside id="sidebar">
-
-    <div id="side-header">
-
-      <span>المستخدمون</span>
-
-      <button id="logoutBtn">
-        خروج
-      </button>
-
-    </div>
-
-    <div id="users"></div>
-
-  </aside>
-
-
-  <main id="chat">
-
-    <div id="chat-header">
-
-      <span id="chat-user">
-        اختر مستخدمًا
-      </span>
-
-      <span id="typing"></span>
-
-    </div>
-
-
-    <div id="messages">
-
-      <div id="empty">
-        اختر مستخدمًا لبدء المحادثة
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <span>المستخدمون</span>
+        <button id="logoutBtn">خروج</button>
       </div>
 
-    </div>
+      <div class="users" id="users"></div>
+    </aside>
 
+    <main class="chat">
 
-    <div id="input-area">
+      <div class="chat-header">
+        <div class="avatar" id="chatAvatar">?</div>
 
-      <input
-        id="messageInput"
-        type="text"
-        placeholder="اكتب رسالة..."
-        disabled
-      >
+        <div>
+          <div class="chat-title" id="chatTitle">
+            اختر مستخدمًا
+          </div>
 
-      <button
-        id="sendBtn"
-        disabled
-      >
-        ➤
-      </button>
+          <div class="chat-status" id="chatStatus"></div>
+        </div>
+      </div>
 
-    </div>
+      <div class="messages" id="messages">
+        <div id="empty">اختر مستخدمًا لبدء المحادثة</div>
+      </div>
 
-  </main>
+      <div class="typing" id="typing"></div>
 
+      <div class="composer">
+
+        <button
+          class="icon-btn"
+          id="recordBtn"
+          title="تسجيل صوتي"
+        >🎙️</button>
+
+        <input
+          id="messageInput"
+          type="text"
+          placeholder="اكتب رسالة..."
+        >
+
+        <button
+          class="icon-btn"
+          id="sendBtn"
+          title="إرسال"
+        >➤</button>
+
+      </div>
+
+    </main>
+  </div>
 </div>
 
-
 <script>
-
-let token =
-  localStorage.getItem("token") || "";
-
+let token = localStorage.getItem("chat_token") || "";
 let currentUser = "";
 let selectedUser = "";
-let socket = null;
+let ws = null;
 let reconnectTimer = null;
 let typingTimer = null;
-let registerMode = false;
 
+let mediaRecorder = null;
+let audioChunks = [];
+let isRecording = false;
 
-/* العناصر */
+const auth = document.getElementById("auth");
+const app = document.getElementById("app");
 
-const auth =
-  document.getElementById("auth");
+const authTitle = document.getElementById("authTitle");
+const authButton = document.getElementById("authButton");
+const switchAuth = document.getElementById("switchAuth");
+const errorBox = document.getElementById("error");
 
-const app =
-  document.getElementById("app");
+const usernameInput = document.getElementById("username");
+const passwordInput = document.getElementById("password");
 
-const usernameInput =
-  document.getElementById("username");
+const usersBox = document.getElementById("users");
+const messagesBox = document.getElementById("messages");
+const messageInput = document.getElementById("messageInput");
 
-const passwordInput =
-  document.getElementById("password");
+const chatTitle = document.getElementById("chatTitle");
+const chatStatus = document.getElementById("chatStatus");
+const chatAvatar = document.getElementById("chatAvatar");
 
-const authTitle =
-  document.getElementById("authTitle");
+const typingBox = document.getElementById("typing");
+const recordBtn = document.getElementById("recordBtn");
 
-const authBtn =
-  document.getElementById("authBtn");
+let registerMode = true;
 
-const switchBtn =
-  document.getElementById("switchBtn");
+function setError(text){
+  errorBox.textContent = text || "";
+}
 
-const errorBox =
-  document.getElementById("error");
+switchAuth.onclick = function(){
+  registerMode = !registerMode;
 
-const usersBox =
-  document.getElementById("users");
-
-const chatUser =
-  document.getElementById("chat-user");
-
-const messagesBox =
-  document.getElementById("messages");
-
-const messageInput =
-  document.getElementById("messageInput");
-
-const sendBtn =
-  document.getElementById("sendBtn");
-
-const typingBox =
-  document.getElementById("typing");
-
-
-/* تبديل الدخول والتسجيل */
-
-switchBtn.onclick = function(){
-
-  registerMode =
-    !registerMode;
-
-  errorBox.textContent = "";
+  setError("");
 
   if(registerMode){
-
-    authTitle.textContent =
-      "إنشاء حساب";
-
-    authBtn.textContent =
-      "إنشاء الحساب";
-
-    switchBtn.textContent =
-      "لدي حساب بالفعل";
-
+    authTitle.textContent = "إنشاء حساب";
+    authButton.textContent = "إنشاء الحساب";
+    switchAuth.textContent = "عندك حساب؟ تسجيل الدخول";
   }else{
-
-    authTitle.textContent =
-      "تسجيل الدخول";
-
-    authBtn.textContent =
-      "دخول";
-
-    switchBtn.textContent =
-      "إنشاء حساب جديد";
-
+    authTitle.textContent = "تسجيل الدخول";
+    authButton.textContent = "دخول";
+    switchAuth.textContent = "مفيش حساب؟ إنشاء حساب";
   }
-
 };
 
-
-/* الدخول أو التسجيل */
-
-authBtn.onclick = async function(){
-
-  const username =
-    usernameInput.value.trim();
-
-  const password =
-    passwordInput.value;
-
-  errorBox.textContent = "";
+authButton.onclick = async function(){
+  const username = usernameInput.value.trim();
+  const password = passwordInput.value;
 
   if(!username || !password){
-
-    errorBox.textContent =
-      "اكتب اسم المستخدم وكلمة السر";
-
+    setError("اكتب اسم المستخدم وكلمة السر");
     return;
-
   }
 
-  authBtn.disabled = true;
+  setError("");
 
   try{
-
-    const endpoint =
-      registerMode
+    const endpoint = registerMode
       ? "/api/register"
       : "/api/login";
 
-    const response =
-      await fetch(
-        endpoint,
-        {
-          method:"POST",
-          headers:{
-            "Content-Type":
-              "application/json"
-          },
-          body:JSON.stringify({
-            username:username,
-            password:password
-          })
-        }
-      );
+    const response = await fetch(endpoint,{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        username,
+        password
+      })
+    });
 
-    const data =
-      await response.json();
+    const data = await response.json();
 
     if(!response.ok){
-
-      throw new Error(
-        data.error ||
-        "حدث خطأ"
-      );
-
+      throw new Error(data.error || "حدث خطأ");
     }
 
-    token =
-      data.token;
+    token = data.token;
 
-    currentUser =
-      data.username || username;
-
-    localStorage.setItem(
-      "token",
-      token
-    );
+    localStorage.setItem("chat_token",token);
 
     showApp();
 
   }catch(error){
-
-    errorBox.textContent =
-      error.message ||
-      "حدث خطأ أثناء العملية";
-
-  }finally{
-
-    authBtn.disabled = false;
-
+    setError(error.message);
   }
-
 };
 
+async function showApp(){
 
-/* إظهار التطبيق */
+  auth.style.display = "none";
+  app.style.display = "block";
 
-function showApp(){
+  try{
+    const response = await fetch(
+      "/api/me?token=" +
+      encodeURIComponent(token)
+    );
 
-  auth.classList.add("hidden");
+    const data = await response.json();
 
-  app.classList.remove("hidden");
+    if(!response.ok){
+      throw new Error("انتهت الجلسة");
+    }
 
-  connectSocket();
+    currentUser = data.username;
 
-  loadUsers();
+    await loadUsers();
+    connectWS();
 
+  }catch(error){
+
+    localStorage.removeItem("chat_token");
+    token = "";
+
+    auth.style.display = "flex";
+    app.style.display = "none";
+
+    setError(error.message);
+  }
 }
 
+document.getElementById("logoutBtn").onclick = async function(){
 
-/* WebSocket */
+  try{
+    await fetch("/api/logout",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({token})
+    });
+  }catch(e){}
 
-function connectSocket(){
+  if(ws){
+    try{
+      ws.close();
+    }catch(e){}
+  }
+
+  localStorage.removeItem("chat_token");
+
+  token = "";
+  currentUser = "";
+  selectedUser = "";
+
+  app.style.display = "none";
+  auth.style.display = "flex";
+
+  usernameInput.value = "";
+  passwordInput.value = "";
+
+  setError("");
+};
+
+async function loadUsers(){
+
+  const response = await fetch(
+    "/api/users?token=" +
+    encodeURIComponent(token)
+  );
+
+  if(!response.ok){
+    throw new Error("فشل تحميل المستخدمين");
+  }
+
+  const data = await response.json();
+
+  usersBox.innerHTML = "";
+
+  data.users.forEach(function(user){
+
+    if(user.username === currentUser){
+      return;
+    }
+
+    const row = document.createElement("div");
+    row.className = "user";
+
+    if(user.username === selectedUser){
+      row.classList.add("active");
+    }
+
+    const avatar = document.createElement("div");
+    avatar.className = "avatar";
+    avatar.textContent =
+      user.username.charAt(0).toUpperCase();
+
+    const info = document.createElement("div");
+    info.className = "user-info";
+
+    const name = document.createElement("div");
+    name.className = "username";
+    name.textContent = user.username;
+
+    const status = document.createElement("div");
+    status.className = "status";
+    status.textContent =
+      user.online ? "متصل الآن" : "غير متصل";
+
+    info.appendChild(name);
+    info.appendChild(status);
+
+    row.appendChild(avatar);
+    row.appendChild(info);
+
+    if(user.online){
+      const dot = document.createElement("div");
+      dot.className = "online-dot";
+      row.appendChild(dot);
+    }
+
+    row.onclick = function(){
+      selectUser(user.username,user.online);
+    };
+
+    usersBox.appendChild(row);
+  });
+}
+
+function connectWS(){
 
   if(!token){
     return;
   }
 
-  if(socket){
-
+  if(ws){
     try{
-      socket.close();
+      ws.close();
     }catch(e){}
-
   }
 
   const protocol =
     location.protocol === "https:"
-    ? "wss:"
-    : "ws:";
+      ? "wss:"
+      : "ws:";
 
-  socket =
-    new WebSocket(
-      protocol +
-      "//" +
-      location.host +
-      "/ws?token=" +
-      encodeURIComponent(token)
-    );
+  ws = new WebSocket(
+    protocol +
+    "//" +
+    location.host +
+    "/ws?token=" +
+    encodeURIComponent(token)
+  );
 
+  ws.onopen = function(){
+    if(reconnectTimer){
+      clearTimeout(reconnectTimer);
+      reconnectTimer = null;
+    }
 
-  socket.onopen = function(){
-
-    console.log(
-      "WebSocket connected"
-    );
-
-    loadUsers();
-
+    if(selectedUser){
+      sendHistoryRequest();
+    }
   };
 
-
-  socket.onmessage = function(event){
+  ws.onmessage = function(event){
 
     try{
-
-      const data =
-        JSON.parse(event.data);
-
-
-      /* رسالة */
+      const data = JSON.parse(event.data);
 
       if(data.type === "message"){
-
-        if(
-          data.from === selectedUser
-        ){
-
-          addMessage(
-            data.from,
-            data.text,
-            data.created_at
-          );
-
-        }
-
-        return;
-
+        receiveTextMessage(data);
       }
 
-
-      /* سجل المحادثة */
-
-      if(data.type === "history"){
-
-        messagesBox.innerHTML = "";
-
-        if(
-          !data.messages ||
-          data.messages.length === 0
-        ){
-
-          showEmptyMessages();
-
-          return;
-
-        }
-
-        for(
-          const msg of data.messages
-        ){
-
-          addMessage(
-            msg.sender,
-            msg.text,
-            msg.created_at
-          );
-
-        }
-
-        scrollMessages();
-
-        return;
-
+      else if(data.type === "history"){
+        showHistory(data.messages || []);
       }
 
+      else if(data.type === "typing"){
+        if(data.from === selectedUser){
 
-      /* يكتب */
-
-      if(data.type === "typing"){
-
-        if(
-          data.from === selectedUser
-        ){
-
-          typingBox.textContent =
-            data.typing
-            ? "يكتب..."
-            : "";
-
+          if(data.typing){
+            typingBox.textContent =
+              selectedUser + " يكتب...";
+          }else{
+            typingBox.textContent = "";
+          }
         }
+      }
 
-        return;
-
+      else if(data.type === "voice"){
+        receiveVoiceMessage(data);
       }
 
     }catch(error){
-
       console.error(error);
-
     }
-
   };
 
+  ws.onclose = function(){
 
-  socket.onclose = function(){
-
-    console.log(
-      "WebSocket disconnected"
-    );
-
-    clearTimeout(
-      reconnectTimer
-    );
-
-    reconnectTimer =
-      setTimeout(
-        connectSocket,
-        2000
-      );
-
+    if(token){
+      reconnectTimer = setTimeout(function(){
+        connectWS();
+      },2000);
+    }
   };
 
-
-  socket.onerror = function(){
-
+  ws.onerror = function(){
     try{
-      socket.close();
+      ws.close();
     }catch(e){}
-
   };
-
 }
 
+function selectUser(username,online){
 
-/* تحميل المستخدمين */
+  selectedUser = username;
 
-async function loadUsers(){
+  chatTitle.textContent = username;
 
-  if(!token){
+  chatAvatar.textContent =
+    username.charAt(0).toUpperCase();
+
+  chatStatus.textContent =
+    online ? "متصل الآن" : "غير متصل";
+
+  typingBox.textContent = "";
+
+  showEmptyMessages();
+
+  loadUsers();
+
+  sendHistoryRequest();
+}
+
+function showEmptyMessages(){
+
+  messagesBox.innerHTML =
+    '<div id="empty">جاري تحميل المحادثة...</div>';
+}
+
+function sendHistoryRequest(){
+
+  if(
+    !ws ||
+    ws.readyState !== WebSocket.OPEN ||
+    !selectedUser
+  ){
     return;
   }
 
-  try{
-
-    const response =
-      await fetch(
-        "/api/users?token=" +
-        encodeURIComponent(token)
-      );
-
-    if(!response.ok){
-      return;
-    }
-
-    const data =
-      await response.json();
-
-    usersBox.innerHTML = "";
-
-    for(
-      const user of data.users
-    ){
-
-      if(
-        user.username === currentUser
-      ){
-        continue;
-      }
-
-      const div =
-        document.createElement("div");
-
-      div.className =
-        "user";
-
-
-      /*
-        لا نستخدم backtick هنا
-        حتى لا نكسر HTML الكبير
-      */
-
-      const dot =
-        document.createElement("span");
-
-      dot.className =
-        "dot" +
-        (
-          user.online
-          ? " online"
-          : ""
-        );
-
-
-      const name =
-        document.createElement("span");
-
-      name.className =
-        "user-name";
-
-      name.textContent =
-        user.username;
-
-
-      div.appendChild(dot);
-      div.appendChild(name);
-
-
-      div.onclick =
-        function(){
-
-          openChat(
-            user.username
-          );
-
-        };
-
-
-      usersBox.appendChild(div);
-
-    }
-
-  }catch(error){
-
-    console.error(error);
-
-  }
-
+  ws.send(JSON.stringify({
+    type:"history",
+    with:selectedUser
+  }));
 }
 
-
-/* فتح محادثة */
-
-function openChat(username){
-
-  selectedUser =
-    username;
-
-  chatUser.textContent =
-    username;
-
-  typingBox.textContent =
-    "";
-
-  messageInput.disabled =
-    false;
-
-  sendBtn.disabled =
-    false;
-
-  app.classList.add(
-    "chat-open"
-  );
+function showHistory(messages){
 
   messagesBox.innerHTML = "";
 
-
-  if(
-    socket &&
-    socket.readyState ===
-    WebSocket.OPEN
-  ){
-
-    socket.send(
-      JSON.stringify({
-        type:"history",
-        with:username
-      })
-    );
-
+  if(messages.length === 0){
+    messagesBox.innerHTML =
+      '<div id="empty">لا توجد رسائل بعد</div>';
+    return;
   }
 
+  messages.forEach(function(message){
+    addMessageToUI(message);
+  });
+
+  scrollMessages();
 }
 
-
-/* إرسال رسالة */
-
-function sendMessage(){
-
-  const text =
-    messageInput.value.trim();
-
-  if(!text){
-    return;
-  }
-
-  if(!selectedUser){
-    return;
-  }
+function receiveTextMessage(data){
 
   if(
-    !socket ||
-    socket.readyState !==
-    WebSocket.OPEN
+    data.from !== selectedUser &&
+    data.to !== selectedUser
   ){
-
+    loadUsers();
     return;
-
   }
 
+  addMessageToUI({
+    from:data.from,
+    to:data.to,
+    text:data.text,
+    created_at:data.created_at,
+    message_type:"text"
+  });
 
-  socket.send(
-    JSON.stringify({
-      type:"message",
-      to:selectedUser,
-      text:text
-    })
+  scrollMessages();
+
+  loadUsers();
+}
+
+function receiveVoiceMessage(data){
+
+  if(
+    data.from !== selectedUser &&
+    data.to !== selectedUser
+  ){
+    loadUsers();
+    return;
+  }
+
+  addMessageToUI({
+    from:data.from,
+    to:data.to,
+    audio_data:data.audio_data,
+    created_at:data.created_at,
+    message_type:"voice"
+  });
+
+  scrollMessages();
+
+  loadUsers();
+}
+
+function addMessageToUI(message){
+
+  const empty = document.getElementById("empty");
+
+  if(empty){
+    empty.remove();
+  }
+
+  const box = document.createElement("div");
+
+  const mine = message.from === currentUser;
+
+  box.className =
+    "message " +
+    (mine ? "mine" : "theirs");
+
+  if(
+    message.message_type === "voice" &&
+    message.audio_data
+  ){
+
+    const audioBox =
+      document.createElement("div");
+
+    audioBox.className =
+      "audio-message";
+
+    const audio =
+      document.createElement("audio");
+
+    audio.controls = true;
+    audio.src = message.audio_data;
+
+    audioBox.appendChild(audio);
+    box.appendChild(audioBox);
+
+  }else{
+
+    const text =
+      document.createElement("div");
+
+    text.textContent =
+      message.text || "";
+
+    box.appendChild(text);
+  }
+
+  const time =
+    document.createElement("div");
+
+  time.className = "message-time";
+
+  time.textContent =
+    formatTime(message.created_at);
+
+  box.appendChild(time);
+
+  messagesBox.appendChild(box);
+}
+
+function formatTime(timestamp){
+
+  if(!timestamp){
+    return "";
+  }
+
+  const date = new Date(timestamp);
+
+  return date.toLocaleTimeString(
+    "ar-EG",
+    {
+      hour:"2-digit",
+      minute:"2-digit"
+    }
   );
-
-
-  messageInput.value =
-    "";
-
-  sendTyping(false);
-
 }
 
+function scrollMessages(){
+  messagesBox.scrollTop =
+    messagesBox.scrollHeight;
+}
 
-/* زر الإرسال */
-
-sendBtn.onclick =
-  sendMessage;
-
-
-/* Enter */
+document.getElementById("sendBtn").onclick =
+function(){
+  sendText();
+};
 
 messageInput.addEventListener(
   "keydown",
   function(event){
 
     if(event.key === "Enter"){
-
       event.preventDefault();
-
-      sendMessage();
-
+      sendText();
     }
-
   }
 );
-
-
-/* الكتابة */
 
 messageInput.addEventListener(
   "input",
   function(){
 
-    sendTyping(true);
+    if(!selectedUser){
+      return;
+    }
 
-    clearTimeout(
-      typingTimer
-    );
+    if(
+      ws &&
+      ws.readyState === WebSocket.OPEN
+    ){
 
-    typingTimer =
-      setTimeout(
-        function(){
+      ws.send(JSON.stringify({
+        type:"typing",
+        to:selectedUser,
+        typing:true
+      }));
+    }
 
-          sendTyping(false);
+    clearTimeout(typingTimer);
 
-        },
-        1200
-      );
+    typingTimer = setTimeout(function(){
 
+      if(
+        ws &&
+        ws.readyState === WebSocket.OPEN
+      ){
+
+        ws.send(JSON.stringify({
+          type:"typing",
+          to:selectedUser,
+          typing:false
+        }));
+      }
+
+    },700);
   }
 );
 
+function sendText(){
 
-/* إرسال حالة الكتابة */
+  const text =
+    messageInput.value.trim();
 
-function sendTyping(value){
+  if(!text || !selectedUser){
+    return;
+  }
+
+  if(
+    !ws ||
+    ws.readyState !== WebSocket.OPEN
+  ){
+    alert("الاتصال غير متاح حاليًا");
+    return;
+  }
+
+  ws.send(JSON.stringify({
+    type:"message",
+    to:selectedUser,
+    text:text
+  }));
+
+  messageInput.value = "";
+}
+
+recordBtn.onclick = async function(){
+
+  if(isRecording){
+    stopRecording();
+  }else{
+    startRecording();
+  }
+};
+
+async function startRecording(){
+
+  if(!selectedUser){
+    alert("اختار مستخدم الأول");
+    return;
+  }
+
+  if(
+    !navigator.mediaDevices ||
+    !navigator.mediaDevices.getUserMedia
+  ){
+    alert("المتصفح لا يدعم التسجيل الصوتي");
+    return;
+  }
+
+  try{
+
+    const stream =
+      await navigator.mediaDevices.getUserMedia({
+        audio:true
+      });
+
+    audioChunks = [];
+
+    let options = {};
+
+    if(
+      MediaRecorder.isTypeSupported(
+        "audio/webm;codecs=opus"
+      )
+    ){
+      options.mimeType =
+        "audio/webm;codecs=opus";
+    }
+
+    mediaRecorder =
+      new MediaRecorder(
+        stream,
+        options
+      );
+
+    mediaRecorder.ondataavailable =
+      function(event){
+
+        if(event.data && event.data.size > 0){
+          audioChunks.push(event.data);
+        }
+      };
+
+    mediaRecorder.onstop =
+      async function(){
+
+        stream.getTracks().forEach(
+          function(track){
+            track.stop();
+          }
+        );
+
+        const blob =
+          new Blob(
+            audioChunks,
+            {
+              type:
+                mediaRecorder.mimeType ||
+                "audio/webm"
+            }
+          );
+
+        await sendVoiceMessage(blob);
+      };
+
+    mediaRecorder.start();
+
+    isRecording = true;
+
+    recordBtn.classList.add("recording");
+    recordBtn.textContent = "⏹️";
+
+  }catch(error){
+
+    alert(
+      "مش قادر أوصل للميكروفون. اسمح للموقع باستخدام الميكروفون."
+    );
+  }
+}
+
+function stopRecording(){
+
+  if(
+    mediaRecorder &&
+    mediaRecorder.state !== "inactive"
+  ){
+    mediaRecorder.stop();
+  }
+
+  isRecording = false;
+
+  recordBtn.classList.remove("recording");
+  recordBtn.textContent = "🎙️";
+}
+
+async function sendVoiceMessage(blob){
 
   if(!selectedUser){
     return;
   }
 
   if(
-    !socket ||
-    socket.readyState !==
-    WebSocket.OPEN
+    !ws ||
+    ws.readyState !== WebSocket.OPEN
   ){
-
+    alert("الاتصال غير متاح");
     return;
-
   }
 
+  if(blob.size > 2 * 1024 * 1024){
 
-  socket.send(
-    JSON.stringify({
-      type:"typing",
+    alert(
+      "التسجيل طويل جدًا. حاول تسجيل رسالة أقصر."
+    );
+
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = function(){
+
+    ws.send(JSON.stringify({
+      type:"voice",
       to:selectedUser,
-      typing:value
-    })
-  );
+      audio_data:reader.result
+    }));
+  };
 
+  reader.readAsDataURL(blob);
 }
 
-
-/* إضافة رسالة */
-
-function addMessage(
-  sender,
-  text,
-  createdAt
-){
-
-  const empty =
-    document.getElementById(
-      "empty"
-    );
-
-  if(empty){
-    empty.remove();
-  }
-
-
-  const div =
-    document.createElement("div");
-
-  div.className =
-    "message " +
-    (
-      sender === currentUser
-      ? "mine"
-      : "theirs"
-    );
-
-
-  const textDiv =
-    document.createElement("div");
-
-  textDiv.textContent =
-    text;
-
-
-  const timeDiv =
-    document.createElement("div");
-
-  timeDiv.className =
-    "time";
-
-
-  if(createdAt){
-
-    const date =
-      new Date(createdAt);
-
-    if(!isNaN(date.getTime())){
-
-      timeDiv.textContent =
-        date.toLocaleTimeString(
-          "ar-EG",
-          {
-            hour:"2-digit",
-            minute:"2-digit"
-          }
-        );
-
-    }
-
-  }
-
-
-  div.appendChild(
-    textDiv
-  );
-
-  div.appendChild(
-    timeDiv
-  );
-
-  messagesBox.appendChild(
-    div
-  );
-
-  scrollMessages();
-
+if(token){
+  showApp();
 }
-
-
-/* لا توجد رسائل */
-
-function showEmptyMessages(){
-
-  messagesBox.innerHTML =
-    '<div id="empty">' +
-    'لا توجد رسائل بعد' +
-    '</div>';
-
-}
-
-
-/* النزول لآخر رسالة */
-
-function scrollMessages(){
-
-  messagesBox.scrollTop =
-    messagesBox.scrollHeight;
-
-}
-
-
-/* تسجيل الخروج */
-
-document.getElementById(
-  "logoutBtn"
-).onclick = async function(){
-
-  try{
-
-    await fetch(
-      "/api/logout",
-      {
-        method:"POST",
-        headers:{
-          "Content-Type":
-            "application/json"
-        },
-        body:JSON.stringify({
-          token:token
-        })
-      }
-    );
-
-  }catch(error){}
-
-
-  token = "";
-  currentUser = "";
-  selectedUser = "";
-
-  localStorage.removeItem(
-    "token"
-  );
-
-
-  if(socket){
-
-    try{
-      socket.close();
-    }catch(e){}
-
-  }
-
-
-  app.classList.add(
-    "hidden"
-  );
-
-  auth.classList.remove(
-    "hidden"
-  );
-
-
-  usernameInput.value =
-    "";
-
-  passwordInput.value =
-    "";
-
-};
-
-
-/* فحص الجلسة */
-
-async function checkSession(){
-
-  if(!token){
-    return;
-  }
-
-  try{
-
-    const response =
-      await fetch(
-        "/api/me?token=" +
-        encodeURIComponent(token)
-      );
-
-
-    if(!response.ok){
-
-      localStorage.removeItem(
-        "token"
-      );
-
-      token = "";
-
-      return;
-
-    }
-
-
-    const data =
-      await response.json();
-
-
-    currentUser =
-      data.username;
-
-
-    showApp();
-
-  }catch(error){
-
-    console.error(error);
-
-  }
-
-}
-
-
-checkSession();
-
 </script>
 
 </body>
 </html>`;
 
-
-/* =====================================================
-   WORKER
-===================================================== */
-
 export default {
+  async fetch(request, env) {
 
-  async fetch(request, env){
+    const url = new URL(request.url);
+
+    const roomId =
+      env.CHAT_ROOM.idFromName("main");
+
+    const room =
+      env.CHAT_ROOM.get(roomId);
+
+    if(
+      url.pathname === "/ws" &&
+      request.headers.get("Upgrade") === "websocket"
+    ){
+      return room.fetch(request);
+    }
+
+    if(url.pathname === "/api/register"){
+      return room.fetch(
+        new Request(
+          new URL("/register",request.url),
+          request
+        )
+      );
+    }
+
+    if(url.pathname === "/api/login"){
+      return room.fetch(
+        new Request(
+          new URL("/login",request.url),
+          request
+        )
+      );
+    }
+
+    if(url.pathname === "/api/logout"){
+      return room.fetch(
+        new Request(
+          new URL("/logout",request.url),
+          request
+        )
+      );
+    }
+
+    if(url.pathname === "/api/me"){
+      return room.fetch(
+        new Request(
+          new URL("/me",request.url),
+          request
+        )
+      );
+    }
+
+    if(url.pathname === "/api/users"){
+      return room.fetch(
+        new Request(
+          new URL("/users",request.url),
+          request
+        )
+      );
+    }
+
+    return new Response(HTML,{
+      headers:{
+        "content-type":"text/html;charset=UTF-8"
+      }
+    });
+  }
+};
+
+export class ChatRoom extends DurableObject {
+
+  constructor(ctx,env){
+    super(ctx,env);
+
+    this.ctx = ctx;
+    this.env = env;
+    this.sql = ctx.storage.sql;
+
+    this.connections = new Map();
+
+    this.initDB();
+  }
+
+  initDB(){
+
+    this.sql.exec(`
+      CREATE TABLE IF NOT EXISTS accounts (
+        username TEXT UNIQUE NOT NULL,
+        password_hash TEXT NOT NULL,
+        salt TEXT NOT NULL,
+        created_at INTEGER NOT NULL
+      )
+    `);
+
+    this.sql.exec(`
+      CREATE TABLE IF NOT EXISTS sessions (
+        token TEXT PRIMARY KEY,
+        username TEXT NOT NULL,
+        created_at INTEGER NOT NULL
+      )
+    `);
+
+    this.sql.exec(`
+      CREATE TABLE IF NOT EXISTS messages (
+        sender TEXT NOT NULL,
+        receiver TEXT NOT NULL,
+        text TEXT,
+        created_at INTEGER NOT NULL
+      )
+    `);
+
+    /*
+      ترقية قاعدة البيانات القديمة تلقائيًا
+      بدون حذف الحسابات أو الرسائل.
+    */
+
+    const accountColumns =
+      this.sql
+        .exec(`PRAGMA table_info(accounts)`)
+        .toArray();
+
+    const accountNames =
+      accountColumns.map(function(column){
+        return column.name;
+      });
+
+    if(!accountNames.includes("salt")){
+
+      this.sql.exec(`
+        ALTER TABLE accounts
+        ADD COLUMN salt TEXT NOT NULL DEFAULT ''
+      `);
+    }
+
+    const messageColumns =
+      this.sql
+        .exec(`PRAGMA table_info(messages)`)
+        .toArray();
+
+    const messageNames =
+      messageColumns.map(function(column){
+        return column.name;
+      });
+
+    if(!messageNames.includes("message_type")){
+
+      this.sql.exec(`
+        ALTER TABLE messages
+        ADD COLUMN message_type TEXT NOT NULL DEFAULT 'text'
+      `);
+    }
+
+    if(!messageNames.includes("audio_data")){
+
+      this.sql.exec(`
+        ALTER TABLE messages
+        ADD COLUMN audio_data TEXT
+      `);
+    }
+  }
+
+  async fetch(request){
+
+    const url = new URL(request.url);
+
+    if(
+      url.pathname === "/register" &&
+      request.method === "POST"
+    ){
+      return this.register(request);
+    }
+
+    if(
+      url.pathname === "/login" &&
+      request.method === "POST"
+    ){
+      return this.login(request);
+    }
+
+    if(
+      url.pathname === "/logout" &&
+      request.method === "POST"
+    ){
+      return this.logout(request);
+    }
+
+    if(url.pathname === "/me"){
+      return this.me(request);
+    }
+
+    if(url.pathname === "/users"){
+      return this.users(request);
+    }
+
+    if(
+      url.pathname === "/ws" &&
+      request.headers.get("Upgrade") === "websocket"
+    ){
+      return this.websocket(request);
+    }
+
+    return new Response("Not found",{
+      status:404
+    });
+  }
+
+  json(data,status=200){
+
+    return new Response(
+      JSON.stringify(data),
+      {
+        status,
+        headers:{
+          "content-type":
+            "application/json;charset=UTF-8"
+        }
+      }
+    );
+  }
+
+  async register(request){
+
+    try{
+
+      const body =
+        await request.json();
+
+      const username =
+        String(body.username || "").trim();
+
+      const password =
+        String(body.password || "");
+
+      if(!username || !password){
+        return this.json(
+          {
+            error:
+              "اسم المستخدم وكلمة السر مطلوبان"
+          },
+          400
+        );
+      }
+
+      if(username.length < 3){
+        return this.json(
+          {
+            error:
+              "اسم المستخدم لازم يكون 3 حروف على الأقل"
+          },
+          400
+        );
+      }
+
+      if(password.length < 4){
+        return this.json(
+          {
+            error:
+              "كلمة السر لازم تكون 4 حروف على الأقل"
+          },
+          400
+        );
+      }
+
+      const exists =
+        this.sql.exec(
+          `
+          SELECT username
+          FROM accounts
+          WHERE username = ?
+          LIMIT 1
+          `,
+          username
+        ).toArray();
+
+      if(exists.length > 0){
+        return this.json(
+          {
+            error:"اسم المستخدم موجود بالفعل"
+          },
+          409
+        );
+      }
+
+      /*
+        مهم:
+        قاعدة البيانات عندك تطلب salt
+        لذلك ننشئ salt قبل إدخال الحساب.
+      */
+
+      const salt =
+        randomBytes(16);
+
+      const passwordHash =
+        await hashPassword(
+          password,
+          salt
+        );
+
+      this.sql.exec(
+        `
+        INSERT INTO accounts
+        (
+          username,
+          password_hash,
+          salt,
+          created_at
+        )
+        VALUES (?, ?, ?, ?)
+        `,
+        username,
+        passwordHash,
+        salt,
+        Date.now()
+      );
+
+      const token =
+        randomToken();
+
+      this.sql.exec(
+        `
+        INSERT INTO sessions
+        (
+          token,
+          username,
+          created_at
+        )
+        VALUES (?, ?, ?)
+        `,
+        token,
+        username,
+        Date.now()
+      );
+
+      return this.json({
+        token,
+        username
+      });
+
+    }catch(error){
+
+      return this.json(
+        {
+          error:
+            "حدث خطأ أثناء إنشاء الحساب: " +
+            error.message
+        },
+        500
+      );
+    }
+  }
+
+  async login(request){
+
+    try{
+
+      const body =
+        await request.json();
+
+      const username =
+        String(body.username || "").trim();
+
+      const password =
+        String(body.password || "");
+
+      const rows =
+        this.sql.exec(
+          `
+          SELECT
+            username,
+            password_hash,
+            salt
+          FROM accounts
+          WHERE username = ?
+          LIMIT 1
+          `,
+          username
+        ).toArray();
+
+      if(rows.length === 0){
+        return this.json(
+          {
+            error:
+              "اسم المستخدم أو كلمة السر غير صحيحة"
+          },
+          401
+        );
+      }
+
+      const account = rows[0];
+
+      /*
+        دعم الحسابات القديمة التي قد يكون
+        salt فيها فارغًا.
+      */
+
+      let valid = false;
+
+      if(account.salt){
+
+        const hash =
+          await hashPassword(
+            password,
+            account.salt
+          );
+
+        valid =
+          hash === account.password_hash;
+      }
+
+      if(!valid){
+
+        return this.json(
+          {
+            error:
+              "اسم المستخدم أو كلمة السر غير صحيحة"
+          },
+          401
+        );
+      }
+
+      const token =
+        randomToken();
+
+      this.sql.exec(
+        `
+        INSERT INTO sessions
+        (
+          token,
+          username,
+          created_at
+        )
+        VALUES (?, ?, ?)
+        `,
+        token,
+        username,
+        Date.now()
+      );
+
+      return this.json({
+        token,
+        username
+      });
+
+    }catch(error){
+
+      return this.json(
+        {
+          error:
+            "حدث خطأ أثناء تسجيل الدخول: " +
+            error.message
+        },
+        500
+      );
+    }
+  }
+
+  async logout(request){
+
+    try{
+
+      const body =
+        await request.json();
+
+      const token =
+        String(body.token || "");
+
+      if(token){
+
+        this.sql.exec(
+          `
+          DELETE FROM sessions
+          WHERE token = ?
+          `,
+          token
+        );
+      }
+
+      return this.json({
+        ok:true
+      });
+
+    }catch(error){
+
+      return this.json(
+        {
+          error:error.message
+        },
+        500
+      );
+    }
+  }
+
+  async me(request){
 
     const url =
       new URL(request.url);
 
+    const token =
+      url.searchParams.get("token") || "";
 
-    /* الصفحة */
+    const username =
+      this.getUserFromToken(token);
 
-    if(
-      url.pathname === "/" &&
-      request.method === "GET"
-    ){
+    if(!username){
+      return this.json(
+        {
+          error:"جلسة غير صالحة"
+        },
+        401
+      );
+    }
+
+    return this.json({
+      username
+    });
+  }
+
+  async users(request){
+
+    const url =
+      new URL(request.url);
+
+    const token =
+      url.searchParams.get("token") || "";
+
+    const username =
+      this.getUserFromToken(token);
+
+    if(!username){
+      return this.json(
+        {
+          error:"جلسة غير صالحة"
+        },
+        401
+      );
+    }
+
+    const rows =
+      this.sql.exec(
+        `
+        SELECT username
+        FROM accounts
+        ORDER BY username
+        `
+      ).toArray();
+
+    const users =
+      rows.map(function(row){
+
+        return {
+          username:row.username,
+          online:
+            this.connections.has(row.username)
+        };
+
+      },this);
+
+    return this.json({
+      users
+    });
+  }
+
+  getUserFromToken(token){
+
+    if(!token){
+      return null;
+    }
+
+    const rows =
+      this.sql.exec(
+        `
+        SELECT username
+        FROM sessions
+        WHERE token = ?
+        LIMIT 1
+        `,
+        token
+      ).toArray();
+
+    if(rows.length === 0){
+      return null;
+    }
+
+    return rows[0].username;
+  }
+
+  async websocket(request){
+
+    const url =
+      new URL(request.url);
+
+    const token =
+      url.searchParams.get("token") || "";
+
+    const username =
+      this.getUserFromToken(token);
+
+    if(!username){
 
       return new Response(
-        HTML,
+        "Unauthorized",
         {
-          headers:{
-            "Content-Type":
-              "text/html;charset=UTF-8"
-          }
+          status:401
         }
       );
-
     }
 
+    const pair =
+      new WebSocketPair();
 
-    /* التسجيل */
+    const client =
+      pair[0];
 
-    if(
-      url.pathname === "/api/register" &&
-      request.method === "POST"
-    ){
+    const server =
+      pair[1];
 
-      return handleRegister(
-        request,
-        env
-      );
+    this.ctx.acceptWebSocket(server);
 
-    }
+    this.connections.set(
+      username,
+      server
+    );
 
+    server.serializeAttachment({
+      username
+    });
 
-    /* الدخول */
+    server.addEventListener(
+      "close",
+      () => {
 
-    if(
-      url.pathname === "/api/login" &&
-      request.method === "POST"
-    ){
-
-      return handleLogin(
-        request,
-        env
-      );
-
-    }
-
-
-    /* الخروج */
-
-    if(
-      url.pathname === "/api/logout" &&
-      request.method === "POST"
-    ){
-
-      return handleLogout(
-        request,
-        env
-      );
-
-    }
-
-
-    /* المستخدم الحالي */
-
-    if(
-      url.pathname === "/api/me" &&
-      request.method === "GET"
-    ){
-
-      return handleMe(
-        request,
-        env
-      );
-
-    }
-
-
-    /* المستخدمين */
-
-    if(
-      url.pathname === "/api/users" &&
-      request.method === "GET"
-    ){
-
-      return handleUsers(
-        request,
-        env
-      );
-
-    }
-
-
-    /* WebSocket */
-
-    if(
-      url.pathname === "/ws" &&
-      request.headers.get(
-        "Upgrade"
-      ) === "websocket"
-    ){
-
-      return websocket(
-        request,
-        env
-      );
-
-    }
-
-
-    return new Response(
-      "Not Found",
-      {
-        status:404
+        if(
+          this.connections.get(username) === server
+        ){
+          this.connections.delete(username);
+        }
       }
     );
 
+    server.addEventListener(
+      "error",
+      () => {
+
+        if(
+          this.connections.get(username) === server
+        ){
+          this.connections.delete(username);
+        }
+      }
+    );
+
+    return new Response(null,{
+      status:101,
+      webSocket:client
+    });
   }
 
-};
+  async webSocketMessage(ws,message){
 
+    try{
 
-/* =====================================================
-   JSON
-===================================================== */
+      const attachment =
+        ws.deserializeAttachment();
 
-function json(
-  data,
-  status = 200
-){
+      if(!attachment){
+        return;
+      }
 
-  return new Response(
-    JSON.stringify(data),
-    {
-      status:status,
-      headers:{
-        "Content-Type":
-          "application/json"
+      const username =
+        attachment.username;
+
+      const data =
+        JSON.parse(message);
+
+      await this.handleMessage(
+        ws,
+        username,
+        data
+      );
+
+    }catch(error){
+
+      try{
+        ws.send(JSON.stringify({
+          type:"error",
+          error:error.message
+        }));
+      }catch(e){}
+    }
+  }
+
+  async webSocketClose(ws){
+
+    const attachment =
+      ws.deserializeAttachment();
+
+    if(!attachment){
+      return;
+    }
+
+    const username =
+      attachment.username;
+
+    if(
+      this.connections.get(username) === ws
+    ){
+      this.connections.delete(username);
+    }
+  }
+
+  async webSocketError(ws){
+
+    const attachment =
+      ws.deserializeAttachment();
+
+    if(!attachment){
+      return;
+    }
+
+    const username =
+      attachment.username;
+
+    if(
+      this.connections.get(username) === ws
+    ){
+      this.connections.delete(username);
+    }
+  }
+
+  async handleMessage(ws,username,data){
+
+    if(data.type === "message"){
+
+      const to =
+        String(data.to || "").trim();
+
+      const text =
+        String(data.text || "").trim();
+
+      if(!to || !text){
+        return;
+      }
+
+      const exists =
+        this.sql.exec(
+          `
+          SELECT username
+          FROM accounts
+          WHERE username = ?
+          LIMIT 1
+          `,
+          to
+        ).toArray();
+
+      if(exists.length === 0){
+        return;
+      }
+
+      const createdAt =
+        Date.now();
+
+      this.sql.exec(
+        `
+        INSERT INTO messages
+        (
+          sender,
+          receiver,
+          text,
+          created_at,
+          message_type,
+          audio_data
+        )
+        VALUES (?, ?, ?, ?, 'text', NULL)
+        `,
+        username,
+        to,
+        text,
+        createdAt
+      );
+
+      const payload =
+        JSON.stringify({
+          type:"message",
+          from:username,
+          to:to,
+          text:text,
+          created_at:createdAt
+        });
+
+      this.sendToUser(to,payload);
+      this.sendToUser(username,payload);
+
+      return;
+    }
+
+    if(data.type === "voice"){
+
+      const to =
+        String(data.to || "").trim();
+
+      const audioData =
+        String(data.audio_data || "");
+
+      if(!to || !audioData){
+        return;
+      }
+
+      const exists =
+        this.sql.exec(
+          `
+          SELECT username
+          FROM accounts
+          WHERE username = ?
+          LIMIT 1
+          `,
+          to
+        ).toArray();
+
+      if(exists.length === 0){
+        return;
+      }
+
+      /*
+        حد أمان للرسائل الصوتية.
+        البيانات Base64 أكبر من الملف الأصلي،
+        لذلك نمنع التسجيلات الضخمة.
+      */
+
+      if(audioData.length > 3000000){
+        try{
+          ws.send(JSON.stringify({
+            type:"error",
+            error:
+              "التسجيل الصوتي طويل جدًا"
+          }));
+        }catch(e){}
+
+        return;
+      }
+
+      const createdAt =
+        Date.now();
+
+      this.sql.exec(
+        `
+        INSERT INTO messages
+        (
+          sender,
+          receiver,
+          text,
+          created_at,
+          message_type,
+          audio_data
+        )
+        VALUES (?, ?, NULL, ?, 'voice', ?)
+        `,
+        username,
+        to,
+        createdAt,
+        audioData
+      );
+
+      const payload =
+        JSON.stringify({
+          type:"voice",
+          from:username,
+          to:to,
+          audio_data:audioData,
+          created_at:createdAt
+        });
+
+      this.sendToUser(to,payload);
+      this.sendToUser(username,payload);
+
+      return;
+    }
+
+    if(data.type === "history"){
+
+      const other =
+        String(data.with || "").trim();
+
+      if(!other){
+        return;
+      }
+
+      const rows =
+        this.sql.exec(
+          `
+          SELECT
+            sender,
+            receiver,
+            text,
+            created_at,
+            message_type,
+            audio_data
+          FROM messages
+          WHERE
+            (
+              sender = ?
+              AND receiver = ?
+            )
+            OR
+            (
+              sender = ?
+              AND receiver = ?
+            )
+          ORDER BY created_at ASC
+          LIMIT 500
+          `,
+          username,
+          other,
+          other,
+          username
+        ).toArray();
+
+      ws.send(JSON.stringify({
+        type:"history",
+        messages:
+          rows.map(function(row){
+
+            return {
+              from:row.sender,
+              to:row.receiver,
+              text:row.text,
+              created_at:row.created_at,
+              message_type:
+                row.message_type || "text",
+              audio_data:
+                row.audio_data || null
+            };
+
+          })
+      }));
+
+      return;
+    }
+
+    if(data.type === "typing"){
+
+      const to =
+        String(data.to || "").trim();
+
+      if(!to){
+        return;
+      }
+
+      const payload =
+        JSON.stringify({
+          type:"typing",
+          from:username,
+          to:to,
+          typing:Boolean(data.typing)
+        });
+
+      this.sendToUser(to,payload);
+
+      return;
+    }
+  }
+
+  sendToUser(username,payload){
+
+    const socket =
+      this.connections.get(username);
+
+    if(!socket){
+      return;
+    }
+
+    try{
+      socket.send(payload);
+    }catch(error){
+
+      if(
+        this.connections.get(username) === socket
+      ){
+        this.connections.delete(username);
       }
     }
+  }
+}
+
+function randomBytes(length){
+
+  const bytes =
+    new Uint8Array(length);
+
+  crypto.getRandomValues(bytes);
+
+  let result = "";
+
+  for(let i=0;i<bytes.length;i++){
+
+    result +=
+      bytes[i]
+        .toString(16)
+        .padStart(2,"0");
+  }
+
+  return result;
+}
+
+function randomToken(){
+
+  return (
+    randomBytes(32) +
+    randomBytes(32)
   );
-
 }
-
-
-/* =====================================================
-   DATABASE
-===================================================== */
-
-function initDB(sql){
-
-  /*
-    الجداول القديمة يتم تركها كما هي.
-    IF NOT EXISTS لا يحذف بيانات الحسابات.
-  */
-
-  sql.exec(`
-    CREATE TABLE IF NOT EXISTS accounts (
-      username TEXT UNIQUE NOT NULL,
-      password_hash TEXT NOT NULL,
-      created_at INTEGER NOT NULL
-    )
-  `);
-
-
-  sql.exec(`
-    CREATE TABLE IF NOT EXISTS sessions (
-      token TEXT PRIMARY KEY,
-      username TEXT NOT NULL,
-      created_at INTEGER NOT NULL
-    )
-  `);
-
-
-  sql.exec(`
-    CREATE TABLE IF NOT EXISTS messages (
-      sender TEXT NOT NULL,
-      receiver TEXT NOT NULL,
-      text TEXT NOT NULL,
-      created_at INTEGER NOT NULL
-    )
-  `);
-
-}
-
-
-/* =====================================================
-   PASSWORD
-===================================================== */
 
 async function hashPassword(
-  password
+  password,
+  saltHex
 ){
+
+  const salt =
+    hexToBytes(saltHex);
 
   const encoder =
     new TextEncoder();
-
-
-  const salt =
-    crypto.getRandomValues(
-      new Uint8Array(16)
-    );
-
 
   const key =
     await crypto.subtle.importKey(
       "raw",
       encoder.encode(password),
-      "PBKDF2",
+      {
+        name:"PBKDF2"
+      },
       false,
       ["deriveBits"]
     );
-
 
   const bits =
     await crypto.subtle.deriveBits(
@@ -1467,1474 +2215,41 @@ async function hashPassword(
       256
     );
 
-
-  return (
-    arrayBufferToBase64(salt) +
-    "." +
-    arrayBufferToBase64(bits)
+  return bytesToHex(
+    new Uint8Array(bits)
   );
-
 }
 
-
-async function verifyPassword(
-  password,
-  stored
-){
-
-  try{
-
-    const parts =
-      stored.split(".");
-
-    if(parts.length !== 2){
-      return false;
-    }
-
-
-    const salt =
-      base64ToUint8Array(
-        parts[0]
-      );
-
-
-    const expected =
-      parts[1];
-
-
-    const encoder =
-      new TextEncoder();
-
-
-    const key =
-      await crypto.subtle.importKey(
-        "raw",
-        encoder.encode(password),
-        "PBKDF2",
-        false,
-        ["deriveBits"]
-      );
-
-
-    const bits =
-      await crypto.subtle.deriveBits(
-        {
-          name:"PBKDF2",
-          salt:salt,
-          iterations:100000,
-          hash:"SHA-256"
-        },
-        key,
-        256
-      );
-
-
-    const actual =
-      arrayBufferToBase64(bits);
-
-
-    return actual === expected;
-
-  }catch(error){
-
-    return false;
-
-  }
-
-}
-
-
-/* =====================================================
-   BASE64
-===================================================== */
-
-function arrayBufferToBase64(
-  buffer
-){
-
-  const bytes =
-    new Uint8Array(buffer);
-
-  let binary = "";
-
-
-  for(
-    let i = 0;
-    i < bytes.length;
-    i++
-  ){
-
-    binary +=
-      String.fromCharCode(
-        bytes[i]
-      );
-
-  }
-
-
-  return btoa(binary);
-
-}
-
-
-function base64ToUint8Array(
-  value
-){
-
-  const binary =
-    atob(value);
-
+function hexToBytes(hex){
 
   const bytes =
     new Uint8Array(
-      binary.length
+      hex.length / 2
     );
 
-
-  for(
-    let i = 0;
-    i < binary.length;
-    i++
-  ){
+  for(let i=0;i<bytes.length;i++){
 
     bytes[i] =
-      binary.charCodeAt(i);
-
+      parseInt(
+        hex.substr(i * 2,2),
+        16
+      );
   }
-
 
   return bytes;
-
 }
 
+function bytesToHex(bytes){
 
-/* =====================================================
-   TOKEN
-===================================================== */
+  let result = "";
 
-function createToken(){
+  for(let i=0;i<bytes.length;i++){
 
-  const bytes =
-    crypto.getRandomValues(
-      new Uint8Array(32)
-    );
-
-  return arrayBufferToBase64(
-    bytes
-  );
-
-}
-
-
-function getToken(request){
-
-  const url =
-    new URL(request.url);
-
-
-  const queryToken =
-    url.searchParams.get(
-      "token"
-    );
-
-
-  if(queryToken){
-    return queryToken;
+    result +=
+      bytes[i]
+        .toString(16)
+        .padStart(2,"0");
   }
 
-
-  const authorization =
-    request.headers.get(
-      "Authorization"
-    );
-
-
-  if(authorization){
-
-    return authorization.replace(
-      /^Bearer\s+/i,
-      ""
-    );
-
+  return result;
   }
-
-
-  return null;
-
-}
-
-
-/* =====================================================
-   USER FROM TOKEN
-===================================================== */
-
-function getUserFromToken(
-  sql,
-  token
-){
-
-  if(!token){
-    return null;
-  }
-
-
-  const rows =
-    sql.exec(
-      `
-      SELECT username
-      FROM sessions
-      WHERE token = ?
-      LIMIT 1
-      `,
-      token
-    ).toArray();
-
-
-  if(
-    !rows ||
-    rows.length === 0
-  ){
-
-    return null;
-
-  }
-
-
-  return rows[0].username;
-
-}
-
-
-/* =====================================================
-   REGISTER
-===================================================== */
-
-async function handleRegister(
-  request,
-  env
-){
-
-  try{
-
-    const body =
-      await request.json();
-
-
-    const username =
-      String(
-        body.username || ""
-      ).trim();
-
-
-    const password =
-      String(
-        body.password || ""
-      );
-
-
-    if(
-      username.length < 3
-    ){
-
-      return json(
-        {
-          error:
-            "اسم المستخدم يجب أن يكون 3 أحرف على الأقل"
-        },
-        400
-      );
-
-    }
-
-
-    if(
-      password.length < 4
-    ){
-
-      return json(
-        {
-          error:
-            "كلمة السر يجب أن تكون 4 أحرف على الأقل"
-        },
-        400
-      );
-
-    }
-
-
-    const id =
-      env.CHAT_ROOM.idFromName(
-        "main"
-      );
-
-
-    const room =
-      env.CHAT_ROOM.get(id);
-
-
-    return room.fetch(
-      new Request(
-        "https://internal/register",
-        {
-          method:"POST",
-          headers:{
-            "Content-Type":
-              "application/json"
-          },
-          body:JSON.stringify({
-            username:username,
-            password:password
-          })
-        }
-      )
-    );
-
-  }catch(error){
-
-    return json(
-      {
-        error:
-          "حدث خطأ أثناء إنشاء الحساب: " +
-          error.message
-      },
-      500
-    );
-
-  }
-
-}
-
-
-/* =====================================================
-   LOGIN
-===================================================== */
-
-async function handleLogin(
-  request,
-  env
-){
-
-  try{
-
-    const body =
-      await request.json();
-
-
-    const username =
-      String(
-        body.username || ""
-      ).trim();
-
-
-    const password =
-      String(
-        body.password || ""
-      );
-
-
-    const id =
-      env.CHAT_ROOM.idFromName(
-        "main"
-      );
-
-
-    const room =
-      env.CHAT_ROOM.get(id);
-
-
-    return room.fetch(
-      new Request(
-        "https://internal/login",
-        {
-          method:"POST",
-          headers:{
-            "Content-Type":
-              "application/json"
-          },
-          body:JSON.stringify({
-            username:username,
-            password:password
-          })
-        }
-      )
-    );
-
-  }catch(error){
-
-    return json(
-      {
-        error:
-          "حدث خطأ أثناء تسجيل الدخول: " +
-          error.message
-      },
-      500
-    );
-
-  }
-
-}
-
-
-/* =====================================================
-   LOGOUT
-===================================================== */
-
-async function handleLogout(
-  request,
-  env
-){
-
-  try{
-
-    const body =
-      await request.json();
-
-
-    const token =
-      body.token;
-
-
-    const id =
-      env.CHAT_ROOM.idFromName(
-        "main"
-      );
-
-
-    const room =
-      env.CHAT_ROOM.get(id);
-
-
-    return room.fetch(
-      new Request(
-        "https://internal/logout",
-        {
-          method:"POST",
-          headers:{
-            "Content-Type":
-              "application/json"
-          },
-          body:JSON.stringify({
-            token:token
-          })
-        }
-      )
-    );
-
-  }catch(error){
-
-    return json(
-      {
-        error:error.message
-      },
-      500
-    );
-
-  }
-
-}
-
-
-/* =====================================================
-   ME
-===================================================== */
-
-async function handleMe(
-  request,
-  env
-){
-
-  const token =
-    getToken(request);
-
-
-  const id =
-    env.CHAT_ROOM.idFromName(
-      "main"
-    );
-
-
-  const room =
-    env.CHAT_ROOM.get(id);
-
-
-  return room.fetch(
-    new Request(
-      "https://internal/me?token=" +
-      encodeURIComponent(
-        token || ""
-      )
-    )
-  );
-
-}
-
-
-/* =====================================================
-   USERS
-===================================================== */
-
-async function handleUsers(
-  request,
-  env
-){
-
-  const token =
-    getToken(request);
-
-
-  const id =
-    env.CHAT_ROOM.idFromName(
-      "main"
-    );
-
-
-  const room =
-    env.CHAT_ROOM.get(id);
-
-
-  return room.fetch(
-    new Request(
-      "https://internal/users?token=" +
-      encodeURIComponent(
-        token || ""
-      )
-    )
-  );
-
-}
-
-
-/* =====================================================
-   WEBSOCKET
-===================================================== */
-
-async function websocket(
-  request,
-  env
-){
-
-  const url =
-    new URL(request.url);
-
-
-  const token =
-    url.searchParams.get(
-      "token"
-    );
-
-
-  if(!token){
-
-    return new Response(
-      "Unauthorized",
-      {
-        status:401
-      }
-    );
-
-  }
-
-
-  const id =
-    env.CHAT_ROOM.idFromName(
-      "main"
-    );
-
-
-  const room =
-    env.CHAT_ROOM.get(id);
-
-
-  return room.fetch(
-    new Request(
-      "https://internal/ws?token=" +
-      encodeURIComponent(token),
-      {
-        headers:{
-          Upgrade:"websocket"
-        }
-      }
-    )
-  );
-
-}
-
-
-/* =====================================================
-   DURABLE OBJECT
-===================================================== */
-
-export class ChatRoom
-  extends DurableObject
-{
-
-  constructor(
-    ctx,
-    env
-  ){
-
-    super(
-      ctx,
-      env
-    );
-
-
-    this.ctx =
-      ctx;
-
-    this.env =
-      env;
-
-
-    this.sql =
-      ctx.storage.sql;
-
-
-    initDB(
-      this.sql
-    );
-
-
-    this.connections =
-      new Map();
-
-  }
-
-
-  async fetch(
-    request
-  ){
-
-    const url =
-      new URL(request.url);
-
-
-    if(
-      url.pathname === "/register" &&
-      request.method === "POST"
-    ){
-
-      return this.register(
-        request
-      );
-
-    }
-
-
-    if(
-      url.pathname === "/login" &&
-      request.method === "POST"
-    ){
-
-      return this.login(
-        request
-      );
-
-    }
-
-
-    if(
-      url.pathname === "/logout" &&
-      request.method === "POST"
-    ){
-
-      return this.logout(
-        request
-      );
-
-    }
-
-
-    if(
-      url.pathname === "/me"
-    ){
-
-      return this.me(
-        request
-      );
-
-    }
-
-
-    if(
-      url.pathname === "/users"
-    ){
-
-      return this.users(
-        request
-      );
-
-    }
-
-
-    if(
-      url.pathname === "/ws" &&
-      request.headers.get(
-        "Upgrade"
-      ) === "websocket"
-    ){
-
-      return this.handleWebSocket(
-        request
-      );
-
-    }
-
-
-    return new Response(
-      "Not Found",
-      {
-        status:404
-      }
-    );
-
-  }
-
-
-  /* ===================================================
-     REGISTER
-  =================================================== */
-
-  async register(
-    request
-  ){
-
-    try{
-
-      const body =
-        await request.json();
-
-
-      const username =
-        String(
-          body.username || ""
-        ).trim();
-
-
-      const password =
-        String(
-          body.password || ""
-        );
-
-
-      /*
-        مهم:
-        لا يوجد SELECT id هنا.
-      */
-
-      const exists =
-        this.sql.exec(
-          `
-          SELECT username
-          FROM accounts
-          WHERE username = ?
-          LIMIT 1
-          `,
-          username
-        ).toArray();
-
-
-      if(
-        exists &&
-        exists.length > 0
-      ){
-
-        return json(
-          {
-            error:
-              "اسم المستخدم موجود بالفعل"
-          },
-          400
-        );
-
-      }
-
-
-      const passwordHash =
-        await hashPassword(
-          password
-        );
-
-
-      const now =
-        Date.now();
-
-
-      this.sql.exec(
-        `
-        INSERT INTO accounts
-        (username,password_hash,created_at)
-        VALUES (?,?,?)
-        `,
-        username,
-        passwordHash,
-        now
-      );
-
-
-      const token =
-        createToken();
-
-
-      this.sql.exec(
-        `
-        INSERT INTO sessions
-        (token,username,created_at)
-        VALUES (?,?,?)
-        `,
-        token,
-        username,
-        now
-      );
-
-
-      return json({
-        ok:true,
-        username:username,
-        token:token
-      });
-
-
-    }catch(error){
-
-      return json(
-        {
-          error:
-            "حدث خطأ أثناء إنشاء الحساب: " +
-            error.message
-        },
-        500
-      );
-
-    }
-
-  }
-
-
-  /* ===================================================
-     LOGIN
-  =================================================== */
-
-  async login(
-    request
-  ){
-
-    try{
-
-      const body =
-        await request.json();
-
-
-      const username =
-        String(
-          body.username || ""
-        ).trim();
-
-
-      const password =
-        String(
-          body.password || ""
-        );
-
-
-      const rows =
-        this.sql.exec(
-          `
-          SELECT username,password_hash
-          FROM accounts
-          WHERE username = ?
-          LIMIT 1
-          `,
-          username
-        ).toArray();
-
-
-      if(
-        !rows ||
-        rows.length === 0
-      ){
-
-        return json(
-          {
-            error:
-              "اسم المستخدم أو كلمة السر غير صحيحة"
-          },
-          401
-        );
-
-      }
-
-
-      const account =
-        rows[0];
-
-
-      const valid =
-        await verifyPassword(
-          password,
-          account.password_hash
-        );
-
-
-      if(!valid){
-
-        return json(
-          {
-            error:
-              "اسم المستخدم أو كلمة السر غير صحيحة"
-          },
-          401
-        );
-
-      }
-
-
-      const token =
-        createToken();
-
-
-      this.sql.exec(
-        `
-        INSERT INTO sessions
-        (token,username,created_at)
-        VALUES (?,?,?)
-        `,
-        token,
-        username,
-        Date.now()
-      );
-
-
-      return json({
-        ok:true,
-        username:username,
-        token:token
-      });
-
-
-    }catch(error){
-
-      return json(
-        {
-          error:
-            "حدث خطأ أثناء تسجيل الدخول: " +
-            error.message
-        },
-        500
-      );
-
-    }
-
-  }
-
-
-  /* ===================================================
-     LOGOUT
-  =================================================== */
-
-  async logout(
-    request
-  ){
-
-    try{
-
-      const body =
-        await request.json();
-
-
-      const token =
-        body.token;
-
-
-      if(token){
-
-        this.sql.exec(
-          `
-          DELETE FROM sessions
-          WHERE token = ?
-          `,
-          token
-        );
-
-      }
-
-
-      return json({
-        ok:true
-      });
-
-
-    }catch(error){
-
-      return json(
-        {
-          error:error.message
-        },
-        500
-      );
-
-    }
-
-  }
-
-
-  /* ===================================================
-     ME
-  =================================================== */
-
-  async me(
-    request
-  ){
-
-    const url =
-      new URL(request.url);
-
-
-    const token =
-      url.searchParams.get(
-        "token"
-      );
-
-
-    const username =
-      getUserFromToken(
-        this.sql,
-        token
-      );
-
-
-    if(!username){
-
-      return json(
-        {
-          error:
-            "غير مسجل الدخول"
-        },
-        401
-      );
-
-    }
-
-
-    return json({
-      ok:true,
-      username:username
-    });
-
-  }
-
-
-  /* ===================================================
-     USERS
-  =================================================== */
-
-  async users(
-    request
-  ){
-
-    const url =
-      new URL(request.url);
-
-
-    const token =
-      url.searchParams.get(
-        "token"
-      );
-
-
-    const currentUser =
-      getUserFromToken(
-        this.sql,
-        token
-      );
-
-
-    if(!currentUser){
-
-      return json(
-        {
-          error:
-            "غير مسجل الدخول"
-        },
-        401
-      );
-
-    }
-
-
-    const rows =
-      this.sql.exec(
-        `
-        SELECT username
-        FROM accounts
-        ORDER BY username
-        `
-      ).toArray();
-
-
-    const users =
-      rows
-        .filter(
-          function(user){
-
-            return (
-              user.username !==
-              currentUser
-            );
-
-          }
-        )
-        .map(
-          function(user){
-
-            return {
-              username:
-                user.username,
-
-              online:
-                this.connections.has(
-                  user.username
-                )
-            };
-
-          }.bind(this)
-        );
-
-
-    return json({
-      users:users
-    });
-
-  }
-
-
-  /* ===================================================
-     WEBSOCKET
-  =================================================== */
-
-  async handleWebSocket(
-    request
-  ){
-
-    const url =
-      new URL(request.url);
-
-
-    const token =
-      url.searchParams.get(
-        "token"
-      );
-
-
-    const username =
-      getUserFromToken(
-        this.sql,
-        token
-      );
-
-
-    if(!username){
-
-      return new Response(
-        "Unauthorized",
-        {
-          status:401
-        }
-      );
-
-    }
-
-
-    const pair =
-      new WebSocketPair();
-
-
-    const client =
-      pair[0];
-
-    const server =
-      pair[1];
-
-
-    server.accept();
-
-
-    this.connections.set(
-      username,
-      server
-    );
-
-
-    server.addEventListener(
-      "message",
-      (event) => {
-
-        this.handleMessage(
-          username,
-          server,
-          event.data
-        );
-
-      }
-    );
-
-
-    server.addEventListener(
-      "close",
-      () => {
-
-        if(
-          this.connections.get(
-            username
-          ) === server
-        ){
-
-          this.connections.delete(
-            username
-          );
-
-        }
-
-      }
-    );
-
-
-    server.addEventListener(
-      "error",
-      () => {
-
-        if(
-          this.connections.get(
-            username
-          ) === server
-        ){
-
-          this.connections.delete(
-            username
-          );
-
-        }
-
-      }
-    );
-
-
-    return new Response(
-      null,
-      {
-        status:101,
-        webSocket:client
-      }
-    );
-
-  }
-
-
-  /* ===================================================
-     WEBSOCKET MESSAGES
-  =================================================== */
-
-  handleMessage(
-    username,
-    socket,
-    raw
-  ){
-
-    try{
-
-      const data =
-        JSON.parse(raw);
-
-
-      /* رسالة */
-
-      if(
-        data.type === "message"
-      ){
-
-        const to =
-          String(
-            data.to || ""
-          ).trim();
-
-
-        const text =
-          String(
-            data.text || ""
-          ).trim();
-
-
-        if(!to || !text){
-          return;
-        }
-
-
-        const createdAt =
-          Date.now();
-
-
-        /*
-          لا نستخدم id
-          حتى لا يحدث تعارض مع
-          قاعدة البيانات القديمة.
-        */
-
-        this.sql.exec(
-          `
-          INSERT INTO messages
-          (sender,receiver,text,created_at)
-          VALUES (?,?,?,?)
-          `,
-          username,
-          to,
-          text,
-          createdAt
-        );
-
-
-        const receiverSocket =
-          this.connections.get(
-            to
-          );
-
-
-        const payload =
-          JSON.stringify({
-            type:"message",
-            from:username,
-            to:to,
-            text:text,
-            created_at:createdAt
-          });
-
-
-        if(receiverSocket){
-
-          try{
-
-            receiverSocket.send(
-              payload
-            );
-
-          }catch(error){}
-
-        }
-
-
-        try{
-
-          socket.send(
-            payload
-          );
-
-        }catch(error){}
-
-
-        return;
-
-      }
-
-
-      /* تاريخ المحادثة */
-
-      if(
-        data.type === "history"
-      ){
-
-        const other =
-          String(
-            data.with || ""
-          ).trim();
-
-
-        if(!other){
-          return;
-        }
-
-
-        const rows =
-          this.sql.exec(
-            `
-            SELECT
-              sender,
-              receiver,
-              text,
-              created_at
-            FROM messages
-            WHERE
-              (sender = ? AND receiver = ?)
-              OR
-              (sender = ? AND receiver = ?)
-            ORDER BY created_at ASC
-            `,
-            username,
-            other,
-            other,
-            username
-          ).toArray();
-
-
-        socket.send(
-          JSON.stringify({
-            type:"history",
-            with:other,
-            messages:rows
-          })
-        );
-
-
-        return;
-
-      }
-
-
-      /* مؤشر الكتابة */
-
-      if(
-        data.type === "typing"
-      ){
-
-        const to =
-          String(
-            data.to || ""
-          ).trim();
-
-
-        const receiverSocket =
-          this.connections.get(
-            to
-          );
-
-
-        if(receiverSocket){
-
-          receiverSocket.send(
-            JSON.stringify({
-              type:"typing",
-              from:username,
-              typing:
-                Boolean(
-                  data.typing
-                )
-            })
-          );
-
-        }
-
-
-        return;
-
-      }
-
-    }catch(error){
-
-      console.error(
-        "WebSocket error:",
-        error
-      );
-
-    }
-
-  }
-
-      }
