@@ -1,6 +1,22 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "respiratory",
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "bola11",
   "main": "worker.js",
-  "compatibility_date": "2026-10-03"
+  "compatibility_date": "2026-10-03",
+
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "CHAT_ROOM",
+        "class_name": "ChatRoom"
+      }
+    ]
+  },
+
+  "exports": {
+    "ChatRoom": {
+      "type": "durable-object",
+      "storage": "sqlite"
+    }
+  }
 }
