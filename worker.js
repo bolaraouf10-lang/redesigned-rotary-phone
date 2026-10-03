@@ -646,7 +646,7 @@ async function hashPassword(
       {
         name:"PBKDF2",
         salt:saltBytes,
-        iterations:120000,
+        iterations:100000,
         hash:"SHA-256"
       },
       key,
@@ -1476,4 +1476,4 @@ export class ChatRoom
 
   }
 
-    }
+  }
