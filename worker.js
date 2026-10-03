@@ -23,8 +23,8 @@ button,input{
 #auth{
   min-height:100vh;
   display:flex;
-  align-items:center;
   justify-content:center;
+  align-items:center;
   padding:20px;
 }
 
@@ -45,9 +45,9 @@ button,input{
 .auth-box input{
   width:100%;
   padding:13px;
-  margin-bottom:12px;
   border:1px solid #ddd;
   border-radius:10px;
+  margin-bottom:12px;
   outline:none;
 }
 
@@ -57,23 +57,27 @@ button,input{
   border:0;
   border-radius:10px;
   background:#128c7e;
-  color:white;
-  font-size:16px;
+  color:#fff;
   cursor:pointer;
+  font-size:16px;
+}
+
+.auth-box button:disabled{
+  opacity:.6;
 }
 
 .auth-switch{
   text-align:center;
-  color:#128c7e;
   margin-top:15px;
+  color:#128c7e;
   cursor:pointer;
 }
 
 #error{
   color:#d00;
   text-align:center;
-  min-height:20px;
   margin-top:10px;
+  min-height:20px;
 }
 
 #app{
@@ -93,21 +97,27 @@ button,input{
   border-left:1px solid #ddd;
   display:flex;
   flex-direction:column;
+  flex-shrink:0;
 }
 
 .sidebar-header{
   background:#075e54;
-  color:white;
+  color:#fff;
   padding:16px;
   display:flex;
   justify-content:space-between;
   align-items:center;
 }
 
+.sidebar-title{
+  font-size:18px;
+  font-weight:bold;
+}
+
 .sidebar-header button{
-  border:0;
   background:#ffffff22;
-  color:white;
+  color:#fff;
+  border:0;
   padding:8px 12px;
   border-radius:8px;
   cursor:pointer;
@@ -118,6 +128,12 @@ button,input{
   flex:1;
 }
 
+.no-users{
+  padding:25px 15px;
+  text-align:center;
+  color:#888;
+}
+
 .user{
   padding:12px;
   border-bottom:1px solid #eee;
@@ -125,6 +141,7 @@ button,input{
   align-items:center;
   gap:10px;
   cursor:pointer;
+  min-height:68px;
 }
 
 .user:hover{
@@ -138,14 +155,15 @@ button,input{
 .avatar{
   width:44px;
   height:44px;
+  min-width:44px;
   border-radius:50%;
   background:#128c7e;
-  color:white;
+  color:#fff;
   display:flex;
-  justify-content:center;
   align-items:center;
+  justify-content:center;
   font-weight:bold;
-  flex-shrink:0;
+  font-size:18px;
 }
 
 .user-info{
@@ -155,48 +173,67 @@ button,input{
 
 .username{
   font-weight:bold;
-  overflow:hidden;
+  font-size:15px;
   white-space:nowrap;
+  overflow:hidden;
   text-overflow:ellipsis;
 }
 
 .status{
   font-size:12px;
+  margin-top:4px;
+}
+
+.status.online{
+  color:#20a050;
+}
+
+.status.offline{
   color:#999;
-  margin-top:3px;
 }
 
 .online-dot{
   width:10px;
   height:10px;
+  min-width:10px;
   border-radius:50%;
   background:#25d366;
 }
 
+.offline-dot{
+  width:10px;
+  height:10px;
+  min-width:10px;
+  border-radius:50%;
+  background:#bbb;
+}
+
 .chat{
   flex:1;
-  min-width:0;
   display:flex;
   flex-direction:column;
+  min-width:0;
 }
 
 .chat-header{
   height:64px;
+  min-height:64px;
   background:#075e54;
-  color:white;
+  color:#fff;
   display:flex;
   align-items:center;
-  gap:10px;
   padding:10px 16px;
+  gap:10px;
 }
 
 .chat-title{
   font-weight:bold;
+  font-size:16px;
 }
 
 .chat-status{
   font-size:12px;
-  opacity:.8;
+  opacity:.85;
   margin-top:3px;
 }
 
@@ -221,7 +258,7 @@ button,input{
 }
 
 .message.theirs{
-  background:white;
+  background:#fff;
   margin-left:auto;
 }
 
@@ -275,13 +312,13 @@ button,input{
 .icon-btn{
   width:45px;
   height:45px;
+  min-width:45px;
   border:0;
   border-radius:50%;
   background:#128c7e;
-  color:white;
+  color:#fff;
   font-size:20px;
   cursor:pointer;
-  flex-shrink:0;
 }
 
 .icon-btn.recording{
@@ -298,37 +335,80 @@ button,input{
 @media(max-width:700px){
 
   .sidebar{
-    width:90px;
+    width:185px;
   }
 
   .sidebar-header{
-    padding:10px;
+    padding:12px 10px;
   }
 
-  .sidebar-header span{
-    display:none;
+  .sidebar-title{
+    font-size:15px;
+  }
+
+  .sidebar-header button{
+    padding:7px 9px;
+    font-size:12px;
   }
 
   .user{
-    justify-content:center;
-    padding:10px 5px;
-  }
-
-  .user-info{
-    display:none;
-  }
-
-  .online-dot{
-    display:none;
+    padding:10px 7px;
+    gap:7px;
   }
 
   .avatar{
-    width:48px;
-    height:48px;
+    width:40px;
+    height:40px;
+    min-width:40px;
+    font-size:16px;
+  }
+
+  .username{
+    font-size:13px;
+  }
+
+  .status{
+    font-size:10px;
+  }
+
+  .online-dot,
+  .offline-dot{
+    width:8px;
+    height:8px;
+    min-width:8px;
   }
 
   .message{
     max-width:85%;
+  }
+}
+
+@media(max-width:420px){
+
+  .sidebar{
+    width:155px;
+  }
+
+  .sidebar-title{
+    font-size:14px;
+  }
+
+  .user{
+    padding:9px 5px;
+  }
+
+  .avatar{
+    width:36px;
+    height:36px;
+    min-width:36px;
+  }
+
+  .username{
+    font-size:12px;
+  }
+
+  .status{
+    font-size:9px;
   }
 }
 </style>
@@ -377,8 +457,15 @@ button,input{
     <aside class="sidebar">
 
       <div class="sidebar-header">
-        <span>المستخدمون</span>
-        <button id="logoutBtn">خروج</button>
+
+        <span class="sidebar-title">
+          المستخدمون
+        </span>
+
+        <button id="logoutBtn">
+          خروج
+        </button>
+
       </div>
 
       <div class="users" id="users"></div>
@@ -399,7 +486,8 @@ button,input{
             اختر مستخدمًا
           </div>
 
-          <div class="chat-status" id="chatStatus"></div>
+          <div class="chat-status" id="chatStatus">
+          </div>
 
         </div>
 
@@ -514,15 +602,12 @@ const recordBtn =
 let registerMode = true;
 
 function setError(text){
-
-  errorBox.textContent =
-    text || "";
+  errorBox.textContent = text || "";
 }
 
 switchAuth.onclick = function(){
 
-  registerMode =
-    !registerMode;
+  registerMode = !registerMode;
 
   setError("");
 
@@ -605,21 +690,12 @@ async function(){
       );
     }
 
-    /*
-      حفظ الجلسة
-    */
-
     token = data.token;
 
     localStorage.setItem(
       "chat_token",
       token
     );
-
-    /*
-      دخول تلقائي مباشرة
-      بعد إنشاء الحساب أو تسجيل الدخول
-    */
 
     currentUser =
       data.username || username;
@@ -652,7 +728,6 @@ async function(){
 async function showApp(){
 
   if(!token){
-
     return;
   }
 
@@ -695,6 +770,7 @@ async function showApp(){
     );
 
     token = "";
+
     currentUser = "";
 
     auth.style.display =
@@ -779,7 +855,30 @@ async function loadUsers(){
 
   usersBox.innerHTML = "";
 
-  data.users.forEach(
+  const list =
+    Array.isArray(data.users)
+      ? data.users
+      : [];
+
+  if(list.length === 0){
+
+    const empty =
+      document.createElement("div");
+
+    empty.className =
+      "no-users";
+
+    empty.textContent =
+      "لا يوجد مستخدمون آخرون";
+
+    usersBox.appendChild(
+      empty
+    );
+
+    return;
+  }
+
+  list.forEach(
     function(user){
 
       if(
@@ -790,9 +889,7 @@ async function loadUsers(){
       }
 
       const row =
-        document.createElement(
-          "div"
-        );
+        document.createElement("div");
 
       row.className =
         "user";
@@ -808,9 +905,7 @@ async function loadUsers(){
       }
 
       const avatar =
-        document.createElement(
-          "div"
-        );
+        document.createElement("div");
 
       avatar.className =
         "avatar";
@@ -821,17 +916,13 @@ async function loadUsers(){
           .toUpperCase();
 
       const info =
-        document.createElement(
-          "div"
-        );
+        document.createElement("div");
 
       info.className =
         "user-info";
 
       const name =
-        document.createElement(
-          "div"
-        );
+        document.createElement("div");
 
       name.className =
         "username";
@@ -840,36 +931,35 @@ async function loadUsers(){
         user.username;
 
       const status =
-        document.createElement(
-          "div"
-        );
+        document.createElement("div");
 
       status.className =
-        "status";
+        "status " +
+        (
+          user.online
+            ? "online"
+            : "offline"
+        );
 
       status.textContent =
         user.online
-          ? "متصل الآن"
-          : "غير متصل";
+          ? "🟢 متصل الآن"
+          : "⚪ غير متصل";
 
       info.appendChild(name);
       info.appendChild(status);
 
+      const dot =
+        document.createElement("div");
+
+      dot.className =
+        user.online
+          ? "online-dot"
+          : "offline-dot";
+
       row.appendChild(avatar);
       row.appendChild(info);
-
-      if(user.online){
-
-        const dot =
-          document.createElement(
-            "div"
-          );
-
-        dot.className =
-          "online-dot";
-
-        row.appendChild(dot);
-      }
+      row.appendChild(dot);
 
       row.onclick =
         function(){
@@ -924,6 +1014,8 @@ function connectWS(){
         reconnectTimer = null;
       }
 
+      loadUsers();
+
       if(selectedUser){
 
         sendHistoryRequest();
@@ -936,22 +1028,16 @@ function connectWS(){
       try{
 
         const data =
-          JSON.parse(
-            event.data
-          );
+          JSON.parse(event.data);
 
         if(
-          data.type ===
-          "message"
+          data.type === "message"
         ){
 
-          receiveTextMessage(
-            data
-          );
+          receiveTextMessage(data);
 
         }else if(
-          data.type ===
-          "history"
+          data.type === "history"
         ){
 
           showHistory(
@@ -959,8 +1045,7 @@ function connectWS(){
           );
 
         }else if(
-          data.type ===
-          "typing"
+          data.type === "typing"
         ){
 
           if(
@@ -976,17 +1061,13 @@ function connectWS(){
           }
 
         }else if(
-          data.type ===
-          "voice"
+          data.type === "voice"
         ){
 
-          receiveVoiceMessage(
-            data
-          );
+          receiveVoiceMessage(data);
 
         }else if(
-          data.type ===
-          "error"
+          data.type === "error"
         ){
 
           alert(
@@ -1004,14 +1085,14 @@ function connectWS(){
   ws.onclose =
     function(){
 
+      loadUsers();
+
       if(token){
 
         reconnectTimer =
           setTimeout(
             function(){
-
               connectWS();
-
             },
             2000
           );
@@ -1045,11 +1126,10 @@ function selectUser(
 
   chatStatus.textContent =
     online
-      ? "متصل الآن"
-      : "غير متصل";
+      ? "🟢 متصل الآن"
+      : "⚪ غير متصل";
 
-  typingBox.textContent =
-    "";
+  typingBox.textContent = "";
 
   showEmptyMessages();
 
@@ -1074,7 +1154,6 @@ function sendHistoryRequest(){
       WebSocket.OPEN ||
     !selectedUser
   ){
-
     return;
   }
 
@@ -1103,9 +1182,7 @@ function showHistory(messages){
   messages.forEach(
     function(message){
 
-      addMessageToUI(
-        message
-      );
+      addMessageToUI(message);
     }
   );
 
@@ -1115,13 +1192,12 @@ function showHistory(messages){
 function receiveTextMessage(data){
 
   if(
-    data.from !==
-      selectedUser &&
-    data.to !==
-      selectedUser
+    data.from !== selectedUser &&
+    data.to !== selectedUser
   ){
 
     loadUsers();
+
     return;
   }
 
@@ -1141,23 +1217,20 @@ function receiveTextMessage(data){
 function receiveVoiceMessage(data){
 
   if(
-    data.from !==
-      selectedUser &&
-    data.to !==
-      selectedUser
+    data.from !== selectedUser &&
+    data.to !== selectedUser
   ){
 
     loadUsers();
+
     return;
   }
 
   addMessageToUI({
     from:data.from,
     to:data.to,
-    audio_data:
-      data.audio_data,
-    created_at:
-      data.created_at,
+    audio_data:data.audio_data,
+    created_at:data.created_at,
     message_type:"voice"
   });
 
@@ -1178,13 +1251,10 @@ function addMessageToUI(message){
   }
 
   const box =
-    document.createElement(
-      "div"
-    );
+    document.createElement("div");
 
   const mine =
-    message.from ===
-    currentUser;
+    message.from === currentUser;
 
   box.className =
     "message " +
@@ -1195,56 +1265,41 @@ function addMessageToUI(message){
     );
 
   if(
-    message.message_type ===
-      "voice" &&
+    message.message_type === "voice" &&
     message.audio_data
   ){
 
     const audioBox =
-      document.createElement(
-        "div"
-      );
+      document.createElement("div");
 
     audioBox.className =
       "audio-message";
 
     const audio =
-      document.createElement(
-        "audio"
-      );
+      document.createElement("audio");
 
     audio.controls = true;
 
     audio.src =
       message.audio_data;
 
-    audioBox.appendChild(
-      audio
-    );
+    audioBox.appendChild(audio);
 
-    box.appendChild(
-      audioBox
-    );
+    box.appendChild(audioBox);
 
   }else{
 
     const text =
-      document.createElement(
-        "div"
-      );
+      document.createElement("div");
 
     text.textContent =
       message.text || "";
 
-    box.appendChild(
-      text
-    );
+    box.appendChild(text);
   }
 
   const time =
-    document.createElement(
-      "div"
-    );
+    document.createElement("div");
 
   time.className =
     "message-time";
@@ -1254,13 +1309,9 @@ function addMessageToUI(message){
       message.created_at
     );
 
-  box.appendChild(
-    time
-  );
+  box.appendChild(time);
 
-  messagesBox.appendChild(
-    box
-  );
+  messagesBox.appendChild(box);
 }
 
 function formatTime(timestamp){
@@ -1291,7 +1342,6 @@ document.getElementById(
   "sendBtn"
 ).onclick =
 function(){
-
   sendText();
 };
 
@@ -1319,7 +1369,7 @@ messageInput.addEventListener(
     if(
       ws &&
       ws.readyState ===
-        WebSocket.OPEN
+      WebSocket.OPEN
     ){
 
       ws.send(
@@ -1342,7 +1392,7 @@ messageInput.addEventListener(
           if(
             ws &&
             ws.readyState ===
-              WebSocket.OPEN
+            WebSocket.OPEN
           ){
 
             ws.send(
@@ -1369,14 +1419,13 @@ function sendText(){
     !text ||
     !selectedUser
   ){
-
     return;
   }
 
   if(
     !ws ||
     ws.readyState !==
-      WebSocket.OPEN
+    WebSocket.OPEN
   ){
 
     alert(
@@ -1423,8 +1472,7 @@ async function startRecording(){
 
   if(
     !navigator.mediaDevices ||
-    !navigator.mediaDevices
-      .getUserMedia
+    !navigator.mediaDevices.getUserMedia
   ){
 
     alert(
@@ -1437,11 +1485,9 @@ async function startRecording(){
   try{
 
     const stream =
-      await navigator
-        .mediaDevices
-        .getUserMedia({
-          audio:true
-        });
+      await navigator.mediaDevices.getUserMedia({
+        audio:true
+      });
 
     audioChunks = [];
 
@@ -1527,7 +1573,7 @@ function stopRecording(){
   if(
     mediaRecorder &&
     mediaRecorder.state !==
-      "inactive"
+    "inactive"
   ){
 
     mediaRecorder.stop();
@@ -1543,9 +1589,7 @@ function stopRecording(){
     "🎙️";
 }
 
-async function sendVoiceMessage(
-  blob
-){
+async function sendVoiceMessage(blob){
 
   if(!selectedUser){
     return;
@@ -1554,7 +1598,7 @@ async function sendVoiceMessage(
   if(
     !ws ||
     ws.readyState !==
-      WebSocket.OPEN
+    WebSocket.OPEN
   ){
 
     alert(
@@ -1592,13 +1636,10 @@ async function sendVoiceMessage(
       );
     };
 
-  reader.readAsDataURL(
-    blob
-  );
+  reader.readAsDataURL(blob);
 }
 
 if(token){
-
   showApp();
 }
 
@@ -1609,7 +1650,7 @@ if(token){
 
 export default {
 
-  async fetch(request, env){
+  async fetch(request,env){
 
     const url =
       new URL(request.url);
@@ -1626,19 +1667,15 @@ export default {
 
     if(
       url.pathname === "/ws" &&
-      request.headers.get(
-        "Upgrade"
-      ) === "websocket"
+      request.headers.get("Upgrade") ===
+      "websocket"
     ){
 
-      return room.fetch(
-        request
-      );
+      return room.fetch(request);
     }
 
     if(
-      url.pathname ===
-      "/api/register"
+      url.pathname === "/api/register"
     ){
 
       return room.fetch(
@@ -1653,8 +1690,7 @@ export default {
     }
 
     if(
-      url.pathname ===
-      "/api/login"
+      url.pathname === "/api/login"
     ){
 
       return room.fetch(
@@ -1669,8 +1705,7 @@ export default {
     }
 
     if(
-      url.pathname ===
-      "/api/logout"
+      url.pathname === "/api/logout"
     ){
 
       return room.fetch(
@@ -1685,8 +1720,7 @@ export default {
     }
 
     if(
-      url.pathname ===
-      "/api/me"
+      url.pathname === "/api/me"
     ){
 
       return room.fetch(
@@ -1701,8 +1735,7 @@ export default {
     }
 
     if(
-      url.pathname ===
-      "/api/users"
+      url.pathname === "/api/users"
     ){
 
       return room.fetch(
@@ -1729,7 +1762,7 @@ export default {
 };
 
 export class ChatRoom
-  extends DurableObject{
+extends DurableObject{
 
   constructor(ctx,env){
 
@@ -1749,10 +1782,6 @@ export class ChatRoom
 
   initDB(){
 
-    /*
-      ACCOUNTS
-    */
-
     this.sql.exec(`
       CREATE TABLE IF NOT EXISTS accounts (
         username TEXT UNIQUE NOT NULL,
@@ -1771,15 +1800,13 @@ export class ChatRoom
 
     const accountNames =
       accountColumns.map(
-        function(column){
-          return column.name;
+        function(c){
+          return c.name;
         }
       );
 
     if(
-      !accountNames.includes(
-        "salt"
-      )
+      !accountNames.includes("salt")
     ){
 
       this.sql.exec(`
@@ -1790,9 +1817,7 @@ export class ChatRoom
     }
 
     if(
-      !accountNames.includes(
-        "created_at"
-      )
+      !accountNames.includes("created_at")
     ){
 
       this.sql.exec(`
@@ -1801,10 +1826,6 @@ export class ChatRoom
         NOT NULL DEFAULT 0
       `);
     }
-
-    /*
-      SESSIONS
-    */
 
     this.sql.exec(`
       CREATE TABLE IF NOT EXISTS sessions (
@@ -1824,15 +1845,13 @@ export class ChatRoom
 
     const sessionNames =
       sessionColumns.map(
-        function(column){
-          return column.name;
+        function(c){
+          return c.name;
         }
       );
 
     if(
-      !sessionNames.includes(
-        "token"
-      )
+      !sessionNames.includes("token")
     ){
 
       try{
@@ -1846,9 +1865,7 @@ export class ChatRoom
     }
 
     if(
-      !sessionNames.includes(
-        "username"
-      )
+      !sessionNames.includes("username")
     ){
 
       try{
@@ -1862,9 +1879,7 @@ export class ChatRoom
     }
 
     if(
-      !sessionNames.includes(
-        "created_at"
-      )
+      !sessionNames.includes("created_at")
     ){
 
       this.sql.exec(`
@@ -1875,9 +1890,7 @@ export class ChatRoom
     }
 
     if(
-      !sessionNames.includes(
-        "expires_at"
-      )
+      !sessionNames.includes("expires_at")
     ){
 
       this.sql.exec(`
@@ -1886,10 +1899,6 @@ export class ChatRoom
         NOT NULL DEFAULT 0
       `);
     }
-
-    /*
-      MESSAGES
-    */
 
     this.sql.exec(`
       CREATE TABLE IF NOT EXISTS messages (
@@ -1909,15 +1918,34 @@ export class ChatRoom
 
     const messageNames =
       messageColumns.map(
-        function(column){
-          return column.name;
+        function(c){
+          return c.name;
         }
       );
 
     if(
-      !messageNames.includes(
-        "created_at"
-      )
+      !messageNames.includes("message_type")
+    ){
+
+      this.sql.exec(`
+        ALTER TABLE messages
+        ADD COLUMN message_type TEXT
+        NOT NULL DEFAULT 'text'
+      `);
+    }
+
+    if(
+      !messageNames.includes("audio_data")
+    ){
+
+      this.sql.exec(`
+        ALTER TABLE messages
+        ADD COLUMN audio_data TEXT
+      `);
+    }
+
+    if(
+      !messageNames.includes("created_at")
     ){
 
       try{
@@ -1930,31 +1958,6 @@ export class ChatRoom
 
       }catch(e){}
     }
-
-    if(
-      !messageNames.includes(
-        "message_type"
-      )
-    ){
-
-      this.sql.exec(`
-        ALTER TABLE messages
-        ADD COLUMN message_type TEXT
-        NOT NULL DEFAULT 'text'
-      `);
-    }
-
-    if(
-      !messageNames.includes(
-        "audio_data"
-      )
-    ){
-
-      this.sql.exec(`
-        ALTER TABLE messages
-        ADD COLUMN audio_data TEXT
-      `);
-    }
   }
 
   async fetch(request){
@@ -1963,72 +1966,46 @@ export class ChatRoom
       new URL(request.url);
 
     if(
-      url.pathname ===
-        "/register" &&
-      request.method ===
-        "POST"
+      url.pathname === "/register" &&
+      request.method === "POST"
     ){
 
-      return this.register(
-        request
-      );
+      return this.register(request);
     }
 
     if(
-      url.pathname ===
-        "/login" &&
-      request.method ===
-        "POST"
+      url.pathname === "/login" &&
+      request.method === "POST"
     ){
 
-      return this.login(
-        request
-      );
+      return this.login(request);
     }
 
     if(
-      url.pathname ===
-        "/logout" &&
-      request.method ===
-        "POST"
+      url.pathname === "/logout" &&
+      request.method === "POST"
     ){
 
-      return this.logout(
-        request
-      );
+      return this.logout(request);
+    }
+
+    if(url.pathname === "/me"){
+
+      return this.me(request);
+    }
+
+    if(url.pathname === "/users"){
+
+      return this.users(request);
     }
 
     if(
-      url.pathname ===
-      "/me"
+      url.pathname === "/ws" &&
+      request.headers.get("Upgrade") ===
+      "websocket"
     ){
 
-      return this.me(
-        request
-      );
-    }
-
-    if(
-      url.pathname ===
-      "/users"
-    ){
-
-      return this.users(
-        request
-      );
-    }
-
-    if(
-      url.pathname ===
-        "/ws" &&
-      request.headers.get(
-        "Upgrade"
-      ) === "websocket"
-    ){
-
-      return this.websocket(
-        request
-      );
+      return this.websocket(request);
     }
 
     return new Response(
@@ -2068,10 +2045,7 @@ export class ChatRoom
           body.password || ""
         );
 
-      if(
-        !username ||
-        !password
-      ){
+      if(!username || !password){
 
         return this.json(
           {
@@ -2179,11 +2153,6 @@ export class ChatRoom
         expiresAt
       );
 
-      /*
-        الحساب اتعمل بنجاح
-        والتوكن جاهز للدخول التلقائي
-      */
-
       return this.json({
         token,
         username
@@ -2252,7 +2221,7 @@ export class ChatRoom
         return this.json(
           {
             error:
-              "الحساب القديم لا يحتوي على بيانات تشفير صالحة"
+              "بيانات تشفير الحساب غير صالحة"
           },
           401
         );
@@ -2380,8 +2349,7 @@ export class ChatRoom
 
       return this.json(
         {
-          error:
-            "جلسة غير صالحة"
+          error:"جلسة غير صالحة"
         },
         401
       );
@@ -2411,8 +2379,7 @@ export class ChatRoom
 
       return this.json(
         {
-          error:
-            "جلسة غير صالحة"
+          error:"جلسة غير صالحة"
         },
         401
       );
@@ -2565,10 +2532,13 @@ export class ChatRoom
         return;
       }
 
+      const data =
+        JSON.parse(message);
+
       await this.handleMessage(
         ws,
         attachment.username,
-        JSON.parse(message)
+        data
       );
 
     }catch(error){
@@ -2945,9 +2915,7 @@ export class ChatRoom
 
     try{
 
-      socket.send(
-        payload
-      );
+      socket.send(payload);
 
     }catch(error){
 
@@ -2968,13 +2936,9 @@ export class ChatRoom
 function randomBytes(length){
 
   const bytes =
-    new Uint8Array(
-      length
-    );
+    new Uint8Array(length);
 
-  crypto.getRandomValues(
-    bytes
-  );
+  crypto.getRandomValues(bytes);
 
   let result = "";
 
@@ -3029,7 +2993,7 @@ async function hashPassword(
     await crypto.subtle.deriveBits(
       {
         name:"PBKDF2",
-        salt:salt,
+        salt,
         iterations:100000,
         hash:"SHA-256"
       },
@@ -3082,4 +3046,4 @@ function bytesToHex(bytes){
   }
 
   return result;
-  }
+}
