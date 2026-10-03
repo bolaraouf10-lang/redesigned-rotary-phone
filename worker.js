@@ -173,6 +173,15 @@ input{
   background:#e5f5f2;
 }
 
+.user.self{
+  background:#fafafa;
+  cursor:default;
+}
+
+.user.self:hover{
+  background:#fafafa;
+}
+
 .avatar{
   width:44px;
   height:44px;
@@ -185,6 +194,10 @@ input{
   justify-content:center;
   font-size:18px;
   font-weight:bold;
+}
+
+.user.self .avatar{
+  background:#075e54;
 }
 
 .user-info{
@@ -211,6 +224,10 @@ input{
 
 .status.offline{
   color:#888;
+}
+
+.status.self-status{
+  color:#128c7e;
 }
 
 .online-dot,
@@ -798,7 +815,10 @@ async function showApp(){
     const response =
       await fetch(
         "/api/me?token=" +
-        encodeURIComponent(token)
+        encodeURIComponent(token),
+        {
+          cache:"no-store"
+        }
       );
 
     const data =
@@ -869,6 +889,8 @@ async function(){
     }catch(e){}
   }
 
+  clearTimeout(reconnectTimer);
+
   localStorage.removeItem(
     "chat_token"
   );
@@ -881,7 +903,8 @@ async function(){
   app.style.display = "none";
 
   usersBox.innerHTML = "";
-  messagesBox.innerHTML = "";
+  messagesBox.innerHTML =
+    '<div class="empty">اختر مستخدمًا لبدء المحادثة</div>';
 
   setError("");
 };
@@ -903,6 +926,9 @@ async function loadUsers(){
         }
       );
 
+    const data =
+      await response.json();
+
     if(!response.ok){
 
       if(response.status === 401){
@@ -912,17 +938,19 @@ async function loadUsers(){
         );
 
         token = "";
+        currentUser = "";
+
+        auth.style.display = "flex";
+        app.style.display = "none";
 
         return;
       }
 
       throw new Error(
+        data.error ||
         "فشل تحميل المستخدمين"
       );
     }
-
-    const data =
-      await response.json();
 
     const list =
       Array.isArray(data.users)
@@ -937,6 +965,21 @@ async function loadUsers(){
       "users:",
       error
     );
+
+    usersBox.innerHTML = "";
+
+    const errorElement =
+      document.createElement("div");
+
+    errorElement.className =
+      "no-users";
+
+    errorElement.textContent =
+      "تعذر تحميل المستخدمين";
+
+    usersBox.appendChild(
+      errorElement
+    );
   }
 }
 
@@ -944,14 +987,64 @@ function renderUsers(list){
 
   usersBox.innerHTML = "";
 
-  const others =
-    list.filter(
-      function(user){
-        return user.username !== currentUser;
+  if(!Array.isArray(list)){
+    list = [];
+  }
+
+  /*
+   * نرتب المستخدم الحالي أولًا،
+   * ثم باقي المستخدمين.
+   */
+  const sorted =
+    list.slice().sort(
+      function(a,b){
+
+        if(
+          a.username === currentUser &&
+          b.username !== currentUser
+        ){
+          return -1;
+        }
+
+        if(
+          a.username !== currentUser &&
+          b.username === currentUser
+        ){
+          return 1;
+        }
+
+        return String(a.username)
+          .localeCompare(
+            String(b.username),
+            "ar"
+          );
       }
     );
 
-  if(others.length === 0){
+  /*
+   * لو لم يصل الحساب الحالي من السيرفر،
+   * نظهره محليًا أيضًا حتى لا تختفي القائمة.
+   */
+  const hasCurrent =
+    sorted.some(
+      function(user){
+        return user.username === currentUser;
+      }
+    );
+
+  if(
+    currentUser &&
+    !hasCurrent
+  ){
+
+    sorted.unshift({
+      username:currentUser,
+      online:true,
+      self:true
+    });
+  }
+
+  if(sorted.length === 0){
 
     const empty =
       document.createElement("div");
@@ -960,22 +1053,27 @@ function renderUsers(list){
       "no-users";
 
     empty.textContent =
-      "لا يوجد مستخدمون آخرون";
+      "لا يوجد مستخدمون مسجلون";
 
-    usersBox.appendChild(
-      empty
-    );
+    usersBox.appendChild(empty);
 
     return;
   }
 
-  others.forEach(
+  sorted.forEach(
     function(user){
+
+      const isSelf =
+        user.username === currentUser;
 
       const row =
         document.createElement("div");
 
       row.className = "user";
+
+      if(isSelf){
+        row.classList.add("self");
+      }
 
       if(
         user.username === selectedUser
@@ -990,7 +1088,7 @@ function renderUsers(list){
       avatar.className = "avatar";
 
       avatar.textContent =
-        user.username
+        String(user.username)
           .charAt(0)
           .toUpperCase();
 
@@ -1005,20 +1103,33 @@ function renderUsers(list){
       name.className = "username";
 
       name.textContent =
-        user.username;
+        isSelf
+          ? String(user.username) + " (أنت)"
+          : String(user.username);
 
       const status =
         document.createElement("div");
 
-      status.className =
-        user.online
-          ? "status online"
-          : "status offline";
+      if(isSelf){
 
-      status.textContent =
-        user.online
-          ? "🟢 متصل الآن"
-          : "⚪ غير متصل";
+        status.className =
+          "status self-status";
+
+        status.textContent =
+          "🟢 أنت متصل الآن";
+
+      }else{
+
+        status.className =
+          user.online
+            ? "status online"
+            : "status offline";
+
+        status.textContent =
+          user.online
+            ? "🟢 متصل الآن"
+            : "⚪ غير متصل";
+      }
 
       info.appendChild(name);
       info.appendChild(status);
@@ -1035,14 +1146,17 @@ function renderUsers(list){
       row.appendChild(info);
       row.appendChild(dot);
 
-      row.onclick =
-        function(){
+      if(!isSelf){
 
-          selectUser(
-            user.username,
-            user.online
-          );
-        };
+        row.onclick =
+          function(){
+
+            selectUser(
+              user.username,
+              Boolean(user.online)
+            );
+          };
+      }
 
       usersBox.appendChild(row);
     }
@@ -2165,11 +2279,6 @@ extends DurableObject{
         now
       );
 
-      /*
-       * الجلسة لا تنتهي تلقائيًا.
-       * القيمة الكبيرة فقط موجودة لأن العمود
-       * القديم في قاعدة البيانات قد يكون NOT NULL.
-       */
       const expiresAt =
         9999999999999;
 
@@ -2395,6 +2504,63 @@ extends DurableObject{
     });
   }
 
+  getOnlineUsernames(){
+
+    /*
+     * نستخرج الاتصالات الفعلية من Durable Object
+     * بدل الاعتماد على Map فقط، لأن Durable Object
+     * قد يدخل وضع Hibernation.
+     */
+
+    const online =
+      new Set();
+
+    try{
+
+      const sockets =
+        this.ctx.getWebSockets();
+
+      for(
+        const socket of sockets
+      ){
+
+        try{
+
+          const attachment =
+            socket.deserializeAttachment();
+
+          if(
+            attachment &&
+            attachment.username
+          ){
+
+            online.add(
+              attachment.username
+            );
+          }
+
+        }catch(e){}
+      }
+
+    }catch(e){
+
+      /*
+       * في حالة عدم توفر getWebSockets لأي سبب،
+       * نستخدم Map كحل احتياطي.
+       */
+
+      for(
+        const username of
+        this.connections.keys()
+      ){
+
+        online.add(username);
+      }
+    }
+
+    return online;
+  }
+
   async users(request){
 
     const url =
@@ -2425,13 +2591,16 @@ extends DurableObject{
         `
       ).toArray();
 
+    const onlineUsers =
+      this.getOnlineUsernames();
+
     const users =
       rows.map(
         row => ({
           username:row.username,
-          online:this.connections.has(
-            row.username
-          )
+          online:
+            row.username === username ||
+            onlineUsers.has(row.username)
         })
       );
 
@@ -2461,12 +2630,6 @@ extends DurableObject{
 
       return null;
     }
-
-    /*
-     * لا يوجد فحص لانتهاء الجلسة.
-     * الجلسة تظل صالحة حتى يعمل المستخدم
-     * تسجيل خروج بنفسه.
-     */
 
     return rows[0].username;
   }
@@ -2501,10 +2664,6 @@ extends DurableObject{
 
     this.ctx.acceptWebSocket(server);
 
-    /*
-     * لو فتح المستخدم اتصالًا جديدًا،
-     * نغلق الاتصال القديم لنفس الحساب.
-     */
     const old =
       this.connections.get(username);
 
@@ -2524,9 +2683,6 @@ extends DurableObject{
       username:username
     });
 
-    /*
-     * تحديث قائمة المستخدمين لكل المتصلين.
-     */
     this.broadcastUsersChanged();
 
     return new Response(
@@ -2596,6 +2752,7 @@ extends DurableObject{
         ws.deserializeAttachment();
 
       if(attachment){
+
         username =
           attachment.username || "";
       }
@@ -2622,9 +2779,27 @@ extends DurableObject{
         type:"users_changed"
       });
 
+    /*
+     * استخدم الاتصالات الفعلية من Durable Object.
+     */
+
+    let sockets = [];
+
+    try{
+
+      sockets =
+        this.ctx.getWebSockets();
+
+    }catch(e){
+
+      sockets =
+        Array.from(
+          this.connections.values()
+        );
+    }
+
     for(
-      const socket of
-      this.connections.values()
+      const socket of sockets
     ){
 
       try{
@@ -2640,8 +2815,44 @@ extends DurableObject{
     payload
   ){
 
-    const socket =
+    let socket =
       this.connections.get(username);
+
+    /*
+     * لو Map لا يحتوي الاتصال، نحاول إيجاده
+     * من WebSockets الخاصة بالـ Durable Object.
+     */
+
+    if(!socket){
+
+      try{
+
+        const sockets =
+          this.ctx.getWebSockets();
+
+        for(
+          const item of sockets
+        ){
+
+          try{
+
+            const attachment =
+              item.deserializeAttachment();
+
+            if(
+              attachment &&
+              attachment.username === username
+            ){
+
+              socket = item;
+              break;
+            }
+
+          }catch(e){}
+        }
+
+      }catch(e){}
+    }
 
     if(!socket){
       return;
