@@ -26,7 +26,7 @@ button,input{
   display:none!important;
 }
 
-/* AUTH */
+/* تسجيل الدخول */
 
 #auth{
   min-height:100vh;
@@ -87,7 +87,7 @@ button,input{
   text-align:center;
 }
 
-/* APP */
+/* التطبيق */
 
 #app{
   height:100vh;
@@ -154,7 +154,7 @@ button,input{
   font-weight:bold;
 }
 
-/* CHAT */
+/* المحادثة */
 
 #chat{
   flex:1;
@@ -248,9 +248,10 @@ button,input{
   color:#777;
 }
 
-/* MOBILE */
+/* الموبايل */
 
 @media(max-width:700px){
+
   #sidebar{
     width:100%;
   }
@@ -266,18 +267,20 @@ button,input{
   #app.chat-open #chat{
     display:flex;
   }
+
 }
 </style>
 </head>
 
 <body>
 
-<!-- تسجيل الدخول -->
+<!-- شاشة الدخول -->
+
 <div id="auth">
 
   <div class="auth-box">
 
-    <h1>Bola11</h1>
+    <h1>دردشة</h1>
 
     <h2 id="authTitle">تسجيل الدخول</h2>
 
@@ -295,7 +298,9 @@ button,input{
       autocomplete="current-password"
     >
 
-    <button id="authBtn">دخول</button>
+    <button id="authBtn">
+      دخول
+    </button>
 
     <button
       id="switchBtn"
@@ -312,6 +317,7 @@ button,input{
 
 
 <!-- التطبيق -->
+
 <div id="app" class="hidden">
 
   <aside id="sidebar">
@@ -342,6 +348,7 @@ button,input{
       <span id="typing"></span>
 
     </div>
+
 
     <div id="messages">
 
@@ -377,7 +384,9 @@ button,input{
 
 <script>
 
-let token = localStorage.getItem("token") || "";
+let token =
+  localStorage.getItem("token") || "";
+
 let currentUser = "";
 let selectedUser = "";
 let socket = null;
@@ -386,65 +395,96 @@ let typingTimer = null;
 let registerMode = false;
 
 
-/* عناصر الصفحة */
+/* العناصر */
 
-const auth = document.getElementById("auth");
-const app = document.getElementById("app");
+const auth =
+  document.getElementById("auth");
 
-const usernameInput = document.getElementById("username");
-const passwordInput = document.getElementById("password");
+const app =
+  document.getElementById("app");
 
-const authTitle = document.getElementById("authTitle");
-const authBtn = document.getElementById("authBtn");
-const switchBtn = document.getElementById("switchBtn");
-const errorBox = document.getElementById("error");
+const usernameInput =
+  document.getElementById("username");
 
-const usersBox = document.getElementById("users");
+const passwordInput =
+  document.getElementById("password");
 
-const chatUser = document.getElementById("chat-user");
-const messagesBox = document.getElementById("messages");
+const authTitle =
+  document.getElementById("authTitle");
 
-const messageInput = document.getElementById("messageInput");
-const sendBtn = document.getElementById("sendBtn");
+const authBtn =
+  document.getElementById("authBtn");
 
-const typingBox = document.getElementById("typing");
+const switchBtn =
+  document.getElementById("switchBtn");
+
+const errorBox =
+  document.getElementById("error");
+
+const usersBox =
+  document.getElementById("users");
+
+const chatUser =
+  document.getElementById("chat-user");
+
+const messagesBox =
+  document.getElementById("messages");
+
+const messageInput =
+  document.getElementById("messageInput");
+
+const sendBtn =
+  document.getElementById("sendBtn");
+
+const typingBox =
+  document.getElementById("typing");
 
 
-/* تبديل تسجيل / إنشاء حساب */
+/* تبديل الدخول والتسجيل */
 
-switchBtn.onclick = () => {
+switchBtn.onclick = function(){
 
-  registerMode = !registerMode;
+  registerMode =
+    !registerMode;
 
   errorBox.textContent = "";
 
   if(registerMode){
 
-    authTitle.textContent = "إنشاء حساب";
+    authTitle.textContent =
+      "إنشاء حساب";
 
-    authBtn.textContent = "إنشاء الحساب";
+    authBtn.textContent =
+      "إنشاء الحساب";
 
-    switchBtn.textContent = "لدي حساب بالفعل";
+    switchBtn.textContent =
+      "لدي حساب بالفعل";
 
   }else{
 
-    authTitle.textContent = "تسجيل الدخول";
+    authTitle.textContent =
+      "تسجيل الدخول";
 
-    authBtn.textContent = "دخول";
+    authBtn.textContent =
+      "دخول";
 
-    switchBtn.textContent = "إنشاء حساب جديد";
+    switchBtn.textContent =
+      "إنشاء حساب جديد";
 
   }
 
 };
 
 
-/* تسجيل الدخول / إنشاء الحساب */
+/* الدخول أو التسجيل */
 
-authBtn.onclick = async () => {
+authBtn.onclick = async function(){
 
-  const username = usernameInput.value.trim();
-  const password = passwordInput.value;
+  const username =
+    usernameInput.value.trim();
+
+  const password =
+    passwordInput.value;
 
   errorBox.textContent = "";
 
@@ -454,6 +494,7 @@ authBtn.onclick = async () => {
       "اكتب اسم المستخدم وكلمة السر";
 
     return;
+
   }
 
   authBtn.disabled = true;
@@ -465,46 +506,51 @@ authBtn.onclick = async () => {
       ? "/api/register"
       : "/api/login";
 
-    const response = await fetch(endpoint,{
+    const response =
+      await fetch(
+        endpoint,
+        {
+          method:"POST",
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+          body:JSON.stringify({
+            username:username,
+            password:password
+          })
+        }
+      );
 
-      method:"POST",
-
-      headers:{
-        "Content-Type":"application/json"
-      },
-
-      body:JSON.stringify({
-        username,
-        password
-      })
-
-    });
-
-    const data = await response.json();
+    const data =
+      await response.json();
 
     if(!response.ok){
 
       throw new Error(
-        data.error || "حدث خطأ"
+        data.error ||
+        "حدث خطأ"
       );
 
     }
 
-    token = data.token;
+    token =
+      data.token;
+
+    currentUser =
+      data.username || username;
 
     localStorage.setItem(
       "token",
       token
     );
 
-    currentUser = data.username || username;
-
     showApp();
 
-  }catch(err){
+  }catch(error){
 
     errorBox.textContent =
-      err.message ||
+      error.message ||
       "حدث خطأ أثناء العملية";
 
   }finally{
@@ -516,24 +562,28 @@ authBtn.onclick = async () => {
 };
 
 
-/* عرض التطبيق */
+/* إظهار التطبيق */
 
 function showApp(){
 
   auth.classList.add("hidden");
+
   app.classList.remove("hidden");
 
   connectSocket();
+
   loadUsers();
 
 }
 
 
-/* الاتصال بالـ WebSocket */
+/* WebSocket */
 
 function connectSocket(){
 
-  if(!token) return;
+  if(!token){
+    return;
+  }
 
   if(socket){
 
@@ -548,25 +598,28 @@ function connectSocket(){
     ? "wss:"
     : "ws:";
 
-  socket = new WebSocket(
-    protocol +
-    "//" +
-    location.host +
-    "/ws?token=" +
-    encodeURIComponent(token)
-  );
+  socket =
+    new WebSocket(
+      protocol +
+      "//" +
+      location.host +
+      "/ws?token=" +
+      encodeURIComponent(token)
+    );
 
 
-  socket.onopen = () => {
+  socket.onopen = function(){
 
-    console.log("WebSocket connected");
+    console.log(
+      "WebSocket connected"
+    );
 
     loadUsers();
 
   };
 
 
-  socket.onmessage = event => {
+  socket.onmessage = function(event){
 
     try{
 
@@ -574,13 +627,12 @@ function connectSocket(){
         JSON.parse(event.data);
 
 
-      /* رسالة جديدة */
+      /* رسالة */
 
       if(data.type === "message"){
 
         if(
-          data.from === selectedUser ||
-          data.to === selectedUser
+          data.from === selectedUser
         ){
 
           addMessage(
@@ -592,17 +644,20 @@ function connectSocket(){
         }
 
         return;
+
       }
 
 
-      /* تاريخ المحادثة */
+      /* سجل المحادثة */
 
       if(data.type === "history"){
 
         messagesBox.innerHTML = "";
 
-        if(!data.messages ||
-           data.messages.length === 0){
+        if(
+          !data.messages ||
+          data.messages.length === 0
+        ){
 
           showEmptyMessages();
 
@@ -610,7 +665,9 @@ function connectSocket(){
 
         }
 
-        for(const msg of data.messages){
+        for(
+          const msg of data.messages
+        ){
 
           addMessage(
             msg.sender,
@@ -623,14 +680,17 @@ function connectSocket(){
         scrollMessages();
 
         return;
+
       }
 
 
-      /* الكتابة */
+      /* يكتب */
 
       if(data.type === "typing"){
 
-        if(data.from === selectedUser){
+        if(
+          data.from === selectedUser
+        ){
 
           typingBox.textContent =
             data.typing
@@ -640,42 +700,38 @@ function connectSocket(){
         }
 
         return;
+
       }
 
+    }catch(error){
 
-      /* تحديث المستخدمين */
-
-      if(data.type === "users"){
-
-        loadUsers();
-
-        return;
-      }
-
-    }catch(e){
-
-      console.error(e);
+      console.error(error);
 
     }
 
   };
 
 
-  socket.onclose = () => {
+  socket.onclose = function(){
 
-    console.log("WebSocket disconnected");
-
-    clearTimeout(reconnectTimer);
-
-    reconnectTimer = setTimeout(
-      connectSocket,
-      2000
+    console.log(
+      "WebSocket disconnected"
     );
+
+    clearTimeout(
+      reconnectTimer
+    );
+
+    reconnectTimer =
+      setTimeout(
+        connectSocket,
+        2000
+      );
 
   };
 
 
-  socket.onerror = () => {
+  socket.onerror = function(){
 
     try{
       socket.close();
@@ -690,7 +746,9 @@ function connectSocket(){
 
 async function loadUsers(){
 
-  if(!token) return;
+  if(!token){
+    return;
+  }
 
   try{
 
@@ -700,51 +758,80 @@ async function loadUsers(){
         encodeURIComponent(token)
       );
 
-    if(!response.ok) return;
+    if(!response.ok){
+      return;
+    }
 
     const data =
       await response.json();
 
     usersBox.innerHTML = "";
 
-    for(const user of data.users){
+    for(
+      const user of data.users
+    ){
 
-      if(user.username === currentUser){
+      if(
+        user.username === currentUser
+      ){
         continue;
       }
 
       const div =
         document.createElement("div");
 
-      div.className = "user";
+      div.className =
+        "user";
 
-      div.innerHTML = `
 
-        <span class="dot ${
+      /*
+        لا نستخدم backtick هنا
+        حتى لا نكسر HTML الكبير
+      */
+
+      const dot =
+        document.createElement("span");
+
+      dot.className =
+        "dot" +
+        (
           user.online
-          ? "online"
+          ? " online"
           : ""
-        }"></span>
+        );
 
-        <span class="user-name">
-          ${escapeHtml(user.username)}
-        </span>
 
-      `;
+      const name =
+        document.createElement("span");
 
-      div.onclick = () => {
+      name.className =
+        "user-name";
 
-        openChat(user.username);
+      name.textContent =
+        user.username;
 
-      };
+
+      div.appendChild(dot);
+      div.appendChild(name);
+
+
+      div.onclick =
+        function(){
+
+          openChat(
+            user.username
+          );
+
+        };
+
 
       usersBox.appendChild(div);
 
     }
 
-  }catch(e){
+  }catch(error){
 
-    console.error(e);
+    console.error(error);
 
   }
 
@@ -755,22 +842,33 @@ async function loadUsers(){
 
 function openChat(username){
 
-  selectedUser = username;
+  selectedUser =
+    username;
 
   chatUser.textContent =
     username;
 
-  typingBox.textContent = "";
+  typingBox.textContent =
+    "";
 
-  messageInput.disabled = false;
-  sendBtn.disabled = false;
+  messageInput.disabled =
+    false;
 
-  app.classList.add("chat-open");
+  sendBtn.disabled =
+    false;
+
+  app.classList.add(
+    "chat-open"
+  );
 
   messagesBox.innerHTML = "";
 
-  if(socket &&
-     socket.readyState === WebSocket.OPEN){
+
+  if(
+    socket &&
+    socket.readyState ===
+    WebSocket.OPEN
+  ){
 
     socket.send(
       JSON.stringify({
@@ -791,32 +889,36 @@ function sendMessage(){
   const text =
     messageInput.value.trim();
 
-  if(!text) return;
+  if(!text){
+    return;
+  }
 
-  if(!selectedUser) return;
+  if(!selectedUser){
+    return;
+  }
 
   if(
     !socket ||
-    socket.readyState !== WebSocket.OPEN
+    socket.readyState !==
+    WebSocket.OPEN
   ){
 
     return;
 
   }
 
+
   socket.send(
     JSON.stringify({
-
       type:"message",
-
       to:selectedUser,
-
       text:text
-
     })
   );
 
-  messageInput.value = "";
+
+  messageInput.value =
+    "";
 
   sendTyping(false);
 
@@ -833,7 +935,7 @@ sendBtn.onclick =
 
 messageInput.addEventListener(
   "keydown",
-  event => {
+  function(event){
 
     if(event.key === "Enter"){
 
@@ -847,19 +949,25 @@ messageInput.addEventListener(
 );
 
 
-/* مؤشر الكتابة */
+/* الكتابة */
 
 messageInput.addEventListener(
   "input",
-  () => {
+  function(){
 
     sendTyping(true);
 
-    clearTimeout(typingTimer);
+    clearTimeout(
+      typingTimer
+    );
 
     typingTimer =
       setTimeout(
-        () => sendTyping(false),
+        function(){
+
+          sendTyping(false);
+
+        },
         1200
       );
 
@@ -867,28 +975,30 @@ messageInput.addEventListener(
 );
 
 
+/* إرسال حالة الكتابة */
+
 function sendTyping(value){
 
-  if(!selectedUser) return;
+  if(!selectedUser){
+    return;
+  }
 
   if(
     !socket ||
-    socket.readyState !== WebSocket.OPEN
+    socket.readyState !==
+    WebSocket.OPEN
   ){
 
     return;
 
   }
 
+
   socket.send(
     JSON.stringify({
-
       type:"typing",
-
       to:selectedUser,
-
       typing:value
-
     })
   );
 
@@ -904,13 +1014,14 @@ function addMessage(
 ){
 
   const empty =
-    document.getElementById("empty");
+    document.getElementById(
+      "empty"
+    );
 
   if(empty){
-
     empty.remove();
-
   }
+
 
   const div =
     document.createElement("div");
@@ -927,13 +1038,16 @@ function addMessage(
   const textDiv =
     document.createElement("div");
 
-  textDiv.textContent = text;
+  textDiv.textContent =
+    text;
 
 
   const timeDiv =
     document.createElement("div");
 
-  timeDiv.className = "time";
+  timeDiv.className =
+    "time";
+
 
   if(createdAt){
 
@@ -956,28 +1070,36 @@ function addMessage(
   }
 
 
-  div.appendChild(textDiv);
-  div.appendChild(timeDiv);
+  div.appendChild(
+    textDiv
+  );
 
-  messagesBox.appendChild(div);
+  div.appendChild(
+    timeDiv
+  );
+
+  messagesBox.appendChild(
+    div
+  );
 
   scrollMessages();
 
 }
 
 
+/* لا توجد رسائل */
+
 function showEmptyMessages(){
 
-  messagesBox.innerHTML = `
-
-    <div id="empty">
-      لا توجد رسائل بعد
-    </div>
-
-  `;
+  messagesBox.innerHTML =
+    '<div id="empty">' +
+    'لا توجد رسائل بعد' +
+    '</div>';
 
 }
 
+
+/* النزول لآخر رسالة */
 
 function scrollMessages(){
 
@@ -991,33 +1113,35 @@ function scrollMessages(){
 
 document.getElementById(
   "logoutBtn"
-).onclick = async () => {
+).onclick = async function(){
 
   try{
 
-    await fetch("/api/logout",{
+    await fetch(
+      "/api/logout",
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":
+            "application/json"
+        },
+        body:JSON.stringify({
+          token:token
+        })
+      }
+    );
 
-      method:"POST",
-
-      headers:{
-        "Content-Type":"application/json"
-      },
-
-      body:JSON.stringify({
-        token
-      })
-
-    });
-
-  }catch(e){}
+  }catch(error){}
 
 
   token = "";
-
   currentUser = "";
   selectedUser = "";
 
-  localStorage.removeItem("token");
+  localStorage.removeItem(
+    "token"
+  );
+
 
   if(socket){
 
@@ -1027,34 +1151,32 @@ document.getElementById(
 
   }
 
-  app.classList.add("hidden");
-  auth.classList.remove("hidden");
 
-  usernameInput.value = "";
-  passwordInput.value = "";
+  app.classList.add(
+    "hidden"
+  );
+
+  auth.classList.remove(
+    "hidden"
+  );
+
+
+  usernameInput.value =
+    "";
+
+  passwordInput.value =
+    "";
 
 };
 
 
-/* حماية HTML */
-
-function escapeHtml(value){
-
-  return String(value)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-
-}
-
-
-/* محاولة الدخول تلقائياً */
+/* فحص الجلسة */
 
 async function checkSession(){
 
-  if(!token) return;
+  if(!token){
+    return;
+  }
 
   try{
 
@@ -1064,26 +1186,33 @@ async function checkSession(){
         encodeURIComponent(token)
       );
 
+
     if(!response.ok){
 
-      localStorage.removeItem("token");
+      localStorage.removeItem(
+        "token"
+      );
+
       token = "";
 
       return;
 
     }
 
+
     const data =
       await response.json();
+
 
     currentUser =
       data.username;
 
+
     showApp();
 
-  }catch(e){
+  }catch(error){
 
-    console.error(e);
+    console.error(error);
 
   }
 
@@ -1098,9 +1227,9 @@ checkSession();
 </html>`;
 
 
-/* =========================
+/* =====================================================
    WORKER
-========================= */
+===================================================== */
 
 export default {
 
@@ -1108,6 +1237,9 @@ export default {
 
     const url =
       new URL(request.url);
+
+
+    /* الصفحة */
 
     if(
       url.pathname === "/" &&
@@ -1127,7 +1259,7 @@ export default {
     }
 
 
-    /* تسجيل */
+    /* التسجيل */
 
     if(
       url.pathname === "/api/register" &&
@@ -1142,7 +1274,7 @@ export default {
     }
 
 
-    /* دخول */
+    /* الدخول */
 
     if(
       url.pathname === "/api/login" &&
@@ -1157,7 +1289,7 @@ export default {
     }
 
 
-    /* خروج */
+    /* الخروج */
 
     if(
       url.pathname === "/api/logout" &&
@@ -1205,21 +1337,16 @@ export default {
     /* WebSocket */
 
     if(
-      url.pathname === "/ws"
+      url.pathname === "/ws" &&
+      request.headers.get(
+        "Upgrade"
+      ) === "websocket"
     ){
 
-      if(
-        request.headers.get(
-          "Upgrade"
-        ) === "websocket"
-      ){
-
-        return websocket(
-          request,
-          env
-        );
-
-      }
+      return websocket(
+        request,
+        env
+      );
 
     }
 
@@ -1236,16 +1363,19 @@ export default {
 };
 
 
-/* =========================
-   HELPERS
-========================= */
+/* =====================================================
+   JSON
+===================================================== */
 
-function json(data,status=200){
+function json(
+  data,
+  status = 200
+){
 
   return new Response(
     JSON.stringify(data),
     {
-      status,
+      status:status,
       headers:{
         "Content-Type":
           "application/json"
@@ -1256,16 +1386,15 @@ function json(data,status=200){
 }
 
 
-/* =========================
+/* =====================================================
    DATABASE
-========================= */
+===================================================== */
 
 function initDB(sql){
 
   /*
-    مهم:
-    لا نغيّر جدول accounts القديم
-    ولا نفترض وجود id فيه.
+    الجداول القديمة يتم تركها كما هي.
+    IF NOT EXISTS لا يحذف بيانات الحسابات.
   */
 
   sql.exec(`
@@ -1276,6 +1405,7 @@ function initDB(sql){
     )
   `);
 
+
   sql.exec(`
     CREATE TABLE IF NOT EXISTS sessions (
       token TEXT PRIMARY KEY,
@@ -1283,6 +1413,7 @@ function initDB(sql){
       created_at INTEGER NOT NULL
     )
   `);
+
 
   sql.exec(`
     CREATE TABLE IF NOT EXISTS messages (
@@ -1296,19 +1427,23 @@ function initDB(sql){
 }
 
 
-/* =========================
-   PASSWORD HASH
-========================= */
+/* =====================================================
+   PASSWORD
+===================================================== */
 
-async function hashPassword(password){
+async function hashPassword(
+  password
+){
 
   const encoder =
     new TextEncoder();
+
 
   const salt =
     crypto.getRandomValues(
       new Uint8Array(16)
     );
+
 
   const key =
     await crypto.subtle.importKey(
@@ -1318,6 +1453,7 @@ async function hashPassword(password){
       false,
       ["deriveBits"]
     );
+
 
   const bits =
     await crypto.subtle.deriveBits(
@@ -1330,6 +1466,7 @@ async function hashPassword(password){
       key,
       256
     );
+
 
   return (
     arrayBufferToBase64(salt) +
@@ -1354,16 +1491,20 @@ async function verifyPassword(
       return false;
     }
 
+
     const salt =
       base64ToUint8Array(
         parts[0]
       );
 
+
     const expected =
       parts[1];
 
+
     const encoder =
       new TextEncoder();
+
 
     const key =
       await crypto.subtle.importKey(
@@ -1373,6 +1514,7 @@ async function verifyPassword(
         false,
         ["deriveBits"]
       );
+
 
     const bits =
       await crypto.subtle.deriveBits(
@@ -1386,12 +1528,14 @@ async function verifyPassword(
         256
       );
 
+
     const actual =
       arrayBufferToBase64(bits);
 
+
     return actual === expected;
 
-  }catch(e){
+  }catch(error){
 
     return false;
 
@@ -1400,16 +1544,23 @@ async function verifyPassword(
 }
 
 
-function arrayBufferToBase64(buffer){
+/* =====================================================
+   BASE64
+===================================================== */
+
+function arrayBufferToBase64(
+  buffer
+){
 
   const bytes =
     new Uint8Array(buffer);
 
   let binary = "";
 
+
   for(
-    let i=0;
-    i<bytes.length;
+    let i = 0;
+    i < bytes.length;
     i++
   ){
 
@@ -1420,24 +1571,29 @@ function arrayBufferToBase64(buffer){
 
   }
 
+
   return btoa(binary);
 
 }
 
 
-function base64ToUint8Array(value){
+function base64ToUint8Array(
+  value
+){
 
   const binary =
     atob(value);
+
 
   const bytes =
     new Uint8Array(
       binary.length
     );
 
+
   for(
-    let i=0;
-    i<binary.length;
+    let i = 0;
+    i < binary.length;
     i++
   ){
 
@@ -1446,14 +1602,15 @@ function base64ToUint8Array(value){
 
   }
 
+
   return bytes;
 
 }
 
 
-/* =========================
+/* =====================================================
    TOKEN
-========================= */
+===================================================== */
 
 function createToken(){
 
@@ -1462,7 +1619,9 @@ function createToken(){
       new Uint8Array(32)
     );
 
-  return arrayBufferToBase64(bytes);
+  return arrayBufferToBase64(
+    bytes
+  );
 
 }
 
@@ -1472,25 +1631,42 @@ function getToken(request){
   const url =
     new URL(request.url);
 
-  return (
+
+  const queryToken =
     url.searchParams.get(
       "token"
-    ) ||
+    );
+
+
+  if(queryToken){
+    return queryToken;
+  }
+
+
+  const authorization =
     request.headers.get(
       "Authorization"
-    )?.replace(
+    );
+
+
+  if(authorization){
+
+    return authorization.replace(
       /^Bearer\s+/i,
       ""
-    ) ||
-    null
-  );
+    );
+
+  }
+
+
+  return null;
 
 }
 
 
-/* =========================
-   GET USER
-========================= */
+/* =====================================================
+   USER FROM TOKEN
+===================================================== */
 
 function getUserFromToken(
   sql,
@@ -1500,6 +1676,7 @@ function getUserFromToken(
   if(!token){
     return null;
   }
+
 
   const rows =
     sql.exec(
@@ -1512,6 +1689,7 @@ function getUserFromToken(
       token
     ).toArray();
 
+
   if(
     !rows ||
     rows.length === 0
@@ -1521,14 +1699,15 @@ function getUserFromToken(
 
   }
 
+
   return rows[0].username;
 
 }
 
 
-/* =========================
+/* =====================================================
    REGISTER
-========================= */
+===================================================== */
 
 async function handleRegister(
   request,
@@ -1540,10 +1719,12 @@ async function handleRegister(
     const body =
       await request.json();
 
+
     const username =
       String(
         body.username || ""
       ).trim();
+
 
     const password =
       String(
@@ -1586,6 +1767,7 @@ async function handleRegister(
         "main"
       );
 
+
     const room =
       env.CHAT_ROOM.get(id);
 
@@ -1600,20 +1782,20 @@ async function handleRegister(
               "application/json"
           },
           body:JSON.stringify({
-            username,
-            password
+            username:username,
+            password:password
           })
         }
       )
     );
 
-  }catch(e){
+  }catch(error){
 
     return json(
       {
         error:
           "حدث خطأ أثناء إنشاء الحساب: " +
-          e.message
+          error.message
       },
       500
     );
@@ -1623,9 +1805,9 @@ async function handleRegister(
 }
 
 
-/* =========================
+/* =====================================================
    LOGIN
-========================= */
+===================================================== */
 
 async function handleLogin(
   request,
@@ -1637,10 +1819,12 @@ async function handleLogin(
     const body =
       await request.json();
 
+
     const username =
       String(
         body.username || ""
       ).trim();
+
 
     const password =
       String(
@@ -1652,6 +1836,7 @@ async function handleLogin(
       env.CHAT_ROOM.idFromName(
         "main"
       );
+
 
     const room =
       env.CHAT_ROOM.get(id);
@@ -1667,20 +1852,20 @@ async function handleLogin(
               "application/json"
           },
           body:JSON.stringify({
-            username,
-            password
+            username:username,
+            password:password
           })
         }
       )
     );
 
-  }catch(e){
+  }catch(error){
 
     return json(
       {
         error:
           "حدث خطأ أثناء تسجيل الدخول: " +
-          e.message
+          error.message
       },
       500
     );
@@ -1690,9 +1875,9 @@ async function handleLogin(
 }
 
 
-/* =========================
+/* =====================================================
    LOGOUT
-========================= */
+===================================================== */
 
 async function handleLogout(
   request,
@@ -1704,22 +1889,16 @@ async function handleLogout(
     const body =
       await request.json();
 
+
     const token =
       body.token;
-
-    if(!token){
-
-      return json({
-        ok:true
-      });
-
-    }
 
 
     const id =
       env.CHAT_ROOM.idFromName(
         "main"
       );
+
 
     const room =
       env.CHAT_ROOM.get(id);
@@ -1735,17 +1914,17 @@ async function handleLogout(
               "application/json"
           },
           body:JSON.stringify({
-            token
+            token:token
           })
         }
       )
     );
 
-  }catch(e){
+  }catch(error){
 
     return json(
       {
-        error:e.message
+        error:error.message
       },
       500
     );
@@ -1755,9 +1934,9 @@ async function handleLogout(
 }
 
 
-/* =========================
+/* =====================================================
    ME
-========================= */
+===================================================== */
 
 async function handleMe(
   request,
@@ -1767,13 +1946,16 @@ async function handleMe(
   const token =
     getToken(request);
 
+
   const id =
     env.CHAT_ROOM.idFromName(
       "main"
     );
 
+
   const room =
     env.CHAT_ROOM.get(id);
+
 
   return room.fetch(
     new Request(
@@ -1787,9 +1969,9 @@ async function handleMe(
 }
 
 
-/* =========================
+/* =====================================================
    USERS
-========================= */
+===================================================== */
 
 async function handleUsers(
   request,
@@ -1799,13 +1981,16 @@ async function handleUsers(
   const token =
     getToken(request);
 
+
   const id =
     env.CHAT_ROOM.idFromName(
       "main"
     );
 
+
   const room =
     env.CHAT_ROOM.get(id);
+
 
   return room.fetch(
     new Request(
@@ -1819,9 +2004,9 @@ async function handleUsers(
 }
 
 
-/* =========================
+/* =====================================================
    WEBSOCKET
-========================= */
+===================================================== */
 
 async function websocket(
   request,
@@ -1831,10 +2016,12 @@ async function websocket(
   const url =
     new URL(request.url);
 
+
   const token =
     url.searchParams.get(
       "token"
     );
+
 
   if(!token){
 
@@ -1852,6 +2039,7 @@ async function websocket(
     env.CHAT_ROOM.idFromName(
       "main"
     );
+
 
   const room =
     env.CHAT_ROOM.get(id);
@@ -1872,25 +2060,40 @@ async function websocket(
 }
 
 
-/* =========================
+/* =====================================================
    DURABLE OBJECT
-========================= */
+===================================================== */
 
 export class ChatRoom
   extends DurableObject
 {
 
-  constructor(ctx,env){
+  constructor(
+    ctx,
+    env
+  ){
 
-    super(ctx,env);
+    super(
+      ctx,
+      env
+    );
 
-    this.ctx = ctx;
-    this.env = env;
+
+    this.ctx =
+      ctx;
+
+    this.env =
+      env;
+
 
     this.sql =
       ctx.storage.sql;
 
-    initDB(this.sql);
+
+    initDB(
+      this.sql
+    );
+
 
     this.connections =
       new Map();
@@ -1898,13 +2101,13 @@ export class ChatRoom
   }
 
 
-  async fetch(request){
+  async fetch(
+    request
+  ){
 
     const url =
       new URL(request.url);
 
-
-    /* REGISTER */
 
     if(
       url.pathname === "/register" &&
@@ -1918,8 +2121,6 @@ export class ChatRoom
     }
 
 
-    /* LOGIN */
-
     if(
       url.pathname === "/login" &&
       request.method === "POST"
@@ -1931,8 +2132,6 @@ export class ChatRoom
 
     }
 
-
-    /* LOGOUT */
 
     if(
       url.pathname === "/logout" &&
@@ -1946,8 +2145,6 @@ export class ChatRoom
     }
 
 
-    /* ME */
-
     if(
       url.pathname === "/me"
     ){
@@ -1959,8 +2156,6 @@ export class ChatRoom
     }
 
 
-    /* USERS */
-
     if(
       url.pathname === "/users"
     ){
@@ -1971,8 +2166,6 @@ export class ChatRoom
 
     }
 
-
-    /* WS */
 
     if(
       url.pathname === "/ws" &&
@@ -1998,21 +2191,25 @@ export class ChatRoom
   }
 
 
-  /* =====================
+  /* ===================================================
      REGISTER
-  ===================== */
+  =================================================== */
 
-  async register(request){
+  async register(
+    request
+  ){
 
     try{
 
       const body =
         await request.json();
 
+
       const username =
         String(
           body.username || ""
         ).trim();
+
 
       const password =
         String(
@@ -2021,10 +2218,8 @@ export class ChatRoom
 
 
       /*
-        مهم جداً:
-        هنا لا نستخدم SELECT id
-        لأن جدول accounts القديم
-        لا يحتوي على id.
+        مهم:
+        لا يوجد SELECT id هنا.
       */
 
       const exists =
@@ -2095,18 +2290,18 @@ export class ChatRoom
 
       return json({
         ok:true,
-        username,
-        token
+        username:username,
+        token:token
       });
 
 
-    }catch(e){
+    }catch(error){
 
       return json(
         {
           error:
             "حدث خطأ أثناء إنشاء الحساب: " +
-            e.message
+            error.message
         },
         500
       );
@@ -2116,21 +2311,25 @@ export class ChatRoom
   }
 
 
-  /* =====================
+  /* ===================================================
      LOGIN
-  ===================== */
+  =================================================== */
 
-  async login(request){
+  async login(
+    request
+  ){
 
     try{
 
       const body =
         await request.json();
 
+
       const username =
         String(
           body.username || ""
         ).trim();
+
 
       const password =
         String(
@@ -2208,18 +2407,18 @@ export class ChatRoom
 
       return json({
         ok:true,
-        username,
-        token
+        username:username,
+        token:token
       });
 
 
-    }catch(e){
+    }catch(error){
 
       return json(
         {
           error:
             "حدث خطأ أثناء تسجيل الدخول: " +
-            e.message
+            error.message
         },
         500
       );
@@ -2229,16 +2428,19 @@ export class ChatRoom
   }
 
 
-  /* =====================
+  /* ===================================================
      LOGOUT
-  ===================== */
+  =================================================== */
 
-  async logout(request){
+  async logout(
+    request
+  ){
 
     try{
 
       const body =
         await request.json();
+
 
       const token =
         body.token;
@@ -2262,11 +2464,11 @@ export class ChatRoom
       });
 
 
-    }catch(e){
+    }catch(error){
 
       return json(
         {
-          error:e.message
+          error:error.message
         },
         500
       );
@@ -2276,19 +2478,23 @@ export class ChatRoom
   }
 
 
-  /* =====================
+  /* ===================================================
      ME
-  ===================== */
+  =================================================== */
 
-  async me(request){
+  async me(
+    request
+  ){
 
     const url =
       new URL(request.url);
+
 
     const token =
       url.searchParams.get(
         "token"
       );
+
 
     const username =
       getUserFromToken(
@@ -2301,7 +2507,8 @@ export class ChatRoom
 
       return json(
         {
-          error:"غير مسجل الدخول"
+          error:
+            "غير مسجل الدخول"
         },
         401
       );
@@ -2311,25 +2518,29 @@ export class ChatRoom
 
     return json({
       ok:true,
-      username
+      username:username
     });
 
   }
 
 
-  /* =====================
+  /* ===================================================
      USERS
-  ===================== */
+  =================================================== */
 
-  async users(request){
+  async users(
+    request
+  ){
 
     const url =
       new URL(request.url);
+
 
     const token =
       url.searchParams.get(
         "token"
       );
+
 
     const currentUser =
       getUserFromToken(
@@ -2342,7 +2553,8 @@ export class ChatRoom
 
       return json(
         {
-          error:"غير مسجل الدخول"
+          error:
+            "غير مسجل الدخول"
         },
         401
       );
@@ -2363,35 +2575,50 @@ export class ChatRoom
     const users =
       rows
         .filter(
-          user =>
-            user.username !== currentUser
+          function(user){
+
+            return (
+              user.username !==
+              currentUser
+            );
+
+          }
         )
         .map(
-          user => ({
-            username:user.username,
-            online:
-              this.connections.has(
-                user.username
-              )
-          })
+          function(user){
+
+            return {
+              username:
+                user.username,
+
+              online:
+                this.connections.has(
+                  user.username
+                )
+            };
+
+          }.bind(this)
         );
 
 
     return json({
-      users
+      users:users
     });
 
   }
 
 
-  /* =====================
+  /* ===================================================
      WEBSOCKET
-  ===================== */
+  =================================================== */
 
-  async handleWebSocket(request){
+  async handleWebSocket(
+    request
+  ){
 
     const url =
       new URL(request.url);
+
 
     const token =
       url.searchParams.get(
@@ -2421,6 +2648,7 @@ export class ChatRoom
     const pair =
       new WebSocketPair();
 
+
     const client =
       pair[0];
 
@@ -2439,7 +2667,7 @@ export class ChatRoom
 
     server.addEventListener(
       "message",
-      event => {
+      (event) => {
 
         this.handleMessage(
           username,
@@ -2502,9 +2730,9 @@ export class ChatRoom
   }
 
 
-  /* =====================
-     WS MESSAGES
-  ===================== */
+  /* ===================================================
+     WEBSOCKET MESSAGES
+  =================================================== */
 
   handleMessage(
     username,
@@ -2529,6 +2757,7 @@ export class ChatRoom
             data.to || ""
           ).trim();
 
+
         const text =
           String(
             data.text || ""
@@ -2543,6 +2772,12 @@ export class ChatRoom
         const createdAt =
           Date.now();
 
+
+        /*
+          لا نستخدم id
+          حتى لا يحدث تعارض مع
+          قاعدة البيانات القديمة.
+        */
 
         this.sql.exec(
           `
@@ -2567,8 +2802,8 @@ export class ChatRoom
           JSON.stringify({
             type:"message",
             from:username,
-            to,
-            text,
+            to:to,
+            text:text,
             created_at:createdAt
           });
 
@@ -2581,7 +2816,7 @@ export class ChatRoom
               payload
             );
 
-          }catch(e){}
+          }catch(error){}
 
         }
 
@@ -2592,7 +2827,7 @@ export class ChatRoom
             payload
           );
 
-        }catch(e){}
+        }catch(error){}
 
 
         return;
@@ -2653,7 +2888,7 @@ export class ChatRoom
       }
 
 
-      /* الكتابة */
+      /* مؤشر الكتابة */
 
       if(
         data.type === "typing"
@@ -2691,15 +2926,15 @@ export class ChatRoom
 
       }
 
-    }catch(e){
+    }catch(error){
 
       console.error(
-        "WS error:",
-        e
+        "WebSocket error:",
+        error
       );
 
     }
 
   }
 
-  }
+      }
