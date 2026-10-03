@@ -9,14 +9,22 @@ const HTML = `<!doctype html>
 
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#e5ddd5}
-button,input{font-family:inherit}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#e5ddd5;
+}
+
+button,input{
+  font-family:inherit;
+}
 
 #auth{
   min-height:100vh;
   display:flex;
-  justify-content:center;
   align-items:center;
+  justify-content:center;
   padding:20px;
 }
 
@@ -37,9 +45,9 @@ button,input{font-family:inherit}
 .auth-box input{
   width:100%;
   padding:13px;
+  margin-bottom:12px;
   border:1px solid #ddd;
   border-radius:10px;
-  margin-bottom:12px;
   outline:none;
 }
 
@@ -49,23 +57,23 @@ button,input{font-family:inherit}
   border:0;
   border-radius:10px;
   background:#128c7e;
-  color:#fff;
-  cursor:pointer;
+  color:white;
   font-size:16px;
+  cursor:pointer;
 }
 
 .auth-switch{
   text-align:center;
-  margin-top:15px;
   color:#128c7e;
+  margin-top:15px;
   cursor:pointer;
 }
 
 #error{
   color:#d00;
   text-align:center;
-  margin-top:10px;
   min-height:20px;
+  margin-top:10px;
 }
 
 #app{
@@ -89,18 +97,18 @@ button,input{font-family:inherit}
 
 .sidebar-header{
   background:#075e54;
-  color:#fff;
-  padding:17px;
+  color:white;
+  padding:16px;
   display:flex;
   justify-content:space-between;
   align-items:center;
 }
 
 .sidebar-header button{
-  background:#ffffff22;
-  color:#fff;
   border:0;
-  padding:7px 10px;
+  background:#ffffff22;
+  color:white;
+  padding:8px 12px;
   border-radius:8px;
   cursor:pointer;
 }
@@ -111,7 +119,7 @@ button,input{font-family:inherit}
 }
 
 .user{
-  padding:13px;
+  padding:12px;
   border-bottom:1px solid #eee;
   display:flex;
   align-items:center;
@@ -128,14 +136,14 @@ button,input{font-family:inherit}
 }
 
 .avatar{
-  width:43px;
-  height:43px;
+  width:44px;
+  height:44px;
   border-radius:50%;
   background:#128c7e;
-  color:#fff;
+  color:white;
   display:flex;
-  align-items:center;
   justify-content:center;
+  align-items:center;
   font-weight:bold;
   flex-shrink:0;
 }
@@ -147,8 +155,8 @@ button,input{font-family:inherit}
 
 .username{
   font-weight:bold;
-  white-space:nowrap;
   overflow:hidden;
+  white-space:nowrap;
   text-overflow:ellipsis;
 }
 
@@ -163,24 +171,23 @@ button,input{font-family:inherit}
   height:10px;
   border-radius:50%;
   background:#25d366;
-  flex-shrink:0;
 }
 
 .chat{
   flex:1;
+  min-width:0;
   display:flex;
   flex-direction:column;
-  min-width:0;
 }
 
 .chat-header{
   height:64px;
   background:#075e54;
-  color:#fff;
+  color:white;
   display:flex;
   align-items:center;
-  padding:10px 16px;
   gap:10px;
+  padding:10px 16px;
 }
 
 .chat-title{
@@ -214,7 +221,7 @@ button,input{font-family:inherit}
 }
 
 .message.theirs{
-  background:#fff;
+  background:white;
   margin-left:auto;
 }
 
@@ -271,7 +278,7 @@ button,input{font-family:inherit}
   border:0;
   border-radius:50%;
   background:#128c7e;
-  color:#fff;
+  color:white;
   font-size:20px;
   cursor:pointer;
   flex-shrink:0;
@@ -289,14 +296,40 @@ button,input{font-family:inherit}
 }
 
 @media(max-width:700px){
-  .sidebar{width:90px}
-  .sidebar-header{padding:10px}
-  .sidebar-header span{display:none}
-  .user{justify-content:center;padding:10px 5px}
-  .user-info{display:none}
-  .online-dot{display:none}
-  .avatar{width:48px;height:48px}
-  .message{max-width:85%}
+
+  .sidebar{
+    width:90px;
+  }
+
+  .sidebar-header{
+    padding:10px;
+  }
+
+  .sidebar-header span{
+    display:none;
+  }
+
+  .user{
+    justify-content:center;
+    padding:10px 5px;
+  }
+
+  .user-info{
+    display:none;
+  }
+
+  .online-dot{
+    display:none;
+  }
+
+  .avatar{
+    width:48px;
+    height:48px;
+  }
+
+  .message{
+    max-width:85%;
+  }
 }
 </style>
 </head>
@@ -305,232 +338,351 @@ button,input{font-family:inherit}
 
 <div id="auth">
 
-<div class="auth-box">
+  <div class="auth-box">
 
-<h2 id="authTitle">إنشاء حساب</h2>
+    <h2 id="authTitle">إنشاء حساب</h2>
 
-<input
-id="username"
-type="text"
-placeholder="اسم المستخدم"
-autocomplete="username">
+    <input
+      id="username"
+      type="text"
+      placeholder="اسم المستخدم"
+      autocomplete="username"
+    >
 
-<input
-id="password"
-type="password"
-placeholder="كلمة السر"
-autocomplete="current-password">
+    <input
+      id="password"
+      type="password"
+      placeholder="كلمة السر"
+      autocomplete="current-password"
+    >
 
-<button id="authButton">إنشاء الحساب</button>
+    <button id="authButton">
+      إنشاء الحساب
+    </button>
 
-<div class="auth-switch" id="switchAuth">
-عندك حساب؟ تسجيل الدخول
-</div>
+    <div class="auth-switch" id="switchAuth">
+      عندك حساب؟ تسجيل الدخول
+    </div>
 
-<div id="error"></div>
+    <div id="error"></div>
 
-</div>
+  </div>
 
 </div>
 
 <div id="app">
 
-<div class="layout">
+  <div class="layout">
 
-<aside class="sidebar">
+    <aside class="sidebar">
 
-<div class="sidebar-header">
-<span>المستخدمون</span>
-<button id="logoutBtn">خروج</button>
-</div>
+      <div class="sidebar-header">
+        <span>المستخدمون</span>
+        <button id="logoutBtn">خروج</button>
+      </div>
 
-<div class="users" id="users"></div>
+      <div class="users" id="users"></div>
 
-</aside>
+    </aside>
 
-<main class="chat">
+    <main class="chat">
 
-<div class="chat-header">
+      <div class="chat-header">
 
-<div class="avatar" id="chatAvatar">?</div>
+        <div class="avatar" id="chatAvatar">
+          ?
+        </div>
 
-<div>
+        <div>
 
-<div class="chat-title" id="chatTitle">
-اختر مستخدمًا
-</div>
+          <div class="chat-title" id="chatTitle">
+            اختر مستخدمًا
+          </div>
 
-<div class="chat-status" id="chatStatus"></div>
+          <div class="chat-status" id="chatStatus"></div>
 
-</div>
+        </div>
 
-</div>
+      </div>
 
-<div class="messages" id="messages">
+      <div class="messages" id="messages">
 
-<div id="empty">
-اختر مستخدمًا لبدء المحادثة
-</div>
+        <div id="empty">
+          اختر مستخدمًا لبدء المحادثة
+        </div>
 
-</div>
+      </div>
 
-<div class="typing" id="typing"></div>
+      <div class="typing" id="typing"></div>
 
-<div class="composer">
+      <div class="composer">
 
-<button
-class="icon-btn"
-id="recordBtn"
-title="تسجيل صوتي">🎙️</button>
+        <button
+          class="icon-btn"
+          id="recordBtn"
+          title="تسجيل صوتي"
+        >
+          🎙️
+        </button>
 
-<input
-id="messageInput"
-type="text"
-placeholder="اكتب رسالة...">
+        <input
+          id="messageInput"
+          type="text"
+          placeholder="اكتب رسالة..."
+        >
 
-<button
-class="icon-btn"
-id="sendBtn"
-title="إرسال">➤</button>
+        <button
+          class="icon-btn"
+          id="sendBtn"
+          title="إرسال"
+        >
+          ➤
+        </button>
 
-</div>
+      </div>
 
-</main>
+    </main>
 
-</div>
+  </div>
 
 </div>
 
 <script>
 
-let token=localStorage.getItem("chat_token")||"";
-let currentUser="";
-let selectedUser="";
-let ws=null;
-let reconnectTimer=null;
-let typingTimer=null;
+let token =
+  localStorage.getItem("chat_token") || "";
 
-let mediaRecorder=null;
-let audioChunks=[];
-let isRecording=false;
+let currentUser = "";
+let selectedUser = "";
 
-const auth=document.getElementById("auth");
-const app=document.getElementById("app");
+let ws = null;
+let reconnectTimer = null;
+let typingTimer = null;
 
-const authTitle=document.getElementById("authTitle");
-const authButton=document.getElementById("authButton");
-const switchAuth=document.getElementById("switchAuth");
-const errorBox=document.getElementById("error");
+let mediaRecorder = null;
+let audioChunks = [];
+let isRecording = false;
 
-const usernameInput=document.getElementById("username");
-const passwordInput=document.getElementById("password");
+const auth =
+  document.getElementById("auth");
 
-const usersBox=document.getElementById("users");
-const messagesBox=document.getElementById("messages");
-const messageInput=document.getElementById("messageInput");
+const app =
+  document.getElementById("app");
 
-const chatTitle=document.getElementById("chatTitle");
-const chatStatus=document.getElementById("chatStatus");
-const chatAvatar=document.getElementById("chatAvatar");
+const authTitle =
+  document.getElementById("authTitle");
 
-const typingBox=document.getElementById("typing");
-const recordBtn=document.getElementById("recordBtn");
+const authButton =
+  document.getElementById("authButton");
 
-let registerMode=true;
+const switchAuth =
+  document.getElementById("switchAuth");
+
+const errorBox =
+  document.getElementById("error");
+
+const usernameInput =
+  document.getElementById("username");
+
+const passwordInput =
+  document.getElementById("password");
+
+const usersBox =
+  document.getElementById("users");
+
+const messagesBox =
+  document.getElementById("messages");
+
+const messageInput =
+  document.getElementById("messageInput");
+
+const chatTitle =
+  document.getElementById("chatTitle");
+
+const chatStatus =
+  document.getElementById("chatStatus");
+
+const chatAvatar =
+  document.getElementById("chatAvatar");
+
+const typingBox =
+  document.getElementById("typing");
+
+const recordBtn =
+  document.getElementById("recordBtn");
+
+let registerMode = true;
 
 function setError(text){
-  errorBox.textContent=text||"";
+
+  errorBox.textContent =
+    text || "";
 }
 
-switchAuth.onclick=function(){
+switchAuth.onclick = function(){
 
-  registerMode=!registerMode;
+  registerMode =
+    !registerMode;
+
   setError("");
 
   if(registerMode){
 
-    authTitle.textContent="إنشاء حساب";
-    authButton.textContent="إنشاء الحساب";
-    switchAuth.textContent="عندك حساب؟ تسجيل الدخول";
+    authTitle.textContent =
+      "إنشاء حساب";
+
+    authButton.textContent =
+      "إنشاء الحساب";
+
+    switchAuth.textContent =
+      "عندك حساب؟ تسجيل الدخول";
 
   }else{
 
-    authTitle.textContent="تسجيل الدخول";
-    authButton.textContent="دخول";
-    switchAuth.textContent="مفيش حساب؟ إنشاء حساب";
+    authTitle.textContent =
+      "تسجيل الدخول";
+
+    authButton.textContent =
+      "دخول";
+
+    switchAuth.textContent =
+      "مفيش حساب؟ إنشاء حساب";
   }
 };
 
-authButton.onclick=async function(){
+authButton.onclick =
+async function(){
 
-  const username=usernameInput.value.trim();
-  const password=passwordInput.value;
+  const username =
+    usernameInput.value.trim();
 
-  if(!username||!password){
+  const password =
+    passwordInput.value;
 
-    setError("اكتب اسم المستخدم وكلمة السر");
+  if(!username || !password){
+
+    setError(
+      "اكتب اسم المستخدم وكلمة السر"
+    );
+
     return;
   }
 
   setError("");
 
+  authButton.disabled = true;
+
   try{
 
-    const endpoint=registerMode
-      ? "/api/register"
-      : "/api/login";
+    const endpoint =
+      registerMode
+        ? "/api/register"
+        : "/api/login";
 
-    const response=await fetch(endpoint,{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify({
-        username,
-        password
-      })
-    });
+    const response =
+      await fetch(
+        endpoint,
+        {
+          method:"POST",
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+          body:JSON.stringify({
+            username,
+            password
+          })
+        }
+      );
 
-    const data=await response.json();
+    const data =
+      await response.json();
 
     if(!response.ok){
-      throw new Error(data.error||"حدث خطأ");
+
+      throw new Error(
+        data.error || "حدث خطأ"
+      );
     }
 
-    token=data.token;
+    /*
+      حفظ الجلسة
+    */
+
+    token = data.token;
 
     localStorage.setItem(
       "chat_token",
       token
     );
 
-    showApp();
+    /*
+      دخول تلقائي مباشرة
+      بعد إنشاء الحساب أو تسجيل الدخول
+    */
+
+    currentUser =
+      data.username || username;
+
+    auth.style.display =
+      "none";
+
+    app.style.display =
+      "block";
+
+    await loadUsers();
+
+    connectWS();
+
+    usernameInput.value = "";
+    passwordInput.value = "";
 
   }catch(error){
 
-    setError(error.message);
+    setError(
+      error.message
+    );
+
+  }finally{
+
+    authButton.disabled = false;
   }
 };
 
 async function showApp(){
 
-  auth.style.display="none";
-  app.style.display="block";
+  if(!token){
+
+    return;
+  }
 
   try{
 
-    const response=await fetch(
-      "/api/me?token="+
-      encodeURIComponent(token)
-    );
+    const response =
+      await fetch(
+        "/api/me?token=" +
+        encodeURIComponent(token)
+      );
 
-    const data=await response.json();
+    const data =
+      await response.json();
 
     if(!response.ok){
-      throw new Error("انتهت الجلسة");
+
+      throw new Error(
+        data.error ||
+        "انتهت الجلسة"
+      );
     }
 
-    currentUser=data.username;
+    currentUser =
+      data.username;
+
+    auth.style.display =
+      "none";
+
+    app.style.display =
+      "block";
 
     await loadUsers();
 
@@ -538,28 +690,45 @@ async function showApp(){
 
   }catch(error){
 
-    localStorage.removeItem("chat_token");
+    localStorage.removeItem(
+      "chat_token"
+    );
 
-    token="";
+    token = "";
+    currentUser = "";
 
-    auth.style.display="flex";
-    app.style.display="none";
+    auth.style.display =
+      "flex";
 
-    setError(error.message);
+    app.style.display =
+      "none";
+
+    setError(
+      "انتهت الجلسة، سجل الدخول مرة أخرى"
+    );
   }
 }
 
-document.getElementById("logoutBtn").onclick=async function(){
+document.getElementById(
+  "logoutBtn"
+).onclick =
+async function(){
 
   try{
 
-    await fetch("/api/logout",{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify({token})
-    });
+    await fetch(
+      "/api/logout",
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":
+            "application/json"
+        },
+        body:JSON.stringify({
+          token
+        })
+      }
+    );
 
   }catch(e){}
 
@@ -570,99 +739,150 @@ document.getElementById("logoutBtn").onclick=async function(){
     }catch(e){}
   }
 
-  localStorage.removeItem("chat_token");
+  localStorage.removeItem(
+    "chat_token"
+  );
 
-  token="";
-  currentUser="";
-  selectedUser="";
+  token = "";
+  currentUser = "";
+  selectedUser = "";
 
-  app.style.display="none";
-  auth.style.display="flex";
+  app.style.display =
+    "none";
 
-  usernameInput.value="";
-  passwordInput.value="";
+  auth.style.display =
+    "flex";
+
+  usernameInput.value = "";
+  passwordInput.value = "";
 
   setError("");
 };
 
 async function loadUsers(){
 
-  const response=await fetch(
-    "/api/users?token="+
-    encodeURIComponent(token)
-  );
+  const response =
+    await fetch(
+      "/api/users?token=" +
+      encodeURIComponent(token)
+    );
 
   if(!response.ok){
-    throw new Error("فشل تحميل المستخدمين");
+
+    throw new Error(
+      "فشل تحميل المستخدمين"
+    );
   }
 
-  const data=await response.json();
+  const data =
+    await response.json();
 
-  usersBox.innerHTML="";
+  usersBox.innerHTML = "";
 
-  data.users.forEach(function(user){
+  data.users.forEach(
+    function(user){
 
-    if(user.username===currentUser){
-      return;
-    }
+      if(
+        user.username ===
+        currentUser
+      ){
+        return;
+      }
 
-    const row=document.createElement("div");
+      const row =
+        document.createElement(
+          "div"
+        );
 
-    row.className="user";
+      row.className =
+        "user";
 
-    if(user.username===selectedUser){
-      row.classList.add("active");
-    }
+      if(
+        user.username ===
+        selectedUser
+      ){
 
-    const avatar=document.createElement("div");
+        row.classList.add(
+          "active"
+        );
+      }
 
-    avatar.className="avatar";
+      const avatar =
+        document.createElement(
+          "div"
+        );
 
-    avatar.textContent=
-      user.username.charAt(0).toUpperCase();
+      avatar.className =
+        "avatar";
 
-    const info=document.createElement("div");
+      avatar.textContent =
+        user.username
+          .charAt(0)
+          .toUpperCase();
 
-    info.className="user-info";
+      const info =
+        document.createElement(
+          "div"
+        );
 
-    const name=document.createElement("div");
+      info.className =
+        "user-info";
 
-    name.className="username";
-    name.textContent=user.username;
+      const name =
+        document.createElement(
+          "div"
+        );
 
-    const status=document.createElement("div");
+      name.className =
+        "username";
 
-    status.className="status";
-    status.textContent=
-      user.online
-        ? "متصل الآن"
-        : "غير متصل";
+      name.textContent =
+        user.username;
 
-    info.appendChild(name);
-    info.appendChild(status);
+      const status =
+        document.createElement(
+          "div"
+        );
 
-    row.appendChild(avatar);
-    row.appendChild(info);
+      status.className =
+        "status";
 
-    if(user.online){
-
-      const dot=document.createElement("div");
-
-      dot.className="online-dot";
-
-      row.appendChild(dot);
-    }
-
-    row.onclick=function(){
-
-      selectUser(
-        user.username,
+      status.textContent =
         user.online
-      );
-    };
+          ? "متصل الآن"
+          : "غير متصل";
 
-    usersBox.appendChild(row);
-  });
+      info.appendChild(name);
+      info.appendChild(status);
+
+      row.appendChild(avatar);
+      row.appendChild(info);
+
+      if(user.online){
+
+        const dot =
+          document.createElement(
+            "div"
+          );
+
+        dot.className =
+          "online-dot";
+
+        row.appendChild(dot);
+      }
+
+      row.onclick =
+        function(){
+
+          selectUser(
+            user.username,
+            user.online
+          );
+        };
+
+      usersBox.appendChild(row);
+    }
+  );
 }
 
 function connectWS(){
@@ -678,110 +898,158 @@ function connectWS(){
     }catch(e){}
   }
 
-  const protocol=
-    location.protocol==="https:"
-      ?"wss:"
-      :"ws:";
+  const protocol =
+    location.protocol === "https:"
+      ? "wss:"
+      : "ws:";
 
-  ws=new WebSocket(
-    protocol+
-    "//"+
-    location.host+
-    "/ws?token="+
-    encodeURIComponent(token)
-  );
+  ws =
+    new WebSocket(
+      protocol +
+      "//" +
+      location.host +
+      "/ws?token=" +
+      encodeURIComponent(token)
+    );
 
-  ws.onopen=function(){
+  ws.onopen =
+    function(){
 
-    if(reconnectTimer){
+      if(reconnectTimer){
 
-      clearTimeout(reconnectTimer);
-      reconnectTimer=null;
-    }
-
-    if(selectedUser){
-      sendHistoryRequest();
-    }
-  };
-
-  ws.onmessage=function(event){
-
-    try{
-
-      const data=JSON.parse(event.data);
-
-      if(data.type==="message"){
-
-        receiveTextMessage(data);
-
-      }else if(data.type==="history"){
-
-        showHistory(data.messages||[]);
-
-      }else if(data.type==="typing"){
-
-        if(data.from===selectedUser){
-
-          typingBox.textContent=
-            data.typing
-              ? selectedUser+" يكتب..."
-              : "";
-
-        }
-
-      }else if(data.type==="voice"){
-
-        receiveVoiceMessage(data);
-
-      }else if(data.type==="error"){
-
-        alert(
-          data.error||"حدث خطأ"
+        clearTimeout(
+          reconnectTimer
         );
+
+        reconnectTimer = null;
       }
 
-    }catch(error){
+      if(selectedUser){
 
-      console.error(error);
-    }
-  };
+        sendHistoryRequest();
+      }
+    };
 
-  ws.onclose=function(){
+  ws.onmessage =
+    function(event){
 
-    if(token){
+      try{
 
-      reconnectTimer=setTimeout(
-        function(){
-          connectWS();
-        },
-        2000
-      );
-    }
-  };
+        const data =
+          JSON.parse(
+            event.data
+          );
 
-  ws.onerror=function(){
+        if(
+          data.type ===
+          "message"
+        ){
 
-    try{
-      ws.close();
-    }catch(e){}
-  };
+          receiveTextMessage(
+            data
+          );
+
+        }else if(
+          data.type ===
+          "history"
+        ){
+
+          showHistory(
+            data.messages || []
+          );
+
+        }else if(
+          data.type ===
+          "typing"
+        ){
+
+          if(
+            data.from ===
+            selectedUser
+          ){
+
+            typingBox.textContent =
+              data.typing
+                ? selectedUser +
+                  " يكتب..."
+                : "";
+          }
+
+        }else if(
+          data.type ===
+          "voice"
+        ){
+
+          receiveVoiceMessage(
+            data
+          );
+
+        }else if(
+          data.type ===
+          "error"
+        ){
+
+          alert(
+            data.error ||
+            "حدث خطأ"
+          );
+        }
+
+      }catch(error){
+
+        console.error(error);
+      }
+    };
+
+  ws.onclose =
+    function(){
+
+      if(token){
+
+        reconnectTimer =
+          setTimeout(
+            function(){
+
+              connectWS();
+
+            },
+            2000
+          );
+      }
+    };
+
+  ws.onerror =
+    function(){
+
+      try{
+        ws.close();
+      }catch(e){}
+    };
 }
 
-function selectUser(username,online){
+function selectUser(
+  username,
+  online
+){
 
-  selectedUser=username;
+  selectedUser =
+    username;
 
-  chatTitle.textContent=username;
+  chatTitle.textContent =
+    username;
 
-  chatAvatar.textContent=
-    username.charAt(0).toUpperCase();
+  chatAvatar.textContent =
+    username
+      .charAt(0)
+      .toUpperCase();
 
-  chatStatus.textContent=
+  chatStatus.textContent =
     online
       ? "متصل الآن"
       : "غير متصل";
 
-  typingBox.textContent="";
+  typingBox.textContent =
+    "";
 
   showEmptyMessages();
 
@@ -792,41 +1060,54 @@ function selectUser(username,online){
 
 function showEmptyMessages(){
 
-  messagesBox.innerHTML=
-    '<div id="empty">جاري تحميل المحادثة...</div>';
+  messagesBox.innerHTML =
+    '<div id="empty">' +
+    'جاري تحميل المحادثة...' +
+    '</div>';
 }
 
 function sendHistoryRequest(){
 
   if(
-    !ws||
-    ws.readyState!==WebSocket.OPEN||
+    !ws ||
+    ws.readyState !==
+      WebSocket.OPEN ||
     !selectedUser
   ){
+
     return;
   }
 
-  ws.send(JSON.stringify({
-    type:"history",
-    with:selectedUser
-  }));
+  ws.send(
+    JSON.stringify({
+      type:"history",
+      with:selectedUser
+    })
+  );
 }
 
 function showHistory(messages){
 
-  messagesBox.innerHTML="";
+  messagesBox.innerHTML = "";
 
-  if(messages.length===0){
+  if(messages.length === 0){
 
-    messagesBox.innerHTML=
-      '<div id="empty">لا توجد رسائل بعد</div>';
+    messagesBox.innerHTML =
+      '<div id="empty">' +
+      'لا توجد رسائل بعد' +
+      '</div>';
 
     return;
   }
 
-  messages.forEach(function(message){
-    addMessageToUI(message);
-  });
+  messages.forEach(
+    function(message){
+
+      addMessageToUI(
+        message
+      );
+    }
+  );
 
   scrollMessages();
 }
@@ -834,8 +1115,10 @@ function showHistory(messages){
 function receiveTextMessage(data){
 
   if(
-    data.from!==selectedUser&&
-    data.to!==selectedUser
+    data.from !==
+      selectedUser &&
+    data.to !==
+      selectedUser
   ){
 
     loadUsers();
@@ -851,14 +1134,17 @@ function receiveTextMessage(data){
   });
 
   scrollMessages();
+
   loadUsers();
 }
 
 function receiveVoiceMessage(data){
 
   if(
-    data.from!==selectedUser&&
-    data.to!==selectedUser
+    data.from !==
+      selectedUser &&
+    data.to !==
+      selectedUser
   ){
 
     loadUsers();
@@ -868,75 +1154,113 @@ function receiveVoiceMessage(data){
   addMessageToUI({
     from:data.from,
     to:data.to,
-    audio_data:data.audio_data,
-    created_at:data.created_at,
+    audio_data:
+      data.audio_data,
+    created_at:
+      data.created_at,
     message_type:"voice"
   });
 
   scrollMessages();
+
   loadUsers();
 }
 
 function addMessageToUI(message){
 
-  const empty=
-    document.getElementById("empty");
+  const empty =
+    document.getElementById(
+      "empty"
+    );
 
   if(empty){
     empty.remove();
   }
 
-  const box=document.createElement("div");
+  const box =
+    document.createElement(
+      "div"
+    );
 
-  const mine=
-    message.from===currentUser;
+  const mine =
+    message.from ===
+    currentUser;
 
-  box.className=
-    "message "+
-    (mine?"mine":"theirs");
+  box.className =
+    "message " +
+    (
+      mine
+        ? "mine"
+        : "theirs"
+    );
 
   if(
-    message.message_type==="voice"&&
+    message.message_type ===
+      "voice" &&
     message.audio_data
   ){
 
-    const audioBox=
-      document.createElement("div");
+    const audioBox =
+      document.createElement(
+        "div"
+      );
 
-    audioBox.className=
+    audioBox.className =
       "audio-message";
 
-    const audio=
-      document.createElement("audio");
+    const audio =
+      document.createElement(
+        "audio"
+      );
 
-    audio.controls=true;
-    audio.src=message.audio_data;
+    audio.controls = true;
 
-    audioBox.appendChild(audio);
-    box.appendChild(audioBox);
+    audio.src =
+      message.audio_data;
+
+    audioBox.appendChild(
+      audio
+    );
+
+    box.appendChild(
+      audioBox
+    );
 
   }else{
 
-    const text=
-      document.createElement("div");
+    const text =
+      document.createElement(
+        "div"
+      );
 
-    text.textContent=
-      message.text||"";
+    text.textContent =
+      message.text || "";
 
-    box.appendChild(text);
+    box.appendChild(
+      text
+    );
   }
 
-  const time=
-    document.createElement("div");
+  const time =
+    document.createElement(
+      "div"
+    );
 
-  time.className="message-time";
+  time.className =
+    "message-time";
 
-  time.textContent=
-    formatTime(message.created_at);
+  time.textContent =
+    formatTime(
+      message.created_at
+    );
 
-  box.appendChild(time);
+  box.appendChild(
+    time
+  );
 
-  messagesBox.appendChild(box);
+  messagesBox.appendChild(
+    box
+  );
 }
 
 function formatTime(timestamp){
@@ -945,7 +1269,8 @@ function formatTime(timestamp){
     return "";
   }
 
-  const date=new Date(timestamp);
+  const date =
+    new Date(timestamp);
 
   return date.toLocaleTimeString(
     "ar-EG",
@@ -958,12 +1283,15 @@ function formatTime(timestamp){
 
 function scrollMessages(){
 
-  messagesBox.scrollTop=
+  messagesBox.scrollTop =
     messagesBox.scrollHeight;
 }
 
-document.getElementById("sendBtn").onclick=
+document.getElementById(
+  "sendBtn"
+).onclick =
 function(){
+
   sendText();
 };
 
@@ -971,7 +1299,7 @@ messageInput.addEventListener(
   "keydown",
   function(event){
 
-    if(event.key==="Enter"){
+    if(event.key === "Enter"){
 
       event.preventDefault();
 
@@ -989,68 +1317,88 @@ messageInput.addEventListener(
     }
 
     if(
-      ws&&
-      ws.readyState===WebSocket.OPEN
+      ws &&
+      ws.readyState ===
+        WebSocket.OPEN
     ){
 
-      ws.send(JSON.stringify({
-        type:"typing",
-        to:selectedUser,
-        typing:true
-      }));
+      ws.send(
+        JSON.stringify({
+          type:"typing",
+          to:selectedUser,
+          typing:true
+        })
+      );
     }
 
-    clearTimeout(typingTimer);
-
-    typingTimer=setTimeout(
-      function(){
-
-        if(
-          ws&&
-          ws.readyState===WebSocket.OPEN
-        ){
-
-          ws.send(JSON.stringify({
-            type:"typing",
-            to:selectedUser,
-            typing:false
-          }));
-        }
-
-      },
-      700
+    clearTimeout(
+      typingTimer
     );
+
+    typingTimer =
+      setTimeout(
+        function(){
+
+          if(
+            ws &&
+            ws.readyState ===
+              WebSocket.OPEN
+          ){
+
+            ws.send(
+              JSON.stringify({
+                type:"typing",
+                to:selectedUser,
+                typing:false
+              })
+            );
+          }
+
+        },
+        700
+      );
   }
 );
 
 function sendText(){
 
-  const text=
+  const text =
     messageInput.value.trim();
 
-  if(!text||!selectedUser){
+  if(
+    !text ||
+    !selectedUser
+  ){
+
     return;
   }
 
   if(
-    !ws||
-    ws.readyState!==WebSocket.OPEN
+    !ws ||
+    ws.readyState !==
+      WebSocket.OPEN
   ){
 
-    alert("الاتصال غير متاح حاليًا");
+    alert(
+      "الاتصال غير متاح حاليًا"
+    );
+
     return;
   }
 
-  ws.send(JSON.stringify({
-    type:"message",
-    to:selectedUser,
-    text:text
-  }));
+  ws.send(
+    JSON.stringify({
+      type:"message",
+      to:selectedUser,
+      text:text
+    })
+  );
 
-  messageInput.value="";
+  messageInput.value = "";
 }
 
-recordBtn.onclick=async function(){
+recordBtn.onclick =
+async function(){
 
   if(isRecording){
 
@@ -1066,13 +1414,17 @@ async function startRecording(){
 
   if(!selectedUser){
 
-    alert("اختار مستخدم الأول");
+    alert(
+      "اختار مستخدم الأول"
+    );
+
     return;
   }
 
   if(
-    !navigator.mediaDevices||
-    !navigator.mediaDevices.getUserMedia
+    !navigator.mediaDevices ||
+    !navigator.mediaDevices
+      .getUserMedia
   ){
 
     alert(
@@ -1084,14 +1436,16 @@ async function startRecording(){
 
   try{
 
-    const stream=
-      await navigator.mediaDevices.getUserMedia({
-        audio:true
-      });
+    const stream =
+      await navigator
+        .mediaDevices
+        .getUserMedia({
+          audio:true
+        });
 
-    audioChunks=[];
+    audioChunks = [];
 
-    let options={};
+    let options = {};
 
     if(
       MediaRecorder.isTypeSupported(
@@ -1099,57 +1453,66 @@ async function startRecording(){
       )
     ){
 
-      options.mimeType=
+      options.mimeType =
         "audio/webm;codecs=opus";
     }
 
-    mediaRecorder=
+    mediaRecorder =
       new MediaRecorder(
         stream,
         options
       );
 
-    mediaRecorder.ondataavailable=
+    mediaRecorder.ondataavailable =
       function(event){
 
         if(
-          event.data&&
-          event.data.size>0
+          event.data &&
+          event.data.size > 0
         ){
 
-          audioChunks.push(event.data);
+          audioChunks.push(
+            event.data
+          );
         }
       };
 
-    mediaRecorder.onstop=
+    mediaRecorder.onstop =
       async function(){
 
-        stream.getTracks().forEach(
-          function(track){
-            track.stop();
-          }
-        );
+        stream
+          .getTracks()
+          .forEach(
+            function(track){
+              track.stop();
+            }
+          );
 
-        const blob=
+        const blob =
           new Blob(
             audioChunks,
             {
               type:
-                mediaRecorder.mimeType||
+                mediaRecorder.mimeType ||
                 "audio/webm"
             }
           );
 
-        await sendVoiceMessage(blob);
+        await sendVoiceMessage(
+          blob
+        );
       };
 
     mediaRecorder.start();
 
-    isRecording=true;
+    isRecording = true;
 
-    recordBtn.classList.add("recording");
+    recordBtn.classList.add(
+      "recording"
+    );
 
-    recordBtn.textContent="⏹️";
+    recordBtn.textContent =
+      "⏹️";
 
   }catch(error){
 
@@ -1162,36 +1525,49 @@ async function startRecording(){
 function stopRecording(){
 
   if(
-    mediaRecorder&&
-    mediaRecorder.state!=="inactive"
+    mediaRecorder &&
+    mediaRecorder.state !==
+      "inactive"
   ){
 
     mediaRecorder.stop();
   }
 
-  isRecording=false;
+  isRecording = false;
 
-  recordBtn.classList.remove("recording");
+  recordBtn.classList.remove(
+    "recording"
+  );
 
-  recordBtn.textContent="🎙️";
+  recordBtn.textContent =
+    "🎙️";
 }
 
-async function sendVoiceMessage(blob){
+async function sendVoiceMessage(
+  blob
+){
 
   if(!selectedUser){
     return;
   }
 
   if(
-    !ws||
-    ws.readyState!==WebSocket.OPEN
+    !ws ||
+    ws.readyState !==
+      WebSocket.OPEN
   ){
 
-    alert("الاتصال غير متاح");
+    alert(
+      "الاتصال غير متاح"
+    );
+
     return;
   }
 
-  if(blob.size>2*1024*1024){
+  if(
+    blob.size >
+    2 * 1024 * 1024
+  ){
 
     alert(
       "التسجيل طويل جدًا. حاول تسجيل رسالة أقصر."
@@ -1200,21 +1576,29 @@ async function sendVoiceMessage(blob){
     return;
   }
 
-  const reader=new FileReader();
+  const reader =
+    new FileReader();
 
-  reader.onload=function(){
+  reader.onload =
+    function(){
 
-    ws.send(JSON.stringify({
-      type:"voice",
-      to:selectedUser,
-      audio_data:reader.result
-    }));
-  };
+      ws.send(
+        JSON.stringify({
+          type:"voice",
+          to:selectedUser,
+          audio_data:
+            reader.result
+        })
+      );
+    };
 
-  reader.readAsDataURL(blob);
+  reader.readAsDataURL(
+    blob
+  );
 }
 
 if(token){
+
   showApp();
 }
 
@@ -1225,69 +1609,108 @@ if(token){
 
 export default {
 
-  async fetch(request,env){
+  async fetch(request, env){
 
-    const url=new URL(request.url);
+    const url =
+      new URL(request.url);
 
-    const roomId=
-      env.CHAT_ROOM.idFromName("main");
+    const roomId =
+      env.CHAT_ROOM.idFromName(
+        "main"
+      );
 
-    const room=
-      env.CHAT_ROOM.get(roomId);
+    const room =
+      env.CHAT_ROOM.get(
+        roomId
+      );
 
     if(
-      url.pathname==="/ws"&&
-      request.headers.get("Upgrade")==="websocket"
+      url.pathname === "/ws" &&
+      request.headers.get(
+        "Upgrade"
+      ) === "websocket"
     ){
 
-      return room.fetch(request);
+      return room.fetch(
+        request
+      );
     }
 
-    if(url.pathname==="/api/register"){
+    if(
+      url.pathname ===
+      "/api/register"
+    ){
 
       return room.fetch(
         new Request(
-          new URL("/register",request.url),
+          new URL(
+            "/register",
+            request.url
+          ),
           request
         )
       );
     }
 
-    if(url.pathname==="/api/login"){
+    if(
+      url.pathname ===
+      "/api/login"
+    ){
 
       return room.fetch(
         new Request(
-          new URL("/login",request.url),
+          new URL(
+            "/login",
+            request.url
+          ),
           request
         )
       );
     }
 
-    if(url.pathname==="/api/logout"){
+    if(
+      url.pathname ===
+      "/api/logout"
+    ){
 
       return room.fetch(
         new Request(
-          new URL("/logout",request.url),
+          new URL(
+            "/logout",
+            request.url
+          ),
           request
         )
       );
     }
 
-    if(url.pathname==="/api/me"){
+    if(
+      url.pathname ===
+      "/api/me"
+    ){
 
       return room.fetch(
         new Request(
-          new URL("/me",request.url),
+          new URL(
+            "/me",
+            request.url
+          ),
           request
         )
       );
     }
 
-    if(url.pathname==="/api/users"){
+    if(
+      url.pathname ===
+      "/api/users"
+    ){
 
       return room.fetch(
         new Request(
-          new URL("/users",request.url),
+          new URL(
+            "/users",
+            request.url
+          ),
           request
         )
       );
@@ -1305,18 +1728,21 @@ export default {
   }
 };
 
-export class ChatRoom extends DurableObject {
+export class ChatRoom
+  extends DurableObject{
 
   constructor(ctx,env){
 
     super(ctx,env);
 
-    this.ctx=ctx;
-    this.env=env;
+    this.ctx = ctx;
+    this.env = env;
 
-    this.sql=ctx.storage.sql;
+    this.sql =
+      ctx.storage.sql;
 
-    this.connections=new Map();
+    this.connections =
+      new Map();
 
     this.initDB();
   }
@@ -1324,9 +1750,7 @@ export class ChatRoom extends DurableObject {
   initDB(){
 
     /*
-      =========================
       ACCOUNTS
-      =========================
     */
 
     this.sql.exec(`
@@ -1338,36 +1762,48 @@ export class ChatRoom extends DurableObject {
       )
     `);
 
-    let accountColumns=
+    const accountColumns =
       this.sql
-        .exec(`PRAGMA table_info(accounts)`)
+        .exec(
+          `PRAGMA table_info(accounts)`
+        )
         .toArray();
 
-    let accountNames=
-      accountColumns.map(function(column){
-        return column.name;
-      });
+    const accountNames =
+      accountColumns.map(
+        function(column){
+          return column.name;
+        }
+      );
 
-    if(!accountNames.includes("salt")){
+    if(
+      !accountNames.includes(
+        "salt"
+      )
+    ){
 
       this.sql.exec(`
         ALTER TABLE accounts
-        ADD COLUMN salt TEXT NOT NULL DEFAULT ''
+        ADD COLUMN salt TEXT
+        NOT NULL DEFAULT ''
       `);
     }
 
-    if(!accountNames.includes("created_at")){
+    if(
+      !accountNames.includes(
+        "created_at"
+      )
+    ){
 
       this.sql.exec(`
         ALTER TABLE accounts
-        ADD COLUMN created_at INTEGER NOT NULL DEFAULT 0
+        ADD COLUMN created_at INTEGER
+        NOT NULL DEFAULT 0
       `);
     }
 
     /*
-      =========================
       SESSIONS
-      =========================
     */
 
     this.sql.exec(`
@@ -1379,17 +1815,25 @@ export class ChatRoom extends DurableObject {
       )
     `);
 
-    const sessionColumns=
+    const sessionColumns =
       this.sql
-        .exec(`PRAGMA table_info(sessions)`)
+        .exec(
+          `PRAGMA table_info(sessions)`
+        )
         .toArray();
 
-    const sessionNames=
-      sessionColumns.map(function(column){
-        return column.name;
-      });
+    const sessionNames =
+      sessionColumns.map(
+        function(column){
+          return column.name;
+        }
+      );
 
-    if(!sessionNames.includes("token")){
+    if(
+      !sessionNames.includes(
+        "token"
+      )
+    ){
 
       try{
 
@@ -1401,7 +1845,11 @@ export class ChatRoom extends DurableObject {
       }catch(e){}
     }
 
-    if(!sessionNames.includes("username")){
+    if(
+      !sessionNames.includes(
+        "username"
+      )
+    ){
 
       try{
 
@@ -1413,7 +1861,11 @@ export class ChatRoom extends DurableObject {
       }catch(e){}
     }
 
-    if(!sessionNames.includes("created_at")){
+    if(
+      !sessionNames.includes(
+        "created_at"
+      )
+    ){
 
       this.sql.exec(`
         ALTER TABLE sessions
@@ -1422,7 +1874,11 @@ export class ChatRoom extends DurableObject {
       `);
     }
 
-    if(!sessionNames.includes("expires_at")){
+    if(
+      !sessionNames.includes(
+        "expires_at"
+      )
+    ){
 
       this.sql.exec(`
         ALTER TABLE sessions
@@ -1432,9 +1888,7 @@ export class ChatRoom extends DurableObject {
     }
 
     /*
-      =========================
       MESSAGES
-      =========================
     */
 
     this.sql.exec(`
@@ -1446,26 +1900,42 @@ export class ChatRoom extends DurableObject {
       )
     `);
 
-    const messageColumns=
+    const messageColumns =
       this.sql
-        .exec(`PRAGMA table_info(messages)`)
+        .exec(
+          `PRAGMA table_info(messages)`
+        )
         .toArray();
 
-    const messageNames=
-      messageColumns.map(function(column){
-        return column.name;
-      });
+    const messageNames =
+      messageColumns.map(
+        function(column){
+          return column.name;
+        }
+      );
 
-    if(!messageNames.includes("created_at")){
+    if(
+      !messageNames.includes(
+        "created_at"
+      )
+    ){
 
-      this.sql.exec(`
-        ALTER TABLE messages
-        ADD COLUMN created_at INTEGER
-        NOT NULL DEFAULT 0
-      `);
+      try{
+
+        this.sql.exec(`
+          ALTER TABLE messages
+          ADD COLUMN created_at INTEGER
+          NOT NULL DEFAULT 0
+        `);
+
+      }catch(e){}
     }
 
-    if(!messageNames.includes("message_type")){
+    if(
+      !messageNames.includes(
+        "message_type"
+      )
+    ){
 
       this.sql.exec(`
         ALTER TABLE messages
@@ -1474,7 +1944,11 @@ export class ChatRoom extends DurableObject {
       `);
     }
 
-    if(!messageNames.includes("audio_data")){
+    if(
+      !messageNames.includes(
+        "audio_data"
+      )
+    ){
 
       this.sql.exec(`
         ALTER TABLE messages
@@ -1485,46 +1959,76 @@ export class ChatRoom extends DurableObject {
 
   async fetch(request){
 
-    const url=new URL(request.url);
+    const url =
+      new URL(request.url);
 
     if(
-      url.pathname==="/register"&&
-      request.method==="POST"
+      url.pathname ===
+        "/register" &&
+      request.method ===
+        "POST"
     ){
 
-      return this.register(request);
-    }
-
-    if(
-      url.pathname==="/login"&&
-      request.method==="POST"
-    ){
-
-      return this.login(request);
+      return this.register(
+        request
+      );
     }
 
     if(
-      url.pathname==="/logout"&&
-      request.method==="POST"
+      url.pathname ===
+        "/login" &&
+      request.method ===
+        "POST"
     ){
 
-      return this.logout(request);
-    }
-
-    if(url.pathname==="/me"){
-      return this.me(request);
-    }
-
-    if(url.pathname==="/users"){
-      return this.users(request);
+      return this.login(
+        request
+      );
     }
 
     if(
-      url.pathname==="/ws"&&
-      request.headers.get("Upgrade")==="websocket"
+      url.pathname ===
+        "/logout" &&
+      request.method ===
+        "POST"
     ){
 
-      return this.websocket(request);
+      return this.logout(
+        request
+      );
+    }
+
+    if(
+      url.pathname ===
+      "/me"
+    ){
+
+      return this.me(
+        request
+      );
+    }
+
+    if(
+      url.pathname ===
+      "/users"
+    ){
+
+      return this.users(
+        request
+      );
+    }
+
+    if(
+      url.pathname ===
+        "/ws" &&
+      request.headers.get(
+        "Upgrade"
+      ) === "websocket"
+    ){
+
+      return this.websocket(
+        request
+      );
     }
 
     return new Response(
@@ -1551,16 +2055,23 @@ export class ChatRoom extends DurableObject {
 
     try{
 
-      const body=
+      const body =
         await request.json();
 
-      const username=
-        String(body.username||"").trim();
+      const username =
+        String(
+          body.username || ""
+        ).trim();
 
-      const password=
-        String(body.password||"");
+      const password =
+        String(
+          body.password || ""
+        );
 
-      if(!username||!password){
+      if(
+        !username ||
+        !password
+      ){
 
         return this.json(
           {
@@ -1571,7 +2082,7 @@ export class ChatRoom extends DurableObject {
         );
       }
 
-      if(username.length<3){
+      if(username.length < 3){
 
         return this.json(
           {
@@ -1582,7 +2093,7 @@ export class ChatRoom extends DurableObject {
         );
       }
 
-      if(password.length<4){
+      if(password.length < 4){
 
         return this.json(
           {
@@ -1593,7 +2104,7 @@ export class ChatRoom extends DurableObject {
         );
       }
 
-      const exists=
+      const exists =
         this.sql.exec(
           `
           SELECT username
@@ -1604,7 +2115,7 @@ export class ChatRoom extends DurableObject {
           username
         ).toArray();
 
-      if(exists.length>0){
+      if(exists.length > 0){
 
         return this.json(
           {
@@ -1615,14 +2126,17 @@ export class ChatRoom extends DurableObject {
         );
       }
 
-      const salt=
+      const salt =
         randomBytes(16);
 
-      const passwordHash=
+      const passwordHash =
         await hashPassword(
           password,
           salt
         );
+
+      const now =
+        Date.now();
 
       this.sql.exec(
         `
@@ -1638,17 +2152,15 @@ export class ChatRoom extends DurableObject {
         username,
         passwordHash,
         salt,
-        Date.now()
+        now
       );
 
-      const token=
+      const token =
         randomToken();
 
-      const now=Date.now();
-
-      const expiresAt=
-        now+
-        (30*24*60*60*1000);
+      const expiresAt =
+        now +
+        30 * 24 * 60 * 60 * 1000;
 
       this.sql.exec(
         `
@@ -1667,6 +2179,11 @@ export class ChatRoom extends DurableObject {
         expiresAt
       );
 
+      /*
+        الحساب اتعمل بنجاح
+        والتوكن جاهز للدخول التلقائي
+      */
+
       return this.json({
         token,
         username
@@ -1677,7 +2194,7 @@ export class ChatRoom extends DurableObject {
       return this.json(
         {
           error:
-            "حدث خطأ أثناء إنشاء الحساب: "+
+            "حدث خطأ أثناء إنشاء الحساب: " +
             error.message
         },
         500
@@ -1689,16 +2206,20 @@ export class ChatRoom extends DurableObject {
 
     try{
 
-      const body=
+      const body =
         await request.json();
 
-      const username=
-        String(body.username||"").trim();
+      const username =
+        String(
+          body.username || ""
+        ).trim();
 
-      const password=
-        String(body.password||"");
+      const password =
+        String(
+          body.password || ""
+        );
 
-      const rows=
+      const rows =
         this.sql.exec(
           `
           SELECT
@@ -1712,7 +2233,7 @@ export class ChatRoom extends DurableObject {
           username
         ).toArray();
 
-      if(rows.length===0){
+      if(rows.length === 0){
 
         return this.json(
           {
@@ -1723,26 +2244,30 @@ export class ChatRoom extends DurableObject {
         );
       }
 
-      const account=rows[0];
+      const account =
+        rows[0];
 
       if(!account.salt){
 
         return this.json(
           {
             error:
-              "الحساب قديم ويحتاج إنشاء حساب جديد"
+              "الحساب القديم لا يحتوي على بيانات تشفير صالحة"
           },
           401
         );
       }
 
-      const hash=
+      const hash =
         await hashPassword(
           password,
           account.salt
         );
 
-      if(hash!==account.password_hash){
+      if(
+        hash !==
+        account.password_hash
+      ){
 
         return this.json(
           {
@@ -1753,14 +2278,15 @@ export class ChatRoom extends DurableObject {
         );
       }
 
-      const token=
+      const token =
         randomToken();
 
-      const now=Date.now();
+      const now =
+        Date.now();
 
-      const expiresAt=
-        now+
-        (30*24*60*60*1000);
+      const expiresAt =
+        now +
+        30 * 24 * 60 * 60 * 1000;
 
       this.sql.exec(
         `
@@ -1789,7 +2315,7 @@ export class ChatRoom extends DurableObject {
       return this.json(
         {
           error:
-            "حدث خطأ أثناء تسجيل الدخول: "+
+            "حدث خطأ أثناء تسجيل الدخول: " +
             error.message
         },
         500
@@ -1801,11 +2327,13 @@ export class ChatRoom extends DurableObject {
 
     try{
 
-      const body=
+      const body =
         await request.json();
 
-      const token=
-        String(body.token||"");
+      const token =
+        String(
+          body.token || ""
+        );
 
       if(token){
 
@@ -1835,20 +2363,25 @@ export class ChatRoom extends DurableObject {
 
   async me(request){
 
-    const url=
+    const url =
       new URL(request.url);
 
-    const token=
-      url.searchParams.get("token")||"";
+    const token =
+      url.searchParams.get(
+        "token"
+      ) || "";
 
-    const username=
-      this.getUserFromToken(token);
+    const username =
+      this.getUserFromToken(
+        token
+      );
 
     if(!username){
 
       return this.json(
         {
-          error:"جلسة غير صالحة"
+          error:
+            "جلسة غير صالحة"
         },
         401
       );
@@ -1861,26 +2394,31 @@ export class ChatRoom extends DurableObject {
 
   async users(request){
 
-    const url=
+    const url =
       new URL(request.url);
 
-    const token=
-      url.searchParams.get("token")||"";
+    const token =
+      url.searchParams.get(
+        "token"
+      ) || "";
 
-    const username=
-      this.getUserFromToken(token);
+    const username =
+      this.getUserFromToken(
+        token
+      );
 
     if(!username){
 
       return this.json(
         {
-          error:"جلسة غير صالحة"
+          error:
+            "جلسة غير صالحة"
         },
         401
       );
     }
 
-    const rows=
+    const rows =
       this.sql.exec(
         `
         SELECT username
@@ -1889,18 +2427,22 @@ export class ChatRoom extends DurableObject {
         `
       ).toArray();
 
-    const users=
-      rows.map(function(row){
+    const users =
+      rows.map(
+        function(row){
 
-        return {
-          username:row.username,
-          online:
-            this.connections.has(
-              row.username
-            )
-        };
+          return {
+            username:
+              row.username,
 
-      }.bind(this));
+            online:
+              this.connections.has(
+                row.username
+              )
+          };
+
+        }.bind(this)
+      );
 
     return this.json({
       users
@@ -1913,7 +2455,7 @@ export class ChatRoom extends DurableObject {
       return null;
     }
 
-    const rows=
+    const rows =
       this.sql.exec(
         `
         SELECT
@@ -1926,15 +2468,17 @@ export class ChatRoom extends DurableObject {
         token
       ).toArray();
 
-    if(rows.length===0){
+    if(rows.length === 0){
+
       return null;
     }
 
-    const session=rows[0];
+    const session =
+      rows[0];
 
     if(
-      session.expires_at>0&&
-      session.expires_at<Date.now()
+      session.expires_at > 0 &&
+      session.expires_at < Date.now()
     ){
 
       this.sql.exec(
@@ -1953,30 +2497,41 @@ export class ChatRoom extends DurableObject {
 
   async websocket(request){
 
-    const url=
+    const url =
       new URL(request.url);
 
-    const token=
-      url.searchParams.get("token")||"";
+    const token =
+      url.searchParams.get(
+        "token"
+      ) || "";
 
-    const username=
-      this.getUserFromToken(token);
+    const username =
+      this.getUserFromToken(
+        token
+      );
 
     if(!username){
 
       return new Response(
         "Unauthorized",
-        {status:401}
+        {
+          status:401
+        }
       );
     }
 
-    const pair=
+    const pair =
       new WebSocketPair();
 
-    const client=pair[0];
-    const server=pair[1];
+    const client =
+      pair[0];
 
-    this.ctx.acceptWebSocket(server);
+    const server =
+      pair[1];
+
+    this.ctx.acceptWebSocket(
+      server
+    );
 
     this.connections.set(
       username,
@@ -2003,23 +2558,17 @@ export class ChatRoom extends DurableObject {
 
     try{
 
-      const attachment=
+      const attachment =
         ws.deserializeAttachment();
 
       if(!attachment){
         return;
       }
 
-      const username=
-        attachment.username;
-
-      const data=
-        JSON.parse(message);
-
       await this.handleMessage(
         ws,
-        username,
-        data
+        attachment.username,
+        JSON.parse(message)
       );
 
     }catch(error){
@@ -2039,41 +2588,49 @@ export class ChatRoom extends DurableObject {
 
   async webSocketClose(ws){
 
-    const attachment=
+    const attachment =
       ws.deserializeAttachment();
 
     if(!attachment){
       return;
     }
 
-    const username=
+    const username =
       attachment.username;
 
     if(
-      this.connections.get(username)===ws
+      this.connections.get(
+        username
+      ) === ws
     ){
 
-      this.connections.delete(username);
+      this.connections.delete(
+        username
+      );
     }
   }
 
   async webSocketError(ws){
 
-    const attachment=
+    const attachment =
       ws.deserializeAttachment();
 
     if(!attachment){
       return;
     }
 
-    const username=
+    const username =
       attachment.username;
 
     if(
-      this.connections.get(username)===ws
+      this.connections.get(
+        username
+      ) === ws
     ){
 
-      this.connections.delete(username);
+      this.connections.delete(
+        username
+      );
     }
   }
 
@@ -2083,19 +2640,23 @@ export class ChatRoom extends DurableObject {
     data
   ){
 
-    if(data.type==="message"){
+    if(data.type === "message"){
 
-      const to=
-        String(data.to||"").trim();
+      const to =
+        String(
+          data.to || ""
+        ).trim();
 
-      const text=
-        String(data.text||"").trim();
+      const text =
+        String(
+          data.text || ""
+        ).trim();
 
-      if(!to||!text){
+      if(!to || !text){
         return;
       }
 
-      const exists=
+      const exists =
         this.sql.exec(
           `
           SELECT username
@@ -2106,11 +2667,12 @@ export class ChatRoom extends DurableObject {
           to
         ).toArray();
 
-      if(exists.length===0){
+      if(exists.length === 0){
         return;
       }
 
-      const createdAt=Date.now();
+      const createdAt =
+        Date.now();
 
       this.sql.exec(
         `
@@ -2124,7 +2686,8 @@ export class ChatRoom extends DurableObject {
           audio_data
         )
         VALUES(
-          ?,?,
+          ?,
+          ?,
           ?,
           ?,
           'text',
@@ -2137,7 +2700,7 @@ export class ChatRoom extends DurableObject {
         createdAt
       );
 
-      const payload=
+      const payload =
         JSON.stringify({
           type:"message",
           from:username,
@@ -2159,19 +2722,23 @@ export class ChatRoom extends DurableObject {
       return;
     }
 
-    if(data.type==="voice"){
+    if(data.type === "voice"){
 
-      const to=
-        String(data.to||"").trim();
+      const to =
+        String(
+          data.to || ""
+        ).trim();
 
-      const audioData=
-        String(data.audio_data||"");
+      const audioData =
+        String(
+          data.audio_data || ""
+        );
 
-      if(!to||!audioData){
+      if(!to || !audioData){
         return;
       }
 
-      const exists=
+      const exists =
         this.sql.exec(
           `
           SELECT username
@@ -2182,28 +2749,28 @@ export class ChatRoom extends DurableObject {
           to
         ).toArray();
 
-      if(exists.length===0){
+      if(exists.length === 0){
         return;
       }
 
-      if(audioData.length>3000000){
+      if(
+        audioData.length >
+        3000000
+      ){
 
-        try{
-
-          ws.send(
-            JSON.stringify({
-              type:"error",
-              error:
-                "التسجيل الصوتي طويل جدًا"
-            })
-          );
-
-        }catch(e){}
+        ws.send(
+          JSON.stringify({
+            type:"error",
+            error:
+              "التسجيل الصوتي طويل جدًا"
+          })
+        );
 
         return;
       }
 
-      const createdAt=Date.now();
+      const createdAt =
+        Date.now();
 
       this.sql.exec(
         `
@@ -2231,7 +2798,7 @@ export class ChatRoom extends DurableObject {
         audioData
       );
 
-      const payload=
+      const payload =
         JSON.stringify({
           type:"voice",
           from:username,
@@ -2253,16 +2820,18 @@ export class ChatRoom extends DurableObject {
       return;
     }
 
-    if(data.type==="history"){
+    if(data.type === "history"){
 
-      const other=
-        String(data.with||"").trim();
+      const other =
+        String(
+          data.with || ""
+        ).trim();
 
       if(!other){
         return;
       }
 
-      const rows=
+      const rows =
         this.sql.exec(
           `
           SELECT
@@ -2303,30 +2872,44 @@ export class ChatRoom extends DurableObject {
           type:"history",
 
           messages:
-            rows.map(function(row){
+            rows.map(
+              function(row){
 
-              return {
-                from:row.sender,
-                to:row.receiver,
-                text:row.text,
-                created_at:row.created_at,
-                message_type:
-                  row.message_type||"text",
-                audio_data:
-                  row.audio_data||null
-              };
+                return {
+                  from:
+                    row.sender,
 
-            })
+                  to:
+                    row.receiver,
+
+                  text:
+                    row.text,
+
+                  created_at:
+                    row.created_at,
+
+                  message_type:
+                    row.message_type ||
+                    "text",
+
+                  audio_data:
+                    row.audio_data ||
+                    null
+                };
+              }
+            )
         })
       );
 
       return;
     }
 
-    if(data.type==="typing"){
+    if(data.type === "typing"){
 
-      const to=
-        String(data.to||"").trim();
+      const to =
+        String(
+          data.to || ""
+        ).trim();
 
       if(!to){
         return;
@@ -2338,11 +2921,11 @@ export class ChatRoom extends DurableObject {
           type:"typing",
           from:username,
           to:to,
-          typing:Boolean(data.typing)
+          typing:Boolean(
+            data.typing
+          )
         })
       );
-
-      return;
     }
   }
 
@@ -2351,7 +2934,7 @@ export class ChatRoom extends DurableObject {
     payload
   ){
 
-    const socket=
+    const socket =
       this.connections.get(
         username
       );
@@ -2362,14 +2945,16 @@ export class ChatRoom extends DurableObject {
 
     try{
 
-      socket.send(payload);
+      socket.send(
+        payload
+      );
 
     }catch(error){
 
       if(
         this.connections.get(
           username
-        )===socket
+        ) === socket
       ){
 
         this.connections.delete(
@@ -2382,12 +2967,16 @@ export class ChatRoom extends DurableObject {
 
 function randomBytes(length){
 
-  const bytes=
-    new Uint8Array(length);
+  const bytes =
+    new Uint8Array(
+      length
+    );
 
-  crypto.getRandomValues(bytes);
+  crypto.getRandomValues(
+    bytes
+  );
 
-  let result="";
+  let result = "";
 
   for(
     let i=0;
@@ -2395,7 +2984,7 @@ function randomBytes(length){
     i++
   ){
 
-    result+=
+    result +=
       bytes[i]
         .toString(16)
         .padStart(2,"0");
@@ -2407,7 +2996,7 @@ function randomBytes(length){
 function randomToken(){
 
   return (
-    randomBytes(32)+
+    randomBytes(32) +
     randomBytes(32)
   );
 }
@@ -2417,22 +3006,26 @@ async function hashPassword(
   saltHex
 ){
 
-  const salt=
-    hexToBytes(saltHex);
+  const salt =
+    hexToBytes(
+      saltHex
+    );
 
-  const encoder=
+  const encoder =
     new TextEncoder();
 
-  const key=
+  const key =
     await crypto.subtle.importKey(
       "raw",
       encoder.encode(password),
-      {name:"PBKDF2"},
+      {
+        name:"PBKDF2"
+      },
       false,
       ["deriveBits"]
     );
 
-  const bits=
+  const bits =
     await crypto.subtle.deriveBits(
       {
         name:"PBKDF2",
@@ -2451,9 +3044,9 @@ async function hashPassword(
 
 function hexToBytes(hex){
 
-  const bytes=
+  const bytes =
     new Uint8Array(
-      hex.length/2
+      hex.length / 2
     );
 
   for(
@@ -2462,9 +3055,9 @@ function hexToBytes(hex){
     i++
   ){
 
-    bytes[i]=
+    bytes[i] =
       parseInt(
-        hex.substr(i*2,2),
+        hex.substr(i * 2,2),
         16
       );
   }
@@ -2474,7 +3067,7 @@ function hexToBytes(hex){
 
 function bytesToHex(bytes){
 
-  let result="";
+  let result = "";
 
   for(
     let i=0;
@@ -2482,11 +3075,11 @@ function bytesToHex(bytes){
     i++
   ){
 
-    result+=
+    result +=
       bytes[i]
         .toString(16)
         .padStart(2,"0");
   }
 
   return result;
-}
+  }
