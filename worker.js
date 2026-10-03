@@ -5,24 +5,43 @@ const HTML = `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>دردشة</title>
+<title>Bola11</title>
 
 <style>
 *{box-sizing:border-box}
+
 body{
   margin:0;
   font-family:Arial,sans-serif;
   background:#e5ddd5;
 }
-button{
-  border:0;
-  border-radius:10px;
-  padding:12px 18px;
-  background:#128c7e;
-  color:white;
-  font-size:16px;
-  cursor:pointer;
+
+button,input{
+  font-family:inherit;
 }
+
+#auth{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
+
+.authBox{
+  width:100%;
+  max-width:400px;
+  background:white;
+  padding:25px;
+  border-radius:18px;
+  box-shadow:0 5px 25px #0002;
+}
+
+.authBox h1{
+  text-align:center;
+  margin-top:0;
+}
+
 input{
   width:100%;
   padding:13px;
@@ -31,88 +50,192 @@ input{
   border-radius:10px;
   font-size:16px;
 }
-.auth{
-  max-width:420px;
-  margin:60px auto;
-  background:white;
-  padding:25px;
-  border-radius:18px;
+
+button{
+  border:0;
+  padding:12px 18px;
+  border-radius:10px;
+  cursor:pointer;
+  font-size:15px;
 }
-.auth h1{text-align:center}
-#authMsg{
-  margin:12px 0;
-  min-height:24px;
+
+.mainBtn{
+  width:100%;
+  background:#128c7e;
+  color:white;
+  margin-top:8px;
 }
-.error{color:#c00}
-.success{color:#087f23}
-#app{display:none}
+
+.switchBtn{
+  width:100%;
+  background:#eee;
+  margin-top:8px;
+}
+
+#error{
+  color:#d00;
+  text-align:center;
+  min-height:22px;
+}
+
+#app{
+  display:none;
+  height:100vh;
+  flex-direction:column;
+}
+
 header{
+  height:60px;
   background:#075e54;
   color:white;
-  padding:15px;
-  font-size:21px;
-  font-weight:bold;
-}
-.top{
-  background:white;
-  padding:10px;
   display:flex;
-  justify-content:space-between;
   align-items:center;
+  justify-content:space-between;
+  padding:0 15px;
 }
-#users{
+
+header h2{
+  margin:0;
+  font-size:20px;
+}
+
+.logout{
+  background:#ffffff22;
+  color:white;
+}
+
+.content{
+  flex:1;
+  display:flex;
+  min-height:0;
+}
+
+.sidebar{
+  width:270px;
+  background:#fff;
+  border-left:1px solid #ddd;
+  overflow-y:auto;
+}
+
+.sidebarTitle{
+  padding:15px;
+  font-weight:bold;
   background:#f5f5f5;
-  padding:10px;
 }
+
 .user{
-  display:inline-block;
-  background:white;
-  padding:7px 12px;
-  border-radius:15px;
-  margin:3px;
+  padding:13px;
+  border-bottom:1px solid #eee;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:10px;
 }
+
+.user:hover{
+  background:#f1f1f1;
+}
+
+.user.active{
+  background:#d9fdd3;
+}
+
+.dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#aaa;
+}
+
+.dot.online{
+  background:#25d366;
+}
+
+.chat{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+}
+
+.chatHeader{
+  background:#f0f0f0;
+  padding:12px 15px;
+  border-bottom:1px solid #ddd;
+  font-weight:bold;
+}
+
 #messages{
-  height:calc(100vh - 205px);
-  overflow:auto;
+  flex:1;
+  overflow-y:auto;
   padding:15px;
 }
-.msg{
-  background:white;
-  width:max-content;
-  max-width:82%;
-  padding:10px 14px;
-  margin:8px 0;
-  border-radius:14px;
+
+.message{
+  max-width:75%;
+  padding:9px 12px;
+  margin:6px 0;
+  border-radius:10px;
+  word-wrap:break-word;
 }
-.name{
-  color:#075e54;
-  font-weight:bold;
-  font-size:13px;
+
+.mine{
+  margin-right:auto;
+  background:#d9fdd3;
+}
+
+.theirs{
+  margin-left:auto;
+  background:white;
+}
+
+.messageName{
+  font-size:12px;
+  color:#777;
   margin-bottom:4px;
 }
-#bar{
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  background:white;
-  padding:10px;
+
+.sendBox{
   display:flex;
-  gap:8px;
+  gap:7px;
+  padding:10px;
+  background:#f0f0f0;
 }
-#input{
-  flex:1;
+
+.sendBox input{
   margin:0;
+  flex:1;
 }
-#send{
-  border-radius:50%;
-  width:48px;
-  padding:0;
+
+.sendBtn{
+  background:#128c7e;
+  color:white;
 }
-#status{
-  font-size:13px;
+
+.empty{
   color:#777;
-  margin-top:5px;
+  text-align:center;
+  padding:30px;
+}
+
+@media(max-width:700px){
+  .sidebar{
+    width:110px;
+  }
+
+  .user{
+    font-size:13px;
+    padding:12px 6px;
+  }
+
+  .sidebarTitle{
+    font-size:13px;
+    padding:10px 5px;
+  }
+
+  .message{
+    max-width:85%;
+  }
 }
 </style>
 </head>
@@ -120,316 +243,445 @@ header{
 <body>
 
 <div id="auth">
-  <div class="auth">
-    <h1>💬 دردشة</h1>
 
-    <input id="username" placeholder="اسم المستخدم">
-    <input id="password" type="password" placeholder="كلمة المرور">
+  <div class="authBox" id="loginBox">
+    <h1>💬 Bola11</h1>
 
-    <button id="register" style="width:100%">
-      إنشاء حساب
-    </button>
+    <input id="loginUser" placeholder="اسم المستخدم">
+    <input id="loginPass" type="password" placeholder="كلمة السر">
 
-    <br><br>
+    <button class="mainBtn" onclick="login()">دخول</button>
+    <button class="switchBtn" onclick="showRegister()">إنشاء حساب</button>
 
-    <button id="login" style="width:100%">
-      تسجيل الدخول
-    </button>
-
-    <div id="authMsg"></div>
+    <div id="loginError" class="error"></div>
   </div>
+
+  <div class="authBox" id="registerBox" style="display:none">
+    <h1>👤 إنشاء حساب</h1>
+
+    <input id="regUser" placeholder="اسم المستخدم">
+    <input id="regPass" type="password" placeholder="كلمة السر">
+
+    <button class="mainBtn" onclick="register()">إنشاء الحساب</button>
+    <button class="switchBtn" onclick="showLogin()">لدي حساب بالفعل</button>
+
+    <div id="registerError" class="error"></div>
+  </div>
+
 </div>
+
 
 <div id="app">
 
-  <header>💬 دردشة</header>
+  <header>
+    <h2>💬 Bola11</h2>
+    <button class="logout" onclick="logout()">تسجيل خروج</button>
+  </header>
 
-  <div class="top">
-    <span>👤 <b id="me"></b></span>
-    <button id="logout">خروج</button>
-  </div>
+  <div class="content">
 
-  <div id="users">
-    <b>🟢 المتصلون:</b>
-    <div id="userList"></div>
-  </div>
+    <aside class="sidebar">
 
-  <div id="messages"></div>
+      <div class="sidebarTitle">
+        👥 المستخدمون
+      </div>
 
-  <div id="bar">
-    <input
-      id="input"
-      placeholder="اكتب رسالة..."
-      autocomplete="off"
-    >
-    <button id="send">➤</button>
+      <div id="users">
+        جاري تحميل المستخدمين...
+      </div>
+
+    </aside>
+
+    <main class="chat">
+
+      <div class="chatHeader" id="chatTitle">
+        اختر شخصًا لبدء المحادثة
+      </div>
+
+      <div id="messages">
+        <div class="empty">
+          اختر مستخدمًا من القائمة
+        </div>
+      </div>
+
+      <div class="sendBox">
+
+        <input
+          id="messageInput"
+          placeholder="اكتب رسالة..."
+          disabled
+          onkeydown="if(event.key==='Enter') sendMessage()"
+        >
+
+        <button
+          class="sendBtn"
+          onclick="sendMessage()"
+        >
+          إرسال
+        </button>
+
+      </div>
+
+    </main>
+
   </div>
 
 </div>
 
+
 <script>
 
-const auth = document.getElementById("auth");
-const app = document.getElementById("app");
-
-const usernameInput = document.getElementById("username");
-const passwordInput = document.getElementById("password");
-
-const authMsg = document.getElementById("authMsg");
-
-const messages = document.getElementById("messages");
-const input = document.getElementById("input");
-const send = document.getElementById("send");
-
-const userList = document.getElementById("userList");
-const me = document.getElementById("me");
-
 let token = localStorage.getItem("chatToken");
-let currentUser = localStorage.getItem("chatUser");
-let ws = null;
+let username = localStorage.getItem("chatUser");
 
-function showError(text){
-  authMsg.className = "error";
-  authMsg.textContent = text;
+let socket = null;
+let selectedUser = null;
+let onlineUsers = new Set();
+
+
+function showLogin(){
+  document.getElementById("loginBox").style.display="block";
+  document.getElementById("registerBox").style.display="none";
 }
 
-function showSuccess(text){
-  authMsg.className = "success";
-  authMsg.textContent = text;
+
+function showRegister(){
+  document.getElementById("loginBox").style.display="none";
+  document.getElementById("registerBox").style.display="block";
 }
 
-async function api(path, body){
-
-  try{
-
-    const response = await fetch(path,{
-      method:"POST",
-      headers:{
-        "content-type":"application/json"
-      },
-      body:JSON.stringify(body)
-    });
-
-    const text = await response.text();
-
-    let data = {};
-
-    try{
-      data = JSON.parse(text);
-    }catch{
-      data = {};
-    }
-
-    if(!response.ok){
-
-      return {
-        ok:false,
-        data:data,
-        status:response.status,
-        raw:text
-      };
-    }
-
-    return {
-      ok:true,
-      data:data,
-      status:response.status,
-      raw:text
-    };
-
-  }catch(error){
-
-    return {
-      ok:false,
-      data:{
-        error:"مشكلة اتصال: "+error.message
-      },
-      status:0,
-      raw:""
-    };
-
-  }
-}
 
 async function register(){
 
-  const u = usernameInput.value.trim();
-  const p = passwordInput.value;
+  const user =
+    document.getElementById("regUser").value.trim();
 
-  if(u.length < 3){
-    showError("اسم المستخدم لازم يكون 3 حروف على الأقل");
+  const pass =
+    document.getElementById("regPass").value;
+
+  const error =
+    document.getElementById("registerError");
+
+  error.textContent="";
+
+  if(!user || !pass){
+    error.textContent="اكتب اسم المستخدم وكلمة السر";
     return;
   }
 
-  if(u.length > 20){
-    showError("اسم المستخدم طويل جدًا");
-    return;
+  try{
+
+    const res = await fetch("/api/register",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        username:user,
+        password:pass
+      })
+    });
+
+    const data = await res.json();
+
+    if(!res.ok){
+      error.textContent=data.error || "فشل إنشاء الحساب";
+      return;
+    }
+
+    token=data.token;
+    username=data.username;
+
+    localStorage.setItem("chatToken",token);
+    localStorage.setItem("chatUser",username);
+
+    startApp();
+
+  }catch(e){
+
+    error.textContent="تعذر الاتصال بالخادم";
+
   }
 
-  if(p.length < 6){
-    showError("كلمة المرور لازم تكون 6 أحرف على الأقل");
-    return;
-  }
-
-  showSuccess("⏳ جاري إنشاء الحساب...");
-
-  const result = await api("/api/register",{
-    username:u,
-    password:p
-  });
-
-  if(!result.ok){
-
-    showError(
-      result.data?.error ||
-      "حصل خطأ رقم "+result.status
-    );
-
-    return;
-  }
-
-  showSuccess("✅ تم إنشاء الحساب! سجل الدخول الآن");
-
-  passwordInput.value = "";
 }
+
 
 async function login(){
 
-  const u = usernameInput.value.trim();
-  const p = passwordInput.value;
+  const user =
+    document.getElementById("loginUser").value.trim();
 
-  if(!u || !p){
-    showError("اكتب اسم المستخدم وكلمة المرور");
+  const pass =
+    document.getElementById("loginPass").value;
+
+  const error =
+    document.getElementById("loginError");
+
+  error.textContent="";
+
+  if(!user || !pass){
+    error.textContent="اكتب اسم المستخدم وكلمة السر";
     return;
   }
 
-  showSuccess("⏳ جاري تسجيل الدخول...");
+  try{
 
-  const result = await api("/api/login",{
-    username:u,
-    password:p
+    const res = await fetch("/api/login",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        username:user,
+        password:pass
+      })
+    });
+
+    const data=await res.json();
+
+    if(!res.ok){
+      error.textContent=data.error || "بيانات الدخول غير صحيحة";
+      return;
+    }
+
+    token=data.token;
+    username=data.username;
+
+    localStorage.setItem("chatToken",token);
+    localStorage.setItem("chatUser",username);
+
+    startApp();
+
+  }catch(e){
+
+    error.textContent="تعذر الاتصال بالخادم";
+
+  }
+
+}
+
+
+async function logout(){
+
+  try{
+
+    if(token){
+
+      await fetch("/api/logout",{
+        method:"POST",
+        headers:{
+          "Authorization":"Bearer "+token
+        }
+      });
+
+    }
+
+  }catch(e){}
+
+  if(socket){
+    socket.close();
+    socket=null;
+  }
+
+  localStorage.removeItem("chatToken");
+  localStorage.removeItem("chatUser");
+
+  token=null;
+  username=null;
+
+  location.reload();
+
+}
+
+
+function startApp(){
+
+  document.getElementById("auth").style.display="none";
+  document.getElementById("app").style.display="flex";
+
+  loadUsers();
+  connectSocket();
+
+}
+
+
+async function loadUsers(){
+
+  const box=document.getElementById("users");
+
+  try{
+
+    const res=await fetch("/api/users",{
+      headers:{
+        "Authorization":"Bearer "+token
+      }
+    });
+
+    const data=await res.json();
+
+    if(!res.ok){
+      box.innerHTML="<div class='empty'>تعذر تحميل المستخدمين</div>";
+      return;
+    }
+
+    renderUsers(data.users || []);
+
+  }catch(e){
+
+    box.innerHTML="<div class='empty'>تعذر الاتصال</div>";
+
+  }
+
+}
+
+
+function renderUsers(users){
+
+  const box=document.getElementById("users");
+
+  box.innerHTML="";
+
+  if(!users.length){
+
+    box.innerHTML=
+      "<div class='empty'>لا يوجد مستخدمون</div>";
+
+    return;
+  }
+
+  users.forEach(user=>{
+
+    const div=document.createElement("div");
+
+    div.className="user";
+
+    if(user===selectedUser){
+      div.classList.add("active");
+    }
+
+    const dot=document.createElement("span");
+
+    dot.className="dot";
+
+    if(onlineUsers.has(user)){
+      dot.classList.add("online");
+    }
+
+    const name=document.createElement("span");
+
+    name.textContent=user;
+
+    div.appendChild(dot);
+    div.appendChild(name);
+
+    div.onclick=()=>selectUser(user);
+
+    box.appendChild(div);
+
   });
 
-  if(!result.ok){
-
-    showError(
-      result.data?.error ||
-      "حصل خطأ رقم "+result.status
-    );
-
-    return;
-  }
-
-  if(!result.data.token){
-
-    showError("تم الدخول لكن لم يتم استلام رمز الدخول");
-    return;
-  }
-
-  token = result.data.token;
-  currentUser = result.data.username;
-
-  localStorage.setItem("chatToken",token);
-  localStorage.setItem("chatUser",currentUser);
-
-  openChat();
 }
 
-function openChat(){
 
-  auth.style.display = "none";
-  app.style.display = "block";
+function selectUser(user){
 
-  me.textContent = currentUser;
+  selectedUser=user;
 
-  connectWebSocket();
+  document.getElementById("chatTitle").textContent=
+    "💬 "+user;
+
+  document.getElementById("messageInput").disabled=false;
+
+  document.getElementById("messageInput").focus();
+
+  document.getElementById("messages").innerHTML="";
+
+  renderUsers(
+    [...document.querySelectorAll(".user")]
+      .map(x=>x.textContent.trim())
+  );
+
+  requestHistory(user);
+
 }
 
-function connectWebSocket(){
 
-  if(!token){
-    return;
-  }
+function connectSocket(){
 
-  if(ws){
+  if(!token) return;
 
-    try{
-      ws.close();
-    }catch{}
+  const protocol=
+    location.protocol==="https:" ? "wss://" : "ws://";
 
-  }
+  socket=new WebSocket(
+    protocol+location.host+
+    "/ws?token="+encodeURIComponent(token)
+  );
 
-  const protocol =
-    location.protocol === "https:"
-      ? "wss://"
-      : "ws://";
+  socket.onopen=()=>{
 
-  const url =
-    protocol +
-    location.host +
-    "/ws?token=" +
-    encodeURIComponent(token);
-
-  ws = new WebSocket(url);
-
-  ws.onopen = function(){
-
-    input.focus();
+    console.log("WebSocket connected");
 
   };
 
-  ws.onmessage = function(event){
+
+  socket.onmessage=(event)=>{
 
     try{
 
-      const data = JSON.parse(event.data);
+      const data=JSON.parse(event.data);
 
-      if(data.type === "message"){
+      if(data.type==="users"){
 
-        addMessage(
-          data.name,
-          data.text
-        );
+        onlineUsers=new Set(data.users || []);
 
-      }
-
-      if(data.type === "users"){
-
-        userList.innerHTML = "";
-
-        data.users.forEach(function(user){
-
-          const el =
-            document.createElement("span");
-
-          el.className = "user";
-          el.textContent = "🟢 " + user;
-
-          userList.appendChild(el);
-
-        });
+        loadUsers();
 
       }
 
-      if(data.type === "error"){
+      if(data.type==="message"){
 
-        alert(
-          data.message ||
-          "حصل خطأ"
-        );
+        if(
+          selectedUser &&
+          (
+            (data.from===username && data.to===selectedUser) ||
+            (data.from===selectedUser && data.to===username)
+          )
+        ){
+
+          showMessage(data);
+
+        }
 
       }
 
-    }catch{}
+      if(data.type==="history"){
+
+        if(data.with===selectedUser){
+
+          document.getElementById("messages").innerHTML="";
+
+          (data.messages || []).forEach(showMessage);
+
+        }
+
+      }
+
+    }catch(e){
+
+      console.log(e);
+
+    }
 
   };
 
-  ws.onclose = function(){
 
-    setTimeout(function(){
+  socket.onclose=()=>{
+
+    setTimeout(()=>{
 
       if(token){
-        connectWebSocket();
+        connectSocket();
       }
 
     },2000);
@@ -438,134 +690,86 @@ function connectWebSocket(){
 
 }
 
-function addMessage(name,text){
 
-  const box =
-    document.createElement("div");
+function requestHistory(user){
 
-  box.className = "msg";
+  if(!socket || socket.readyState!==WebSocket.OPEN)
+    return;
 
-  const nameElement =
-    document.createElement("div");
+  socket.send(JSON.stringify({
+    type:"history",
+    with:user
+  }));
 
-  nameElement.className = "name";
-  nameElement.textContent = name;
-
-  const textElement =
-    document.createElement("div");
-
-  textElement.textContent = text;
-
-  box.append(
-    nameElement,
-    textElement
-  );
-
-  messages.appendChild(box);
-
-  messages.scrollTop =
-    messages.scrollHeight;
 }
+
 
 function sendMessage(){
 
-  const text =
-    input.value.trim();
+  const input=document.getElementById("messageInput");
 
-  if(!text){
+  const text=input.value.trim();
+
+  if(!text) return;
+
+  if(!selectedUser){
+
+    alert("اختر شخصًا أولًا");
     return;
+
   }
 
-  if(
-    !ws ||
-    ws.readyState !== WebSocket.OPEN
-  ){
+  if(!socket || socket.readyState!==WebSocket.OPEN){
 
     alert("الاتصال غير متاح");
     return;
+
   }
 
-  ws.send(
-    JSON.stringify({
-      type:"message",
-      text:text
-    })
-  );
+  socket.send(JSON.stringify({
+    type:"message",
+    to:selectedUser,
+    text:text
+  }));
 
-  input.value = "";
-
+  input.value="";
   input.focus();
+
 }
 
-async function logout(){
 
-  if(ws){
+function showMessage(data){
 
-    try{
-      ws.close();
-    }catch{}
+  const box=document.getElementById("messages");
 
-  }
+  const div=document.createElement("div");
 
-  if(token){
+  div.className="message "+
+    (data.from===username ? "mine" : "theirs");
 
-    await api(
-      "/api/logout",
-      {token:token}
-    );
+  const name=document.createElement("div");
 
-  }
+  name.className="messageName";
 
-  localStorage.removeItem("chatToken");
-  localStorage.removeItem("chatUser");
+  name.textContent=data.from;
 
-  token = null;
-  currentUser = null;
-  ws = null;
+  const text=document.createElement("div");
 
-  messages.innerHTML = "";
-  userList.innerHTML = "";
+  text.textContent=data.text;
 
-  app.style.display = "none";
-  auth.style.display = "block";
+  div.appendChild(name);
+  div.appendChild(text);
 
-  usernameInput.value = "";
-  passwordInput.value = "";
+  box.appendChild(div);
 
-  showSuccess("تم تسجيل الخروج");
+  box.scrollTop=box.scrollHeight;
+
 }
 
-document.getElementById("register").onclick =
-  register;
 
-document.getElementById("login").onclick =
-  login;
+if(token && username){
 
-document.getElementById("logout").onclick =
-  logout;
-
-send.onclick =
-  sendMessage;
-
-input.onkeydown = function(e){
-
-  if(e.key === "Enter"){
-    sendMessage();
-  }
-
-};
-
-passwordInput.onkeydown = function(e){
-
-  if(e.key === "Enter"){
-    login();
-  }
-
-};
-
-if(token && currentUser){
-
-  openChat();
+  startApp();
 
 }
 
@@ -575,74 +779,129 @@ if(token && currentUser){
 </html>`;
 
 
-function json(data,status=200){
+export default {
 
-  return new Response(
-    JSON.stringify(data),
-    {
-      status:status,
-      headers:{
-        "content-type":
-          "application/json;charset=UTF-8"
-      }
+  async fetch(request, env){
+
+    const url=new URL(request.url);
+
+    if(url.pathname==="/"){
+      return new Response(HTML,{
+        headers:{
+          "content-type":"text/html;charset=UTF-8"
+        }
+      });
     }
-  );
 
-}
+    if(
+      url.pathname==="/api/register" ||
+      url.pathname==="/api/login" ||
+      url.pathname==="/api/logout" ||
+      url.pathname==="/api/users" ||
+      url.pathname==="/ws"
+    ){
 
+      const id=env.CHAT_ROOM.idFromName("main");
 
-function bytesToBase64(bytes){
+      const room=env.CHAT_ROOM.get(id);
 
-  let binary = "";
+      return room.fetch(request);
 
-  for(const byte of bytes){
-    binary += String.fromCharCode(byte);
-  }
+    }
 
-  return btoa(binary);
-
-}
-
-
-function base64ToBytes(text){
-
-  const binary = atob(text);
-
-  const bytes =
-    new Uint8Array(binary.length);
-
-  for(
-    let i=0;
-    i<binary.length;
-    i++
-  ){
-
-    bytes[i] =
-      binary.charCodeAt(i);
+    return new Response("Not Found",{
+      status:404
+    });
 
   }
 
-  return bytes;
-
-}
+};
 
 
-async function hashPassword(
-  password,
-  saltBytes
-){
+export class ChatRoom extends DurableObject{
 
-  const key =
-    await crypto.subtle.importKey(
+  constructor(ctx,env){
+
+    super(ctx,env);
+
+    this.ctx=ctx;
+
+    this.sql=ctx.storage.sql;
+
+    this.sql.exec(`
+      CREATE TABLE IF NOT EXISTS accounts(
+        username TEXT PRIMARY KEY,
+        password_hash TEXT NOT NULL,
+        salt TEXT NOT NULL,
+        created_at INTEGER NOT NULL
+      )
+    `);
+
+    this.sql.exec(`
+      CREATE TABLE IF NOT EXISTS sessions(
+        token TEXT PRIMARY KEY,
+        username TEXT NOT NULL,
+        expires_at INTEGER NOT NULL
+      )
+    `);
+
+    this.sql.exec(`
+      CREATE TABLE IF NOT EXISTS messages(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        sender TEXT NOT NULL,
+        receiver TEXT NOT NULL,
+        text TEXT NOT NULL,
+        created_at INTEGER NOT NULL
+      )
+    `);
+
+  }
+
+
+  async fetch(request){
+
+    const url=new URL(request.url);
+
+    if(url.pathname==="/api/register"){
+      return this.register(request);
+    }
+
+    if(url.pathname==="/api/login"){
+      return this.login(request);
+    }
+
+    if(url.pathname==="/api/logout"){
+      return this.logout(request);
+    }
+
+    if(url.pathname==="/api/users"){
+      return this.users(request);
+    }
+
+    if(url.pathname==="/ws"){
+      return this.websocket(request);
+    }
+
+    return new Response("Not Found",{
+      status:404
+    });
+
+  }
+
+
+  async hashPassword(password,saltBytes){
+
+    const encoder=new TextEncoder();
+
+    const key=await crypto.subtle.importKey(
       "raw",
-      new TextEncoder().encode(password),
+      encoder.encode(password),
       "PBKDF2",
       false,
       ["deriveBits"]
     );
 
-  const bits =
-    await crypto.subtle.deriveBits(
+    const bits=await crypto.subtle.deriveBits(
       {
         name:"PBKDF2",
         salt:saltBytes,
@@ -653,375 +912,135 @@ async function hashPassword(
       256
     );
 
-  return new Uint8Array(bits);
-
-}
-
-
-function randomBytes(length){
-
-  const bytes =
-    new Uint8Array(length);
-
-  crypto.getRandomValues(bytes);
-
-  return bytes;
-
-}
-
-
-function randomToken(){
-
-  return bytesToBase64(
-    randomBytes(32)
-  )
-  .replace(/\+/g,"-")
-  .replace(/\//g,"_")
-  .replace(/=/g,"");
-
-}
-
-
-export default {
-
-  async fetch(request,env){
-
-    const url =
-      new URL(request.url);
-
-    if(
-      url.pathname === "/" &&
-      request.method === "GET"
-    ){
-
-      return new Response(
-        HTML,
-        {
-          headers:{
-            "content-type":
-              "text/html;charset=UTF-8"
-          }
-        }
-      );
-
-    }
-
-
-    if(
-      url.pathname === "/ws" &&
-      request.headers
-        .get("Upgrade")
-        ?.toLowerCase() === "websocket"
-    ){
-
-      const token =
-        url.searchParams.get("token");
-
-      if(!token){
-
-        return new Response(
-          "Unauthorized",
-          {status:401}
-        );
-
-      }
-
-      const room =
-        env.CHAT_ROOM.getByName("main");
-
-      return room.fetch(
-        new Request(
-          new URL(
-            "/websocket?token="+
-            encodeURIComponent(token),
-            request.url
-          ),
-          request
-        )
-      );
-
-    }
-
-
-    if(
-      url.pathname === "/api/register" ||
-      url.pathname === "/api/login" ||
-      url.pathname === "/api/logout"
-    ){
-
-      const room =
-        env.CHAT_ROOM.getByName("main");
-
-      return room.fetch(request);
-
-    }
-
-
-    return new Response(
-      "Not Found",
-      {status:404}
+    return this.bytesToBase64(
+      new Uint8Array(bits)
     );
 
   }
 
-};
 
+  bytesToBase64(bytes){
 
-export class ChatRoom
-  extends DurableObject{
+    let binary="";
 
-  constructor(ctx,env){
-
-    super(ctx,env);
-
-    this.sessions = new Map();
-
-    try{
-
-      this.ctx.storage.sql.exec(`
-        CREATE TABLE IF NOT EXISTS accounts(
-          username TEXT PRIMARY KEY,
-          password_hash TEXT NOT NULL,
-          salt TEXT NOT NULL,
-          created_at INTEGER NOT NULL
-        );
-
-        CREATE TABLE IF NOT EXISTS sessions(
-          token TEXT PRIMARY KEY,
-          username TEXT NOT NULL,
-          expires_at INTEGER NOT NULL
-        );
-      `);
-
-    }catch(error){
-
-      this.dbError =
-        String(error);
-
+    for(const b of bytes){
+      binary+=String.fromCharCode(b);
     }
 
-
-    for(
-      const ws of this.ctx.getWebSockets()
-    ){
-
-      try{
-
-        const data =
-          ws.deserializeAttachment();
-
-        if(data?.username){
-
-          this.sessions.set(
-            ws,
-            data
-          );
-
-        }
-
-      }catch{}
-
-    }
+    return btoa(binary);
 
   }
 
 
-  async fetch(request){
+  base64ToBytes(str){
 
-    const url =
-      new URL(request.url);
+    const binary=atob(str);
 
+    const bytes=new Uint8Array(binary.length);
 
-    if(
-      url.pathname === "/api/register"
-    ){
-
-      return this.register(request);
-
+    for(let i=0;i<binary.length;i++){
+      bytes[i]=binary.charCodeAt(i);
     }
 
+    return bytes;
 
-    if(
-      url.pathname === "/api/login"
-    ){
-
-      return this.login(request);
-
-    }
+  }
 
 
-    if(
-      url.pathname === "/api/logout"
-    ){
+  randomToken(){
 
-      return this.logout(request);
+    const bytes=new Uint8Array(32);
 
-    }
+    crypto.getRandomValues(bytes);
 
-
-    if(
-      url.pathname === "/websocket" &&
-      request.headers
-        .get("Upgrade")
-        ?.toLowerCase() === "websocket"
-    ){
-
-      return this.handleWebSocket(
-        request
-      );
-
-    }
-
-
-    return new Response(
-      "Not Found",
-      {status:404}
-    );
+    return this.bytesToBase64(bytes)
+      .replaceAll("+","-")
+      .replaceAll("/","_")
+      .replaceAll("=","");
 
   }
 
 
   async register(request){
 
-    if(this.dbError){
-
-      return json(
-        {
-          error:
-            "خطأ في قاعدة البيانات: "+
-            this.dbError
-        },
-        500
-      );
-
-    }
-
-
-    let data;
-
     try{
 
-      data =
-        await request.json();
+      const body=await request.json();
 
-    }catch{
+      const username=String(body.username || "").trim();
+      const password=String(body.password || "");
 
-      return json(
-        {
-          error:"بيانات غير صحيحة"
-        },
-        400
-      );
+      if(username.length<3){
+        return Response.json(
+          {error:"اسم المستخدم يجب أن يكون 3 أحرف على الأقل"},
+          {status:400}
+        );
+      }
 
-    }
+      if(password.length<4){
+        return Response.json(
+          {error:"كلمة السر يجب أن تكون 4 أحرف على الأقل"},
+          {status:400}
+        );
+      }
 
+      const exists=this.sql
+        .exec(
+          "SELECT username FROM accounts WHERE username=?",
+          username
+        )
+        .one();
 
-    const username =
-      String(
-        data.username || ""
-      ).trim();
+      if(exists){
 
-    const password =
-      String(
-        data.password || ""
-      );
-
-
-    if(
-      !/^[a-zA-Z0-9_\u0600-\u06FF]{3,20}$/
-        .test(username)
-    ){
-
-      return json(
-        {
-          error:
-            "اسم المستخدم لازم يكون من 3 إلى 20 حرف أو رقم أو _"
-        },
-        400
-      );
-
-    }
-
-
-    if(password.length < 6){
-
-      return json(
-        {
-          error:
-            "كلمة المرور لازم تكون 6 أحرف على الأقل"
-        },
-        400
-      );
-
-    }
-
-
-    try{
-
-      const existing =
-        this.ctx.storage.sql
-          .exec(
-            "SELECT username FROM accounts WHERE username=?",
-            username
-          )
-          .toArray();
-
-
-      if(existing.length){
-
-        return json(
-          {
-            error:
-              "اسم المستخدم موجود بالفعل"
-          },
-          409
+        return Response.json(
+          {error:"اسم المستخدم موجود بالفعل"},
+          {status:409}
         );
 
       }
 
+      const salt=new Uint8Array(16);
 
-      const salt =
-        randomBytes(16);
+      crypto.getRandomValues(salt);
 
-      const hash =
-        await hashPassword(
-          password,
-          salt
-        );
+      const saltText=this.bytesToBase64(salt);
 
+      const passwordHash=
+        await this.hashPassword(password,salt);
 
-      this.ctx.storage.sql.exec(
-        `
-        INSERT INTO accounts
-        (
-          username,
-          password_hash,
-          salt,
-          created_at
-        )
-        VALUES(?,?,?,?)
-        `,
+      this.sql.exec(
+        `INSERT INTO accounts
+         (username,password_hash,salt,created_at)
+         VALUES(?,?,?,?)`,
         username,
-        bytesToBase64(hash),
-        bytesToBase64(salt),
+        passwordHash,
+        saltText,
         Date.now()
       );
 
+      const token=this.randomToken();
 
-      return json({
-        ok:true
+      this.sql.exec(
+        `INSERT INTO sessions
+         (token,username,expires_at)
+         VALUES(?,?,?)`,
+        token,
+        username,
+        Date.now()+30*24*60*60*1000
+      );
+
+      return Response.json({
+        ok:true,
+        token,
+        username
       });
 
+    }catch(e){
 
-    }catch(error){
-
-      return json(
-        {
-          error:
-            "خطأ أثناء إنشاء الحساب: "+
-            String(error)
-        },
-        500
+      return Response.json(
+        {error:e.message || "فشل إنشاء الحساب"},
+        {status:500}
       );
 
     }
@@ -1031,449 +1050,382 @@ export class ChatRoom
 
   async login(request){
 
-    if(this.dbError){
-
-      return json(
-        {
-          error:
-            "خطأ في قاعدة البيانات: "+
-            this.dbError
-        },
-        500
-      );
-
-    }
-
-
-    let data;
-
     try{
 
-      data =
-        await request.json();
+      const body=await request.json();
 
-    }catch{
+      const username=String(body.username || "").trim();
+      const password=String(body.password || "");
 
-      return json(
-        {
-          error:"بيانات غير صحيحة"
-        },
-        400
-      );
-
-    }
-
-
-    const username =
-      String(
-        data.username || ""
-      ).trim();
-
-    const password =
-      String(
-        data.password || ""
-      );
-
-
-    try{
-
-      const rows =
-        this.ctx.storage.sql
-          .exec(
-            `
-            SELECT
-              username,
-              password_hash,
-              salt
-            FROM accounts
-            WHERE username=?
-            `,
-            username
-          )
-          .toArray();
-
-
-      if(!rows.length){
-
-        return json(
-          {
-            error:
-              "اسم المستخدم أو كلمة المرور غير صحيحة"
-          },
-          401
-        );
-
-      }
-
-
-      const account =
-        rows[0];
-
-
-      const salt =
-        base64ToBytes(
-          account.salt
-        );
-
-
-      const hash =
-        await hashPassword(
-          password,
-          salt
-        );
-
-
-      if(
-        bytesToBase64(hash) !==
-        account.password_hash
-      ){
-
-        return json(
-          {
-            error:
-              "اسم المستخدم أو كلمة المرور غير صحيحة"
-          },
-          401
-        );
-
-      }
-
-
-      const token =
-        randomToken();
-
-      const expires =
-        Date.now() +
-        30*24*60*60*1000;
-
-
-      this.ctx.storage.sql.exec(
-        `
-        INSERT INTO sessions
-        (
-          token,
-          username,
-          expires_at
+      const account=this.sql
+        .exec(
+          `SELECT username,password_hash,salt
+           FROM accounts
+           WHERE username=?`,
+          username
         )
-        VALUES(?,?,?)
-        `,
+        .one();
+
+      if(!account){
+
+        return Response.json(
+          {error:"اسم المستخدم أو كلمة السر غير صحيحة"},
+          {status:401}
+        );
+
+      }
+
+      const salt=this.base64ToBytes(account.salt);
+
+      const hash=
+        await this.hashPassword(password,salt);
+
+      if(hash!==account.password_hash){
+
+        return Response.json(
+          {error:"اسم المستخدم أو كلمة السر غير صحيحة"},
+          {status:401}
+        );
+
+      }
+
+      const token=this.randomToken();
+
+      this.sql.exec(
+        `INSERT INTO sessions
+         (token,username,expires_at)
+         VALUES(?,?,?)`,
         token,
-        account.username,
-        expires
+        username,
+        Date.now()+30*24*60*60*1000
       );
 
-
-      return json({
+      return Response.json({
         ok:true,
-        token:token,
-        username:account.username
+        token,
+        username
       });
 
+    }catch(e){
 
-    }catch(error){
-
-      return json(
-        {
-          error:
-            "خطأ أثناء تسجيل الدخول: "+
-            String(error)
-        },
-        500
+      return Response.json(
+        {error:e.message || "فشل تسجيل الدخول"},
+        {status:500}
       );
 
     }
+
+  }
+
+
+  async getUserFromToken(request){
+
+    const auth=request.headers.get("Authorization") || "";
+
+    if(!auth.startsWith("Bearer ")){
+      return null;
+    }
+
+    const token=auth.slice(7);
+
+    const session=this.sql
+      .exec(
+        `SELECT username
+         FROM sessions
+         WHERE token=? AND expires_at>?`,
+        token,
+        Date.now()
+      )
+      .one();
+
+    return session ? session.username : null;
+
+  }
+
+
+  async users(request){
+
+    const username=
+      await this.getUserFromToken(request);
+
+    if(!username){
+
+      return Response.json(
+        {error:"غير مسجل الدخول"},
+        {status:401}
+      );
+
+    }
+
+    const rows=[
+      ...this.sql.exec(
+        `SELECT username
+         FROM accounts
+         ORDER BY username ASC`
+      )
+    ];
+
+    return Response.json({
+      users:rows.map(row=>row.username)
+    });
 
   }
 
 
   async logout(request){
 
-    try{
+    const auth=request.headers.get("Authorization") || "";
 
-      const data =
-        await request.json();
+    if(auth.startsWith("Bearer ")){
 
-      const token =
-        String(
-          data.token || ""
-        );
+      const token=auth.slice(7);
 
-      if(token){
+      this.sql.exec(
+        "DELETE FROM sessions WHERE token=?",
+        token
+      );
 
-        this.ctx.storage.sql.exec(
-          "DELETE FROM sessions WHERE token=?",
-          token
-        );
+    }
 
-      }
-
-    }catch{}
-
-
-    return json({
+    return Response.json({
       ok:true
     });
 
   }
 
 
-  getUsernameFromToken(token){
+  async websocket(request){
 
-    if(!token){
-      return null;
-    }
-
-
-    try{
-
-      const rows =
-        this.ctx.storage.sql
-          .exec(
-            `
-            SELECT
-              username,
-              expires_at
-            FROM sessions
-            WHERE token=?
-            `,
-            token
-          )
-          .toArray();
-
-
-      if(!rows.length){
-        return null;
-      }
-
-
-      const session =
-        rows[0];
-
-
-      if(
-        Number(session.expires_at) <
-        Date.now()
-      ){
-
-        this.ctx.storage.sql.exec(
-          "DELETE FROM sessions WHERE token=?",
-          token
-        );
-
-        return null;
-
-      }
-
-
-      return session.username;
-
-    }catch{
-
-      return null;
-
-    }
-
-  }
-
-
-  async handleWebSocket(request){
-
-    const url =
-      new URL(request.url);
-
-    const token =
-      url.searchParams.get("token");
-
-    const username =
-      this.getUsernameFromToken(token);
-
+    const username=
+      await this.getUserFromToken(request);
 
     if(!username){
 
-      return new Response(
-        "Unauthorized",
-        {status:401}
-      );
+      return new Response("Unauthorized",{
+        status:401
+      });
 
     }
 
+    const upgrade=request.headers.get("Upgrade");
 
-    const pair =
+    if(upgrade!=="websocket"){
+
+      return new Response("Expected WebSocket",{
+        status:426
+      });
+
+    }
+
+    const pair=
       new WebSocketPair();
 
-    const client =
-      pair[0];
+    const client=pair[0];
+    const server=pair[1];
 
-    const server =
-      pair[1];
-
-
-    this.ctx.acceptWebSocket(
-      server
-    );
-
+    this.ctx.acceptWebSocket(server);
 
     server.serializeAttachment({
-      username:username
+      username
     });
-
-
-    this.sessions.set(
-      server,
-      {
-        username:username
-      }
-    );
-
 
     this.broadcastUsers();
 
-
-    return new Response(
-      null,
-      {
-        status:101,
-        webSocket:client
-      }
-    );
+    return new Response(null,{
+      status:101,
+      webSocket:client
+    });
 
   }
 
 
-  broadcastUsers(){
+  async webSocketMessage(ws,message){
 
-    const users =
-      [
-        ...new Set(
-          [...this.sessions.values()]
-            .map(
-              x => x.username
-            )
-        )
-      ];
-
-
-    const message =
-      JSON.stringify({
-        type:"users",
-        users:users
-      });
-
-
-    for(
-      const ws of this.ctx.getWebSockets()
-    ){
-
-      try{
-
-        ws.send(message);
-
-      }catch{}
-
-    }
-
-  }
-
-
-  async webSocketMessage(
-    ws,
-    message
-  ){
-
-    const session =
-      this.sessions.get(ws) ||
+    const attachment=
       ws.deserializeAttachment();
 
-
-    if(!session?.username){
+    if(!attachment || !attachment.username){
       return;
     }
 
+    let data;
 
     try{
 
-      const data =
-        JSON.parse(message);
+      data=JSON.parse(message);
+
+    }catch(e){
+
+      return;
+
+    }
 
 
-      if(
-        data.type !== "message"
-      ){
+    if(data.type==="history"){
 
-        return;
+      const withUser=
+        String(data.with || "");
 
-      }
-
-
-      const text =
-        String(
-          data.text || ""
-        ).trim();
-
-
-      if(!text){
+      if(!withUser){
         return;
       }
 
+      const rows=[
+        ...this.sql.exec(
+          `SELECT sender,receiver,text,created_at
+           FROM messages
+           WHERE
+           (sender=? AND receiver=?)
+           OR
+           (sender=? AND receiver=?)
+           ORDER BY id ASC`,
+          attachment.username,
+          withUser,
+          withUser,
+          attachment.username
+        )
+      ];
 
-      const outgoing =
-        JSON.stringify({
-          type:"message",
-          name:session.username,
-          text:text.slice(0,2000)
-        });
+      ws.send(JSON.stringify({
+        type:"history",
+        with:withUser,
+        messages:rows.map(row=>({
+          from:row.sender,
+          to:row.receiver,
+          text:row.text,
+          createdAt:row.created_at
+        }))
+      }));
+
+      return;
+
+    }
 
 
-      for(
-        const client of
-        this.ctx.getWebSockets()
-      ){
+    if(data.type==="message"){
+
+      const to=
+        String(data.to || "").trim();
+
+      const text=
+        String(data.text || "").trim();
+
+      if(!to || !text){
+        return;
+      }
+
+      if(text.length>5000){
+        return;
+      }
+
+      const receiverExists=
+        this.sql.exec(
+          "SELECT username FROM accounts WHERE username=?",
+          to
+        ).one();
+
+      if(!receiverExists){
+        return;
+      }
+
+      const createdAt=Date.now();
+
+      this.sql.exec(
+        `INSERT INTO messages
+         (sender,receiver,text,created_at)
+         VALUES(?,?,?,?)`,
+        attachment.username,
+        to,
+        text,
+        createdAt
+      );
+
+      const packet=JSON.stringify({
+        type:"message",
+        from:attachment.username,
+        to,
+        text,
+        createdAt
+      });
+
+      const sockets=this.ctx.getWebSockets();
+
+      for(const client of sockets){
 
         try{
 
-          client.send(
-            outgoing
-          );
+          const info=client.deserializeAttachment();
 
-        }catch{}
+          if(
+            info &&
+            (
+              info.username===attachment.username ||
+              info.username===to
+            )
+          ){
+
+            client.send(packet);
+
+          }
+
+        }catch(e){}
 
       }
 
-
-    }catch{}
+    }
 
   }
 
 
-  async webSocketClose(
-    ws,
-    code,
-    reason
-  ){
-
-    this.sessions.delete(ws);
+  async webSocketClose(ws){
 
     this.broadcastUsers();
-
-
-    try{
-
-      ws.close(
-        code,
-        reason
-      );
-
-    }catch{}
 
   }
 
 
   async webSocketError(ws){
 
-    this.sessions.delete(ws);
-
     this.broadcastUsers();
 
   }
 
+
+  broadcastUsers(){
+
+    const sockets=this.ctx.getWebSockets();
+
+    const users=[];
+
+    for(const ws of sockets){
+
+      try{
+
+        const info=ws.deserializeAttachment();
+
+        if(info && info.username){
+          users.push(info.username);
+        }
+
+      }catch(e){}
+
+    }
+
+    const unique=[...new Set(users)];
+
+    const packet=JSON.stringify({
+      type:"users",
+      users:unique
+    });
+
+    for(const ws of sockets){
+
+      try{
+        ws.send(packet);
+      }catch(e){}
+
+    }
+
   }
+
+}
