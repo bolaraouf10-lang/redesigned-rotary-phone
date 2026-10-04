@@ -1,16 +1,8 @@
 import { DurableObject } from "cloudflare:workers";
 
-/* =========================================================
-   إعدادات
-========================================================= */
-
 const MAX_FILE_SIZE = 20 * 1024 * 1024;
 const SESSION_FOREVER = 8640000000000000;
 const PBKDF2_ITERATIONS = 100000;
-
-/* =========================================================
-   HTML
-========================================================= */
 
 const HTML = `<!doctype html>
 <html lang="ar" dir="rtl">
@@ -23,607 +15,665 @@ const HTML = `<!doctype html>
 *{box-sizing:border-box}
 
 html,body{
- margin:0;
- width:100%;
- height:100%;
- font-family:Arial,sans-serif
+  margin:0;
+  width:100%;
+  height:100%;
+  font-family:Arial,sans-serif;
 }
 
 body{
- background:#e5ddd5;
- color:#111
+  background:#e5ddd5;
+  color:#111;
 }
 
 button,input{
- font:inherit
+  font:inherit;
 }
 
 button{
- cursor:pointer;
- border:0
+  cursor:pointer;
 }
 
 .hidden{
- display:none!important
+  display:none!important;
 }
 
-/* ================= AUTH ================= */
+/* AUTH */
 
 #auth{
- min-height:100vh;
- display:flex;
- align-items:center;
- justify-content:center;
- padding:20px;
- background:#075e54
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:#e5ddd5;
 }
 
 .auth-box{
- width:min(420px,100%);
- background:#fff;
- padding:25px;
- border-radius:16px;
- box-shadow:0 10px 40px #0004
+  width:100%;
+  max-width:390px;
+  background:#fff;
+  border-radius:18px;
+  padding:25px;
+  box-shadow:0 8px 30px #0002;
 }
 
 .auth-box h1{
- margin:0 0 20px;
- text-align:center;
- color:#075e54
+  margin:0 0 8px;
+  text-align:center;
+  color:#075e54;
+}
+
+.auth-sub{
+  text-align:center;
+  color:#777;
+  margin-bottom:22px;
 }
 
 .auth-box input{
- width:100%;
- padding:13px;
- margin:7px 0;
- border:1px solid #ddd;
- border-radius:10px;
- outline:none
+  width:100%;
+  padding:13px;
+  border:1px solid #ddd;
+  border-radius:10px;
+  margin-bottom:12px;
+  outline:none;
 }
 
 .auth-box input:focus{
- border-color:#128c7e
+  border-color:#128c7e;
 }
 
-.auth-actions{
- display:flex;
- gap:8px;
- margin-top:10px
+.primary{
+  width:100%;
+  border:0;
+  border-radius:10px;
+  padding:13px;
+  background:#128c7e;
+  color:#fff;
+  font-weight:bold;
 }
 
-.auth-actions button{
- flex:1;
- padding:12px;
- border-radius:10px;
- background:#128c7e;
- color:#fff
-}
-
-#switchAuth{
- width:100%;
- margin-top:10px;
- background:none;
- color:#075e54
+.switch{
+  margin-top:14px;
+  text-align:center;
+  color:#128c7e;
+  cursor:pointer;
 }
 
 #error{
- color:#c62828;
- text-align:center;
- min-height:22px;
- margin-top:10px
+  color:#c62828;
+  text-align:center;
+  margin-top:12px;
+  min-height:20px;
 }
 
-/* ================= APP ================= */
+/* APP */
 
 #app{
- height:100vh;
- display:flex;
- overflow:hidden
+  height:100vh;
+  display:flex;
+  overflow:hidden;
 }
+
+.layout{
+  width:100%;
+  height:100%;
+  display:flex;
+}
+
+/* SIDEBAR */
 
 .sidebar{
- width:310px;
- background:#fff;
- border-left:1px solid #ddd;
- display:flex;
- flex-direction:column
+  width:310px;
+  background:#fff;
+  border-left:1px solid #ddd;
+  display:flex;
+  flex-direction:column;
 }
 
-.side-head{
- background:#075e54;
- color:#fff;
- padding:15px
+.side-header{
+  height:65px;
+  background:#075e54;
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 12px;
 }
 
-.side-head-row{
- display:flex;
- justify-content:space-between;
- align-items:center;
- gap:8px
+.side-title{
+  font-size:19px;
+  font-weight:bold;
 }
 
-.side-head h2{
- margin:0;
- font-size:19px
+.header-buttons{
+  display:flex;
+  gap:5px;
 }
 
 .icon-btn{
- background:#ffffff22;
- color:#fff;
- width:38px;
- height:38px;
- border-radius:50%
+  border:0;
+  background:transparent;
+  color:inherit;
+  font-size:20px;
+  width:38px;
+  height:38px;
+  border-radius:50%;
 }
 
-.search{
- padding:10px;
- background:#f0f2f5
+.icon-btn:hover{
+  background:#ffffff22;
 }
 
-.search input{
- width:100%;
- padding:11px;
- border:0;
- border-radius:9px;
- outline:0
+.search-box{
+  padding:10px;
+  background:#f5f5f5;
 }
 
-#userList{
- overflow:auto;
- flex:1
+.search-box input{
+  width:100%;
+  border:0;
+  outline:0;
+  background:#fff;
+  border-radius:20px;
+  padding:10px 14px;
 }
 
-.user{
- display:flex;
- align-items:center;
- gap:10px;
- padding:12px;
- border-bottom:1px solid #eee;
- cursor:pointer
+#users{
+  overflow:auto;
+  flex:1;
 }
 
-.user:hover{
- background:#f5f5f5
+.user-item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:12px;
+  border-bottom:1px solid #eee;
+  cursor:pointer;
 }
 
-.user.active{
- background:#e7f7f4
+.user-item:hover{
+  background:#f5f5f5;
+}
+
+.user-item.selected{
+  background:#e8f5f3;
 }
 
 .avatar{
- width:43px;
- height:43px;
- border-radius:50%;
- background:#128c7e;
- color:#fff;
- display:flex;
- align-items:center;
- justify-content:center;
- font-weight:bold;
- flex-shrink:0
+  width:46px;
+  height:46px;
+  border-radius:50%;
+  background:#128c7e;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+  flex-shrink:0;
 }
 
 .user-info{
- flex:1;
- min-width:0
+  min-width:0;
+  flex:1;
 }
 
 .user-name{
- font-weight:bold;
- overflow:hidden;
- text-overflow:ellipsis;
- white-space:nowrap
+  font-weight:bold;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
 }
 
 .user-status{
- font-size:12px;
- color:#888;
- margin-top:4px;
- display:flex;
- align-items:center;
- gap:5px
+  font-size:12px;
+  color:#888;
+  margin-top:4px;
 }
 
-.dot{
- width:9px;
- height:9px;
- border-radius:50%;
- background:#aaa;
- display:inline-block
+.status-dot{
+  display:inline-block;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  margin-left:5px;
 }
 
-.dot.online{
- background:#20c55a
+.online-dot{
+  background:#20c65a;
 }
+
+.offline-dot{
+  background:#aaa;
+}
+
+/* CHAT */
 
 .chat{
- flex:1;
- display:flex;
- flex-direction:column;
- min-width:0
+  flex:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  background:#efeae2;
 }
 
-.chat-head{
- height:64px;
- background:#075e54;
- color:#fff;
- display:flex;
- align-items:center;
- gap:10px;
- padding:10px 14px
+.chat-header{
+  height:65px;
+  background:#075e54;
+  color:white;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 14px;
 }
 
-.chat-head .avatar{
- background:#128c7e
+.chat-header .avatar{
+  width:45px;
+  height:45px;
+  background:#128c7e;
 }
 
-.chat-title{
- flex:1;
- min-width:0
+.chat-info{
+  flex:1;
+  min-width:0;
 }
 
-.chat-title b{
- display:block;
- overflow:hidden;
- text-overflow:ellipsis;
- white-space:nowrap
+#chatTitle{
+  font-weight:bold;
 }
 
-.chat-title small{
- opacity:.8
+#typing{
+  font-size:12px;
+  opacity:.8;
+  min-height:16px;
 }
 
-.call-buttons{
- display:flex;
- gap:5px
+.messages{
+  flex:1;
+  overflow:auto;
+  padding:15px;
+  background:
+    radial-gradient(#d7d0c8 1px,transparent 1px);
+  background-size:18px 18px;
 }
 
-.call-buttons button{
- width:38px;
- height:38px;
- border-radius:50%;
- background:#ffffff22;
- color:#fff
+.empty-chat{
+  text-align:center;
+  color:#777;
+  margin-top:30px;
 }
 
-#messages{
- flex:1;
- overflow:auto;
- padding:15px;
- display:flex;
- flex-direction:column;
- gap:7px
+.message-row{
+  display:flex;
+  margin:5px 0;
 }
 
-.empty{
- margin:auto;
- color:#777;
- text-align:center
+.message-row.mine{
+  justify-content:flex-start;
 }
 
-.msg{
- max-width:min(75%,520px);
- padding:8px 10px;
- border-radius:10px;
- position:relative;
- word-break:break-word;
- box-shadow:0 1px 2px #0001
+.message-row.theirs{
+  justify-content:flex-end;
 }
 
-.msg.mine{
- align-self:flex-start;
- background:#d9ffc9;
- border-top-left-radius:3px
+.message{
+  max-width:min(75%,600px);
+  padding:8px 10px;
+  border-radius:9px;
+  box-shadow:0 1px 1px #0001;
+  word-break:break-word;
+  position:relative;
 }
 
-.msg.theirs{
- align-self:flex-end;
- background:#fff;
- border-top-right-radius:3px
+.mine .message{
+  background:#d9fdd3;
+  border-top-right-radius:2px;
 }
 
-.msg.deleted{
- color:#888;
- font-style:italic;
- background:#eee
+.theirs .message{
+  background:#fff;
+  border-top-left-radius:2px;
 }
 
-.msg-text{
- white-space:pre-wrap
+.message-text{
+  white-space:pre-wrap;
 }
 
-.msg-time{
- font-size:10px;
- color:#777;
- margin-top:4px;
- text-align:left
+.message-time{
+  font-size:10px;
+  color:#777;
+  margin-top:4px;
+  text-align:left;
 }
 
-.msg img,
-.msg video{
- max-width:100%;
- max-height:320px;
- border-radius:8px;
- display:block;
- margin-top:4px
+.message-file{
+  display:block;
+  max-width:100%;
+  margin-bottom:6px;
 }
 
-.msg audio{
- width:100%;
- max-width:300px;
- margin-top:4px
+.message-file img,
+.message-file video{
+  max-width:100%;
+  max-height:300px;
+  border-radius:8px;
 }
 
-.file-link{
- display:block;
- color:#075e54;
- font-weight:bold;
- text-decoration:none;
- padding:10px;
- background:#f1f1f1;
- border-radius:8px;
- margin-top:4px
+.audio-player{
+  width:250px;
+  max-width:100%;
 }
 
-.typing{
- height:24px;
- padding:0 15px;
- color:#777;
- font-size:12px
+.message-actions{
+  margin-top:5px;
+  display:flex;
+  gap:4px;
 }
+
+.message-actions button{
+  border:0;
+  background:#0000000d;
+  border-radius:5px;
+  font-size:11px;
+  padding:3px 6px;
+}
+
+/* COMPOSER */
 
 .composer{
- display:flex;
- gap:7px;
- padding:10px;
- background:#f0f2f5;
- align-items:center
+  min-height:62px;
+  background:#f0f0f0;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding:9px;
 }
 
 .composer input{
- flex:1;
- min-width:0;
- padding:12px;
- border:0;
- border-radius:20px;
- outline:none
+  flex:1;
+  min-width:0;
+  border:0;
+  outline:0;
+  border-radius:22px;
+  padding:12px 15px;
+  background:#fff;
 }
 
-.composer button{
- width:42px;
- height:42px;
- border-radius:50%;
- background:#128c7e;
- color:#fff;
- flex-shrink:0
+.circle-btn{
+  width:43px;
+  height:43px;
+  border:0;
+  border-radius:50%;
+  background:#128c7e;
+  color:#fff;
+  font-size:19px;
 }
 
-.composer button.recording{
- background:#c62828
+.circle-btn.recording{
+  background:#c62828;
+}
+
+.file-label{
+  width:43px;
+  height:43px;
+  border-radius:50%;
+  background:#128c7e;
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  font-size:20px;
 }
 
 #fileInput{
- display:none
+  display:none;
 }
 
-/* ================= SETTINGS ================= */
+/* CALL */
 
-#settings{
- position:fixed;
- inset:0;
- background:#0007;
- display:flex;
- align-items:center;
- justify-content:center;
- padding:20px;
- z-index:50
-}
-
-.modal{
- width:min(430px,100%);
- background:#fff;
- border-radius:15px;
- padding:20px
-}
-
-.modal h2{
- margin-top:0
-}
-
-.setting-row{
- display:flex;
- justify-content:space-between;
- align-items:center;
- padding:13px 0;
- border-bottom:1px solid #eee
-}
-
-.danger{
- width:100%;
- padding:12px;
- background:#c62828;
- color:#fff;
- border-radius:9px;
- margin-top:15px
-}
-
-.close{
- width:100%;
- padding:11px;
- background:#eee;
- border-radius:9px;
- margin-top:8px
-}
-
-/* ================= CALL ================= */
-
-#callModal{
- position:fixed;
- inset:0;
- background:#000a;
- z-index:100;
- display:flex;
- align-items:center;
- justify-content:center;
- padding:15px
+.call-modal{
+  position:fixed;
+  inset:0;
+  background:#000b;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:1000;
 }
 
 .call-box{
- background:#111;
- width:min(600px,100%);
- border-radius:18px;
- overflow:hidden;
- color:#fff;
- text-align:center;
- position:relative
+  width:min(500px,92%);
+  background:#fff;
+  border-radius:18px;
+  padding:25px;
+  text-align:center;
 }
 
-#remoteVideo{
- width:100%;
- max-height:70vh;
- background:#000;
- object-fit:contain
+.call-box h2{
+  margin-top:0;
 }
 
-#localVideo{
- position:absolute;
- width:120px;
- height:170px;
- object-fit:cover;
- bottom:85px;
- right:20px;
- background:#222;
- border-radius:10px
+.call-buttons{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin-top:20px;
 }
 
-#remoteAudio{
- display:none
+.call-buttons button{
+  border:0;
+  border-radius:10px;
+  padding:11px 20px;
+  color:#fff;
+}
+
+.accept{
+  background:#20a957;
+}
+
+.reject,
+.end-call{
+  background:#d32f2f;
+}
+
+.call-screen{
+  position:fixed;
+  inset:0;
+  background:#111;
+  z-index:1100;
+  display:flex;
+  flex-direction:column;
+}
+
+.remote-video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  background:#111;
+}
+
+.local-video{
+  position:absolute;
+  width:130px;
+  height:180px;
+  right:15px;
+  top:15px;
+  object-fit:cover;
+  border-radius:10px;
+  background:#222;
 }
 
 .call-controls{
- padding:15px;
- display:flex;
- justify-content:center;
- gap:10px
+  position:absolute;
+  bottom:25px;
+  left:0;
+  right:0;
+  display:flex;
+  justify-content:center;
+  gap:12px;
 }
 
 .call-controls button{
- padding:12px 18px;
- border-radius:25px;
- background:#333;
- color:#fff
+  border:0;
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  color:#fff;
+  background:#444;
 }
 
-.call-controls .red{
- background:#c62828
+.call-controls .danger{
+  background:#d32f2f;
 }
 
-#callText{
- padding-top:12px
+/* SETTINGS */
+
+.settings-modal{
+  position:fixed;
+  inset:0;
+  background:#0008;
+  z-index:900;
+  display:flex;
+  justify-content:center;
+  align-items:center;
 }
 
-#incoming{
- position:fixed;
- inset:0;
- background:#0009;
- z-index:120;
- display:flex;
- align-items:center;
- justify-content:center
+.settings{
+  width:min(420px,92%);
+  max-height:90vh;
+  overflow:auto;
+  background:#fff;
+  border-radius:18px;
+  padding:20px;
 }
 
-.incoming-box{
- background:#fff;
- width:min(360px,90%);
- border-radius:18px;
- padding:25px;
- text-align:center
+.settings h2{
+  margin-top:0;
 }
 
-.incoming-buttons{
- display:flex;
- gap:10px
+.setting-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 0;
+  border-bottom:1px solid #eee;
 }
 
-.incoming-buttons button{
- flex:1;
- padding:12px;
- border-radius:10px;
- background:#128c7e;
- color:#fff
+.danger-btn{
+  width:100%;
+  border:0;
+  padding:12px;
+  border-radius:10px;
+  background:#d32f2f;
+  color:white;
+  margin-top:15px;
 }
 
-.incoming-buttons .reject{
- background:#c62828
-}
-
-/* ================= DARK ================= */
+/* DARK */
 
 body.dark{
- background:#111;
- color:#eee
+  background:#111;
+  color:#eee;
 }
 
 body.dark .sidebar,
-body.dark .modal,
-body.dark .incoming-box{
- background:#1e1e1e;
- color:#eee
+body.dark .auth-box,
+body.dark .settings{
+  background:#1e1e1e;
+  color:#eee;
 }
 
-body.dark .user:hover,
-body.dark .user.active{
- background:#292929
+body.dark .user-item{
+  border-color:#333;
 }
 
-body.dark .composer,
-body.dark .search{
- background:#222
+body.dark .user-item:hover{
+  background:#292929;
 }
 
-body.dark .composer input,
-body.dark .search input{
- background:#333;
- color:#fff
+body.dark .search-box,
+body.dark .composer{
+  background:#181818;
 }
 
-body.dark .msg.theirs{
- background:#292929;
- color:#fff
+body.dark .search-box input,
+body.dark .composer input{
+  background:#2a2a2a;
+  color:#fff;
 }
 
-body.dark .msg.mine{
- background:#164d35
+body.dark .chat{
+  background:#111;
 }
 
-body.dark .file-link{
- background:#333;
- color:#8ee6d4
+body.dark .messages{
+  background:#151515;
 }
+
+body.dark .theirs .message{
+  background:#252525;
+  color:#fff;
+}
+
+body.dark .message-actions button{
+  background:#ffffff18;
+  color:#fff;
+}
+
+body.dark .settings{
+  border:1px solid #333;
+}
+
+/* MOBILE */
 
 @media(max-width:700px){
- .sidebar{
-  width:180px
- }
+  .sidebar{
+    width:180px;
+  }
 
- .msg{
-  max-width:88%
- }
+  .message{
+    max-width:88%;
+  }
 }
 
 @media(max-width:430px){
- .sidebar{
-  width:150px
- }
+  .sidebar{
+    width:155px;
+  }
 
- .side-head h2{
-  font-size:15px
- }
+  .side-title{
+    font-size:15px;
+  }
 
- .call-buttons button{
-  width:32px;
-  height:32px
- }
+  .search-box{
+    padding:6px;
+  }
+
+  .user-item{
+    padding:8px;
+  }
+
+  .avatar{
+    width:38px;
+    height:38px;
+  }
+
+  .message{
+    max-width:92%;
+  }
+
+  .composer{
+    gap:4px;
+    padding:6px;
+  }
+
+  .circle-btn,
+  .file-label{
+    width:39px;
+    height:39px;
+  }
 }
 </style>
 </head>
@@ -631,4605 +681,2666 @@ body.dark .file-link{
 <body>
 
 <div id="auth">
+  <div class="auth-box">
+    <h1 id="authTitle">إنشاء حساب</h1>
+    <div class="auth-sub">تطبيق الدردشة</div>
 
- <div class="auth-box">
+    <input id="username" autocomplete="username" placeholder="اسم المستخدم">
+    <input id="password" type="password" autocomplete="current-password" placeholder="كلمة المرور">
 
-  <h1 id="authTitle">إنشاء حساب</h1>
+    <button class="primary" id="authButton">إنشاء الحساب</button>
 
-  <input
-   id="username"
-   maxlength="20"
-   placeholder="اسم المستخدم"
-  >
+    <div class="switch" id="switchAuth">
+      عندك حساب؟ تسجيل الدخول
+    </div>
 
-  <input
-   id="password"
-   type="password"
-   placeholder="كلمة المرور"
-  >
-
-  <div class="auth-actions">
-
-   <button id="registerBtn">
-    إنشاء الحساب
-   </button>
-
-   <button id="loginBtn" style="display:none">
-    دخول
-   </button>
-
+    <div id="error"></div>
   </div>
-
-  <button id="switchAuth">
-   لديك حساب؟ تسجيل الدخول
-  </button>
-
-  <div id="error"></div>
-
- </div>
-
 </div>
 
 <div id="app" class="hidden">
+  <div class="layout">
 
- <aside class="sidebar">
+    <aside class="sidebar">
 
-  <div class="side-head">
+      <div class="side-header">
+        <div class="side-title">المستخدمون</div>
 
-   <div class="side-head-row">
+        <div class="header-buttons">
+          <button class="icon-btn" id="settingsBtn" title="الإعدادات">⚙️</button>
+          <button class="icon-btn" id="logoutBtn" title="خروج">↪️</button>
+        </div>
+      </div>
 
-    <h2>المستخدمون</h2>
+      <div class="search-box">
+        <input id="searchUsers" placeholder="بحث عن مستخدم...">
+      </div>
 
-    <div>
+      <div id="users"></div>
 
-     <button
-      class="icon-btn"
-      id="settingsBtn"
-      title="الإعدادات"
-     >⚙️</button>
+    </aside>
 
-     <button
-      class="icon-btn"
-      id="logoutBtn"
-      title="خروج"
-     >↪</button>
+    <main class="chat">
 
+      <div class="chat-header">
+
+        <div class="avatar" id="chatAvatar">?</div>
+
+        <div class="chat-info">
+          <div id="chatTitle">اختر مستخدمًا</div>
+          <div id="typing"></div>
+        </div>
+
+        <button class="icon-btn" id="audioCallBtn" title="مكالمة صوتية">📞</button>
+        <button class="icon-btn" id="videoCallBtn" title="مكالمة فيديو">📹</button>
+
+      </div>
+
+      <div class="messages" id="messages">
+        <div class="empty-chat">
+          اختر مستخدمًا لبدء المحادثة
+        </div>
+      </div>
+
+      <div class="composer">
+
+        <label class="file-label" title="إرسال ملف">
+          📎
+          <input id="fileInput" type="file">
+        </label>
+
+        <button class="circle-btn" id="recordBtn" title="تسجيل صوتي">🎙️</button>
+
+        <input id="messageInput" placeholder="اكتب رسالة..." autocomplete="off">
+
+        <button class="circle-btn" id="sendBtn">➤</button>
+
+      </div>
+
+    </main>
+
+  </div>
+</div>
+
+<div id="incomingCall" class="call-modal hidden">
+  <div class="call-box">
+    <h2>مكالمة واردة</h2>
+    <div id="incomingText">مكالمة واردة</div>
+
+    <div class="call-buttons">
+      <button class="accept" id="acceptCallBtn">قبول</button>
+      <button class="reject" id="rejectCallBtn">رفض</button>
     </div>
-
-   </div>
-
   </div>
-
-  <div class="search">
-
-   <input
-    id="userSearch"
-    placeholder="ابحث عن مستخدم..."
-   >
-
-  </div>
-
-  <div id="userList">
-   <div class="empty">
-    جاري تحميل المستخدمين...
-   </div>
-  </div>
-
- </aside>
-
- <main class="chat">
-
-  <header class="chat-head">
-
-   <div class="avatar" id="chatAvatar">
-    ?
-   </div>
-
-   <div class="chat-title">
-
-    <b id="chatTitle">
-     اختر مستخدمًا
-    </b>
-
-    <small id="chatStatus">
-     غير متصل
-    </small>
-
-   </div>
-
-   <div class="call-buttons">
-
-    <button
-     id="audioCallBtn"
-     title="مكالمة صوتية"
-    >📞</button>
-
-    <button
-     id="videoCallBtn"
-     title="مكالمة فيديو"
-    >📹</button>
-
-   </div>
-
-  </header>
-
-  <div id="messages">
-
-   <div class="empty">
-    اختر مستخدمًا لبدء المحادثة
-   </div>
-
-  </div>
-
-  <div
-   class="typing"
-   id="typing"
-  ></div>
-
-  <div class="composer">
-
-   <button
-    id="fileBtn"
-    title="إرسال ملف"
-   >📎</button>
-
-   <button
-    id="recordBtn"
-    title="رسالة صوتية"
-   >🎙️</button>
-
-   <input
-    id="messageInput"
-    placeholder="اكتب رسالة..."
-   >
-
-   <button id="sendBtn">
-    ➤
-   </button>
-
-   <input
-    id="fileInput"
-    type="file"
-   >
-
-  </div>
-
- </main>
-
 </div>
 
-<div id="settings" class="hidden">
+<div id="callScreen" class="call-screen hidden">
 
- <div class="modal">
-
-  <h2>الإعدادات</h2>
-
-  <div class="setting-row">
-
-   <span>الحساب</span>
-
-   <b id="settingsUsername"></b>
-
-  </div>
-
-  <div class="setting-row">
-
-   <span>الوضع الداكن</span>
-
-   <input
-    type="checkbox"
-    id="darkMode"
-   >
-
-  </div>
-
-  <button
-   class="danger"
-   id="deleteAccountBtn"
-  >
-   حذف الحساب نهائيًا
-  </button>
-
-  <button
-   class="close"
-   id="closeSettings"
-  >
-   إغلاق
-  </button>
-
- </div>
-
-</div>
-
-<div id="incoming" class="hidden">
-
- <div class="incoming-box">
-
-  <h2 id="incomingTitle">
-   مكالمة واردة
-  </h2>
-
-  <p id="incomingType"></p>
-
-  <div class="incoming-buttons">
-
-   <button id="acceptCall">
-    قبول
-   </button>
-
-   <button
-    class="reject"
-    id="rejectCall"
-   >
-    رفض
-   </button>
-
-  </div>
-
- </div>
-
-</div>
-
-<div id="callModal" class="hidden">
-
- <div class="call-box">
-
-  <video
-   id="remoteVideo"
-   autoplay
-   playsinline
-  ></video>
-
-  <video
-   id="localVideo"
-   autoplay
-   muted
-   playsinline
-  ></video>
-
-  <audio
-   id="remoteAudio"
-   autoplay
-  ></audio>
-
-  <div id="callText">
-   متصل...
-  </div>
+  <video id="remoteVideo" class="remote-video" autoplay playsinline></video>
+  <video id="localVideo" class="local-video" autoplay muted playsinline></video>
 
   <div class="call-controls">
-
-   <button
-    class="red"
-    id="endCallBtn"
-   >
-    إنهاء المكالمة
-   </button>
-
-   <button id="muteBtn">
-    🎤 كتم
-   </button>
-
-   <button id="cameraBtn">
-    📷 الكاميرا
-   </button>
-
+    <button id="muteBtn">🎤</button>
+    <button id="cameraBtn">📷</button>
+    <button id="endCallBtn" class="danger">☎</button>
   </div>
 
- </div>
+</div>
+
+<div id="settingsModal" class="settings-modal hidden">
+
+  <div class="settings">
+
+    <h2>الإعدادات</h2>
+
+    <div class="setting-row">
+      <span>الوضع الداكن</span>
+      <input type="checkbox" id="darkMode">
+    </div>
+
+    <div class="setting-row">
+      <span>اسم الحساب</span>
+      <strong id="settingsUsername"></strong>
+    </div>
+
+    <button class="danger-btn" id="deleteAccountBtn">
+      حذف الحساب
+    </button>
+
+    <button class="primary" id="closeSettings" style="margin-top:10px">
+      إغلاق
+    </button>
+
+  </div>
 
 </div>
 
 <script>
-
-const $ = id => document.getElementById(id);
-
-let token =
- localStorage.getItem("chatToken") || "";
-
-let currentUser =
- localStorage.getItem("chatUser") || "";
-
+let token = localStorage.getItem("chatToken") || "";
+let currentUser = localStorage.getItem("chatUser") || "";
 let selectedUser = "";
 
-let users = [];
-
 let ws = null;
-
 let reconnectTimer = null;
-
-let shouldReconnect = true;
+let typingTimer = null;
 
 let registerMode = true;
 
-let typingTimer = null;
-
 let mediaRecorder = null;
-
 let audioChunks = [];
+let isRecording = false;
 
-let callPC = null;
+let peerConnection = null;
+let localStream = null;
+let incomingCallData = null;
 
-let callStream = null;
+const $ = id => document.getElementById(id);
 
-let remoteStream = null;
+const auth = $("auth");
+const app = $("app");
 
-let callTarget = "";
+const usernameInput = $("username");
+const passwordInput = $("password");
+const authButton = $("authButton");
+const authTitle = $("authTitle");
+const switchAuth = $("switchAuth");
+const errorBox = $("error");
 
-let callType = "audio";
+const usersBox = $("users");
+const searchUsers = $("searchUsers");
 
-let incomingCall = null;
+const messagesBox = $("messages");
+const messageInput = $("messageInput");
+const sendBtn = $("sendBtn");
+const recordBtn = $("recordBtn");
+const fileInput = $("fileInput");
 
-let pendingCandidates = [];
+const chatTitle = $("chatTitle");
+const chatAvatar = $("chatAvatar");
+const typingBox = $("typing");
 
-/* =========================
-   WebRTC
-========================= */
+const incomingCall = $("incomingCall");
+const incomingText = $("incomingText");
 
-const RTC_CONFIG = {
- iceServers:[
-  {
-   urls:"stun:stun.l.google.com:19302"
-  },
-  {
-   urls:"stun:stun.cloudflare.com:3478"
-  }
- ]
-};
+const callScreen = $("callScreen");
+const remoteVideo = $("remoteVideo");
+const localVideo = $("localVideo");
 
-/* =========================
-   أدوات
-========================= */
-
-function esc(value){
-
- return String(value ?? "")
-  .replaceAll("&","&amp;")
-  .replaceAll("<","&lt;")
-  .replaceAll(">","&gt;")
-  .replaceAll('"',"&quot;")
-  .replaceAll("'","&#039;");
+function escapeHtml(value){
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
 }
 
-function setError(message){
- $("error").textContent = message || "";
+function avatarLetter(name){
+  return (name || "?").trim().charAt(0).toUpperCase() || "?";
+}
+
+function showError(message){
+  errorBox.textContent = message || "";
 }
 
 function showApp(){
-
- $("auth").classList.add("hidden");
-
- $("app").classList.remove("hidden");
-
- $("settingsUsername").textContent =
-  currentUser;
+  auth.classList.add("hidden");
+  app.classList.remove("hidden");
 }
 
 function showAuth(){
-
- $("app").classList.add("hidden");
-
- $("auth").classList.remove("hidden");
+  app.classList.add("hidden");
+  auth.classList.remove("hidden");
 }
 
-function saveSession(newToken,newUser){
-
- token = newToken;
-
- currentUser = newUser;
-
- localStorage.setItem(
-  "chatToken",
-  token
- );
-
- localStorage.setItem(
-  "chatUser",
-  currentUser
- );
-}
-
-function clearSession(){
-
- token = "";
-
- currentUser = "";
-
- selectedUser = "";
-
- localStorage.removeItem("chatToken");
-
- localStorage.removeItem("chatUser");
-}
-
-function formatTime(timestamp){
-
- try{
-
-  return new Date(timestamp)
-   .toLocaleTimeString(
-    "ar-EG",
-    {
-     hour:"2-digit",
-     minute:"2-digit"
+async function api(url, options = {}){
+  const response = await fetch(url, {
+    ...options,
+    headers:{
+      ...(options.headers || {}),
+      "Content-Type":"application/json"
     }
-   );
+  });
 
- }catch{
-
-  return "";
- }
-}
-
-async function jsonFetch(url,options){
-
- options = options || {};
-
- options.headers =
-  options.headers || {};
-
- if(
-  !options.headers["Content-Type"] &&
-  options.body &&
-  typeof options.body === "string"
- ){
-  options.headers["Content-Type"] =
-   "application/json";
- }
-
- return fetch(url,options);
-}
-
-/* =========================
-   تسجيل الدخول
-========================= */
-
-$("switchAuth").onclick = function(){
-
- registerMode = !registerMode;
-
- $("authTitle").textContent =
-  registerMode
-   ? "إنشاء حساب"
-   : "تسجيل الدخول";
-
- $("registerBtn").style.display =
-  registerMode
-   ? "block"
-   : "none";
-
- $("loginBtn").style.display =
-  registerMode
-   ? "none"
-   : "block";
-
- $("switchAuth").textContent =
-  registerMode
-   ? "لديك حساب؟ تسجيل الدخول"
-   : "ليس لديك حساب؟ إنشاء حساب";
-
- setError("");
-};
-
-$("registerBtn").onclick =
- function(){
-  auth("register");
- };
-
-$("loginBtn").onclick =
- function(){
-  auth("login");
- };
-
-$("password").addEventListener(
- "keydown",
- function(event){
-
-  if(event.key === "Enter"){
-
-   auth(
-    registerMode
-     ? "register"
-     : "login"
-   );
-  }
- }
-);
-
-async function auth(mode){
-
- const username =
-  $("username").value.trim();
-
- const password =
-  $("password").value;
-
- if(username.length < 3){
-
-  setError(
-   "اسم المستخدم يجب أن يكون 3 أحرف على الأقل"
-  );
-
-  return;
- }
-
- if(password.length < 6){
-
-  setError(
-   "كلمة المرور يجب أن تكون 6 أحرف على الأقل"
-  );
-
-  return;
- }
-
- setError("جاري التنفيذ...");
-
- try{
-
-  const response =
-   await jsonFetch(
-    mode === "register"
-     ? "/api/register"
-     : "/api/login",
-    {
-     method:"POST",
-     body:JSON.stringify({
-      username,
-      password
-     })
-    }
-   );
-
-  const data =
-   await response.json()
-    .catch(function(){
-     return {};
-    });
+  let data = {};
+  try{
+    data = await response.json();
+  }catch{}
 
   if(!response.ok){
-
-   setError(
-    data.error ||
-    "تعذر تنفيذ العملية"
-   );
-
-   return;
+    throw new Error(data.error || "حدث خطأ");
   }
 
-  saveSession(
-   data.token,
-   data.username || username
-  );
-
-  $("username").value = "";
-
-  $("password").value = "";
-
-  setError("");
-
-  showApp();
-
-  await loadUsers();
-
-  connectWS();
-
- }catch(error){
-
-  setError(
-   "تعذر الاتصال بالخادم"
-  );
- }
+  return data;
 }
 
-/* =========================
-   استعادة الجلسة
-========================= */
+/* AUTH */
+
+switchAuth.onclick = () => {
+  registerMode = !registerMode;
+
+  authTitle.textContent = registerMode
+    ? "إنشاء حساب"
+    : "تسجيل الدخول";
+
+  authButton.textContent = registerMode
+    ? "إنشاء الحساب"
+    : "تسجيل الدخول";
+
+  switchAuth.textContent = registerMode
+    ? "عندك حساب؟ تسجيل الدخول"
+    : "ليس لديك حساب؟ إنشاء حساب";
+
+  showError("");
+};
+
+authButton.onclick = async () => {
+
+  const username = usernameInput.value.trim();
+  const password = passwordInput.value;
+
+  if(username.length < 3){
+    showError("اسم المستخدم يجب أن يكون 3 أحرف على الأقل");
+    return;
+  }
+
+  if(password.length < 4){
+    showError("كلمة المرور قصيرة جدًا");
+    return;
+  }
+
+  authButton.disabled = true;
+  showError("جاري التنفيذ...");
+
+  try{
+
+    const endpoint = registerMode
+      ? "/api/register"
+      : "/api/login";
+
+    const data = await api(endpoint,{
+      method:"POST",
+      body:JSON.stringify({
+        username,
+        password
+      })
+    });
+
+    token = data.token;
+    currentUser = data.username || username;
+
+    localStorage.setItem("chatToken",token);
+    localStorage.setItem("chatUser",currentUser);
+
+    usernameInput.value = "";
+    passwordInput.value = "";
+
+    showError("");
+
+    showApp();
+
+    await loadUsers();
+    connectWS();
+
+  }catch(error){
+    showError(error.message);
+  }finally{
+    authButton.disabled = false;
+  }
+};
 
 async function restoreSession(){
 
- if(!token || !currentUser){
-
-  showAuth();
-
-  return;
- }
-
- try{
-
-  const response =
-   await fetch(
-    "/api/me?token=" +
-    encodeURIComponent(token),
-    {
-     cache:"no-store"
-    }
-   );
-
-  if(!response.ok){
-
-   clearSession();
-
-   showAuth();
-
-   return;
+  if(!token){
+    showAuth();
+    return;
   }
 
-  const data =
-   await response.json();
+  try{
 
-  currentUser =
-   data.username;
+    const data = await fetch(
+      "/api/me?token=" + encodeURIComponent(token),
+      {cache:"no-store"}
+    );
 
-  localStorage.setItem(
-   "chatUser",
-   currentUser
-  );
+    if(!data.ok){
+      throw new Error("انتهت الجلسة");
+    }
 
-  showApp();
+    const user = await data.json();
 
-  await loadUsers();
+    currentUser = user.username;
 
-  connectWS();
+    localStorage.setItem("chatUser",currentUser);
 
- }catch{
+    showApp();
 
-  clearSession();
+    await loadUsers();
+    connectWS();
 
-  showAuth();
- }
+  }catch{
+
+    token = "";
+    currentUser = "";
+
+    localStorage.removeItem("chatToken");
+    localStorage.removeItem("chatUser");
+
+    showAuth();
+  }
 }
 
-/* =========================
-   المستخدمون
-========================= */
+/* USERS */
 
 async function loadUsers(){
 
- if(!token) return;
+  if(!token) return;
 
- try{
+  try{
 
-  const response =
-   await fetch(
-    "/api/users?token=" +
-    encodeURIComponent(token),
-    {
-     cache:"no-store"
+    const response = await fetch(
+      "/api/users?token=" + encodeURIComponent(token),
+      {cache:"no-store"}
+    );
+
+    if(response.status === 401){
+      await logout();
+      return;
     }
-   );
 
-  if(response.status === 401){
+    const data = await response.json();
 
-   forceLogout();
+    renderUsers(Array.isArray(data) ? data : data.users || []);
 
-   return;
+  }catch(error){
+    usersBox.innerHTML =
+      '<div style="padding:20px;text-align:center;color:#888">تعذر تحميل المستخدمين</div>';
+  }
+}
+
+function renderUsers(list){
+
+  const query = searchUsers.value.trim().toLowerCase();
+
+  const filtered = list
+    .filter(user => user.username !== currentUser)
+    .filter(user =>
+      !query ||
+      String(user.username).toLowerCase().includes(query)
+    );
+
+  if(!filtered.length){
+    usersBox.innerHTML =
+      '<div style="padding:20px;text-align:center;color:#888">لا يوجد مستخدمون</div>';
+    return;
   }
 
-  const data =
-   await response.json();
+  usersBox.innerHTML = filtered.map(user => {
 
-  users =
-   Array.isArray(data.users)
-    ? data.users
-    : [];
+    const name = escapeHtml(user.username);
+    const online = !!user.online;
 
-  renderUsers();
+    return \`
+      <div class="user-item \${selectedUser === user.username ? "selected" : ""}"
+           data-user="\${encodeURIComponent(user.username)}">
 
- }catch{
+        <div class="avatar">\${escapeHtml(avatarLetter(user.username))}</div>
 
-  $("userList").innerHTML =
-   '<div class="empty">' +
-   'تعذر تحميل المستخدمين' +
-   '</div>';
- }
-}
+        <div class="user-info">
+          <div class="user-name">\${name}</div>
 
-function renderUsers(){
+          <div class="user-status">
+            <span class="status-dot \${online ? "online-dot" : "offline-dot"}"></span>
+            \${online ? "متصل الآن" : "غير متصل"}
+          </div>
+        </div>
 
- const query =
-  $("userSearch")
-   .value
-   .trim()
-   .toLowerCase();
+      </div>
+    \`;
 
- const filtered =
-  users
-   .filter(function(user){
+  }).join("");
 
-    return user.username !==
-     currentUser;
-   })
-   .filter(function(user){
+  document.querySelectorAll(".user-item").forEach(item => {
 
-    return !query ||
-     user.username
-      .toLowerCase()
-      .includes(query);
-   });
-
- if(!filtered.length){
-
-  $("userList").innerHTML =
-   '<div class="empty">' +
-   'لا يوجد مستخدمون' +
-   '</div>';
-
-  return;
- }
-
- let html = "";
-
- filtered.forEach(function(user){
-
-  const active =
-   user.username === selectedUser;
-
-  const online =
-   !!user.online;
-
-  const first =
-   user.username
-    .charAt(0)
-    .toUpperCase();
-
-  html +=
-   '<div class="user ' +
-   (active ? "active" : "") +
-   '" data-user="' +
-   esc(user.username) +
-   '">' +
-
-    '<div class="avatar">' +
-     esc(first) +
-    '</div>' +
-
-    '<div class="user-info">' +
-
-     '<div class="user-name">' +
-      esc(user.username) +
-     '</div>' +
-
-     '<div class="user-status">' +
-
-      '<span class="dot ' +
-      (online ? "online" : "") +
-      '"></span>' +
-
-      (online
-       ? "متصل الآن"
-       : "غير متصل") +
-
-     '</div>' +
-
-    '</div>' +
-
-   '</div>';
- });
-
- $("userList").innerHTML = html;
-
- document
-  .querySelectorAll(".user")
-  .forEach(function(element){
-
-   element.onclick =
-    function(){
-
-     selectUser(
-      element.dataset.user
-     );
+    item.onclick = () => {
+      const user = decodeURIComponent(item.dataset.user);
+      openChat(user);
     };
+
   });
 }
 
-$("userSearch").oninput =
- function(){
+searchUsers.oninput = loadUsers;
 
-  renderUsers();
- };
+async function openChat(username){
 
-function selectUser(username){
+  selectedUser = username;
 
- selectedUser =
-  username;
+  chatTitle.textContent = username;
+  chatAvatar.textContent = avatarLetter(username);
+  typingBox.textContent = "";
 
- const user =
-  users.find(function(item){
-   return item.username === username;
-  });
+  renderUsersFromCurrent();
 
- $("chatTitle").textContent =
-  username;
-
- $("chatAvatar").textContent =
-  username.charAt(0).toUpperCase();
-
- $("chatStatus").textContent =
-  user && user.online
-   ? "متصل الآن"
-   : "غير متصل";
-
- $("messages").innerHTML =
-  '<div class="empty">' +
-  'جاري تحميل المحادثة...' +
-  '</div>';
-
- renderUsers();
-
- loadHistory(username);
+  await loadHistory(username);
 }
 
-/* =========================
-   WebSocket
-========================= */
+function renderUsersFromCurrent(){
+  loadUsers();
+}
+
+async function loadHistory(username){
+
+  messagesBox.innerHTML =
+    '<div class="empty-chat">جاري تحميل الرسائل...</div>';
+
+  try{
+
+    const response = await fetch(
+      "/api/history?token=" +
+      encodeURIComponent(token) +
+      "&user=" +
+      encodeURIComponent(username),
+      {cache:"no-store"}
+    );
+
+    if(!response.ok){
+      throw new Error("تعذر تحميل المحادثة");
+    }
+
+    const data = await response.json();
+
+    const list = Array.isArray(data)
+      ? data
+      : data.messages || [];
+
+    messagesBox.innerHTML = "";
+
+    if(!list.length){
+      messagesBox.innerHTML =
+        '<div class="empty-chat">لا توجد رسائل بعد</div>';
+      return;
+    }
+
+    for(const message of list){
+      addMessageToUI(message,false);
+    }
+
+    scrollMessages();
+
+  }catch(error){
+
+    messagesBox.innerHTML =
+      '<div class="empty-chat">تعذر تحميل المحادثة</div>';
+
+  }
+}
+
+/* MESSAGES */
+
+function formatTime(timestamp){
+
+  try{
+    return new Date(timestamp).toLocaleTimeString("ar-EG",{
+      hour:"2-digit",
+      minute:"2-digit"
+    });
+  }catch{
+    return "";
+  }
+}
+
+function addMessageToUI(message,scroll = true){
+
+  if(!message) return;
+
+  const sender = message.sender || message.from;
+  const mine = sender === currentUser;
+
+  const row = document.createElement("div");
+  row.className = "message-row " + (mine ? "mine" : "theirs");
+
+  const box = document.createElement("div");
+  box.className = "message";
+
+  let content = "";
+
+  if(message.file_id || message.fileId){
+
+    const fileId = message.file_id || message.fileId;
+    const fileName = message.file_name || message.fileName || "ملف";
+    const mime = message.mime || "";
+
+    const url =
+      "/api/file?id=" +
+      encodeURIComponent(fileId) +
+      "&token=" +
+      encodeURIComponent(token);
+
+    if(mime.startsWith("image/")){
+
+      content += \`
+        <a class="message-file" href="\${url}" target="_blank">
+          <img src="\${url}" alt="\${escapeHtml(fileName)}">
+        </a>
+      \`;
+
+    }else if(mime.startsWith("video/")){
+
+      content += \`
+        <video class="message-file" src="\${url}" controls></video>
+      \`;
+
+    }else if(mime.startsWith("audio/")){
+
+      content += \`
+        <audio class="audio-player" src="\${url}" controls></audio>
+      \`;
+
+    }else{
+
+      content += \`
+        <a class="message-file"
+           href="\${url}"
+           target="_blank"
+           download="\${escapeHtml(fileName)}">
+           📎 \${escapeHtml(fileName)}
+        </a>
+      \`;
+    }
+  }
+
+  if(message.text){
+    content += '<div class="message-text">' +
+      escapeHtml(message.text) +
+      '</div>';
+  }
+
+  const id = message.id || "";
+
+  content += \`
+    <div class="message-time">
+      \${formatTime(message.created_at || message.createdAt || Date.now())}
+      \${mine ? " ✓✓" : ""}
+    </div>
+  \`;
+
+  if(mine && id){
+
+    content += \`
+      <div class="message-actions">
+        <button data-edit="\${escapeHtml(id)}">تعديل</button>
+        <button data-delete="\${escapeHtml(id)}">حذف</button>
+      </div>
+    \`;
+  }
+
+  box.innerHTML = content;
+
+  row.dataset.messageId = id;
+
+  row.querySelectorAll("[data-edit]").forEach(button => {
+
+    button.onclick = () => {
+
+      const messageId = button.dataset.edit;
+      const oldText = message.text || "";
+
+      const newText = prompt("تعديل الرسالة",oldText);
+
+      if(newText === null) return;
+
+      sendWS({
+        type:"edit",
+        id:messageId,
+        text:newText
+      });
+    };
+
+  });
+
+  row.querySelectorAll("[data-delete]").forEach(button => {
+
+    button.onclick = () => {
+
+      const messageId = button.dataset.delete;
+
+      sendWS({
+        type:"delete",
+        id:messageId
+      });
+    };
+
+  });
+
+  messagesBox.appendChild(row);
+
+  if(scroll){
+    scrollMessages();
+  }
+}
+
+function scrollMessages(){
+  messagesBox.scrollTop = messagesBox.scrollHeight;
+}
+
+function sendMessage(){
+
+  if(!selectedUser){
+    return;
+  }
+
+  const text = messageInput.value.trim();
+
+  if(!text){
+    return;
+  }
+
+  sendWS({
+    type:"message",
+    to:selectedUser,
+    text
+  });
+
+  messageInput.value = "";
+  sendTyping(false);
+}
+
+sendBtn.onclick = sendMessage;
+
+messageInput.addEventListener("keydown",event => {
+
+  if(event.key === "Enter" && !event.shiftKey){
+    event.preventDefault();
+    sendMessage();
+  }
+
+});
+
+messageInput.addEventListener("input",() => {
+
+  if(!selectedUser) return;
+
+  sendTyping(true);
+
+  clearTimeout(typingTimer);
+
+  typingTimer = setTimeout(() => {
+    sendTyping(false);
+  },1200);
+
+});
+
+function sendTyping(value){
+
+  if(!selectedUser) return;
+
+  sendWS({
+    type:"typing",
+    to:selectedUser,
+    value:!!value
+  });
+}
+
+/* FILE UPLOAD */
+
+fileInput.onchange = async () => {
+
+  const file = fileInput.files[0];
+
+  if(!file) return;
+
+  if(!selectedUser){
+    alert("اختر مستخدمًا أولًا");
+    fileInput.value = "";
+    return;
+  }
+
+  if(file.size > ${MAX_FILE_SIZE}){
+    alert("حجم الملف أكبر من 20 ميجابايت");
+    fileInput.value = "";
+    return;
+  }
+
+  try{
+
+    const form = new FormData();
+
+    form.append("file",file);
+    form.append("to",selectedUser);
+
+    const response = await fetch("/api/upload?token=" +
+      encodeURIComponent(token),{
+        method:"POST",
+        body:form
+      });
+
+    const data = await response.json();
+
+    if(!response.ok){
+      throw new Error(data.error || "فشل رفع الملف");
+    }
+
+    fileInput.value = "";
+
+  }catch(error){
+
+    alert(error.message);
+
+  }
+};
+
+/* VOICE */
+
+recordBtn.onclick = async () => {
+
+  if(isRecording){
+    stopRecording();
+    return;
+  }
+
+  try{
+
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio:true
+    });
+
+    mediaRecorder = new MediaRecorder(stream);
+    audioChunks = [];
+    isRecording = true;
+
+    recordBtn.classList.add("recording");
+    recordBtn.textContent = "⏹️";
+
+    mediaRecorder.ondataavailable = event => {
+
+      if(event.data.size){
+        audioChunks.push(event.data);
+      }
+
+    };
+
+    mediaRecorder.onstop = async () => {
+
+      stream.getTracks().forEach(track => track.stop());
+
+      const blob = new Blob(audioChunks,{
+        type:mediaRecorder.mimeType || "audio/webm"
+      });
+
+      isRecording = false;
+      recordBtn.classList.remove("recording");
+      recordBtn.textContent = "🎙️";
+
+      if(blob.size){
+        await uploadVoice(blob);
+      }
+
+    };
+
+    mediaRecorder.start();
+
+  }catch{
+
+    alert("لا يمكن استخدام الميكروفون");
+
+  }
+};
+
+function stopRecording(){
+
+  if(mediaRecorder && mediaRecorder.state !== "inactive"){
+    mediaRecorder.stop();
+  }
+
+}
+
+async function uploadVoice(blob){
+
+  if(!selectedUser) return;
+
+  try{
+
+    const form = new FormData();
+
+    form.append(
+      "file",
+      blob,
+      "voice-" + Date.now() + ".webm"
+    );
+
+    form.append("to",selectedUser);
+
+    const response = await fetch(
+      "/api/upload?token=" +
+      encodeURIComponent(token),
+      {
+        method:"POST",
+        body:form
+      }
+    );
+
+    const data = await response.json();
+
+    if(!response.ok){
+      throw new Error(data.error || "فشل إرسال التسجيل");
+    }
+
+  }catch(error){
+
+    alert(error.message);
+
+  }
+}
+
+/* WEBSOCKET */
 
 function connectWS(){
 
- if(!token || !shouldReconnect){
-  return;
- }
+  if(!token) return;
 
- if(
-  ws &&
-  (
-   ws.readyState ===
-   WebSocket.OPEN ||
-   ws.readyState ===
-   WebSocket.CONNECTING
-  )
- ){
-  return;
- }
+  if(ws &&
+     (ws.readyState === WebSocket.OPEN ||
+      ws.readyState === WebSocket.CONNECTING)){
+    return;
+  }
 
- const protocol =
-  location.protocol === "https:"
-   ? "wss:"
-   : "ws:";
+  const protocol =
+    location.protocol === "https:" ? "wss:" : "ws:";
 
- ws =
-  new WebSocket(
-   protocol +
-   "//" +
-   location.host +
-   "/ws?token=" +
-   encodeURIComponent(token)
+  ws = new WebSocket(
+    protocol +
+    "//" +
+    location.host +
+    "/ws?token=" +
+    encodeURIComponent(token)
   );
 
- ws.onopen =
-  function(){
+  ws.onopen = () => {
 
-   clearTimeout(
-    reconnectTimer
-   );
+    clearTimeout(reconnectTimer);
 
-   if(selectedUser){
+    loadUsers();
 
-    const selected =
-     users.find(function(item){
-      return item.username ===
-       selectedUser;
-     });
-
-    $("chatStatus").textContent =
-     selected && selected.online
-      ? "متصل الآن"
-      : "غير متصل";
-   }
-
-   loadUsers();
-
-   if(selectedUser){
-    loadHistory(selectedUser);
-   }
   };
 
- ws.onmessage =
-  function(event){
+  ws.onmessage = event => {
 
-   try{
+    try{
 
-    const data =
-     JSON.parse(event.data);
+      const data = JSON.parse(event.data);
 
-    handleSocketMessage(data);
+      handleWSMessage(data);
 
-   }catch{}
+    }catch{}
+
   };
 
- ws.onclose =
-  function(){
+  ws.onclose = () => {
 
-   if(!shouldReconnect){
-    return;
-   }
+    ws = null;
 
-   $("chatStatus").textContent =
-    "جاري إعادة الاتصال...";
+    if(token){
 
-   clearTimeout(
-    reconnectTimer
-   );
+      clearTimeout(reconnectTimer);
 
-   reconnectTimer =
-    setTimeout(
-     connectWS,
-     2000
-    );
+      reconnectTimer = setTimeout(() => {
+        connectWS();
+      },2000);
+
+    }
+
   };
 
- ws.onerror =
-  function(){};
+  ws.onerror = () => {
+    try{
+      ws.close();
+    }catch{}
+  };
 }
 
 function sendWS(data){
 
- if(
-  !ws ||
-  ws.readyState !==
-  WebSocket.OPEN
- ){
-  return false;
- }
+  if(!ws || ws.readyState !== WebSocket.OPEN){
 
- try{
+    connectWS();
 
-  ws.send(
-   JSON.stringify(data)
-  );
+    setTimeout(() => {
 
-  return true;
+      if(ws && ws.readyState === WebSocket.OPEN){
+        ws.send(JSON.stringify(data));
+      }
 
- }catch{
+    },500);
 
-  return false;
- }
+    return;
+  }
+
+  ws.send(JSON.stringify(data));
 }
 
-function handleSocketMessage(data){
+function handleWSMessage(data){
 
- if(data.type === "users"){
+  if(data.type === "message"){
 
-  users =
-   Array.isArray(data.users)
-    ? data.users
-    : [];
+    const message = data.message || data;
 
-  renderUsers();
+    const sender = message.sender || message.from;
+    const receiver = message.receiver || message.to;
 
-  if(selectedUser){
-
-   const selected =
-    users.find(function(item){
-     return item.username ===
-      selectedUser;
-    });
-
-   $("chatStatus").textContent =
-    selected && selected.online
-     ? "متصل الآن"
-     : "غير متصل";
-  }
-
-  return;
- }
-
- if(data.type === "message"){
-
-  const message =
-   data.message;
-
-  if(
-   message &&
-   (
-    message.sender === selectedUser ||
-    message.receiver === selectedUser
-   )
-  ){
-
-   addMessage(message);
-
-   scrollMessages();
-  }
-
-  loadUsers();
-
-  return;
- }
-
- if(data.type === "message_edited"){
-
-  const element =
-   document.querySelector(
-    '[data-message-id="' +
-    data.id +
-    '"] .msg-text'
-   );
-
-  if(element){
-
-   element.textContent =
-    data.text;
-  }
-
-  return;
- }
-
- if(data.type === "message_deleted"){
-
-  const element =
-   document.querySelector(
-    '[data-message-id="' +
-    data.id +
-    '"]'
-   );
-
-  if(element){
-
-   element.classList.add(
-    "deleted"
-   );
-
-   const text =
-    element.querySelector(
-     ".msg-text"
-    );
-
-   if(text){
-    text.textContent =
-     "تم حذف الرسالة";
-   }
-
-   const media =
-    element.querySelectorAll(
-     "img,video,audio,.file-link"
-    );
-
-   media.forEach(function(item){
-    item.remove();
-   });
-  }
-
-  return;
- }
-
- if(data.type === "typing"){
-
-  if(data.from !== selectedUser){
-   return;
-  }
-
-  $("typing").textContent =
-   data.value
-    ? "يكتب الآن..."
-    : "";
-
-  return;
- }
-
- if(data.type === "history"){
-
-  renderMessages(
-   data.messages || []
-  );
-
-  return;
- }
-
- if(data.type === "signal"){
-
-  handleSignal(
-   data
-  );
-
-  return;
- }
-}
-
-/* =========================
-   History
-========================= */
-
-async function loadHistory(username){
-
- if(!username || !token){
-  return;
- }
-
- try{
-
-  const response =
-   await fetch(
-    "/api/history?token=" +
-    encodeURIComponent(token) +
-    "&user=" +
-    encodeURIComponent(username),
-    {
-     cache:"no-store"
+    if(
+      selectedUser &&
+      (
+        (sender === currentUser && receiver === selectedUser) ||
+        (sender === selectedUser && receiver === currentUser)
+      )
+    ){
+      addMessageToUI(message);
     }
-   );
 
-  if(response.status === 401){
-
-   forceLogout();
-
-   return;
+    loadUsers();
+    return;
   }
 
-  const data =
-   await response.json();
-
-  renderMessages(
-   data.messages || []
-  );
-
- }catch{
-
-  $("messages").innerHTML =
-   '<div class="empty">' +
-   'تعذر تحميل المحادثة' +
-   '</div>';
- }
-}
-
-function renderMessages(messages){
-
- $("messages").innerHTML = "";
-
- if(!messages.length){
-
-  $("messages").innerHTML =
-   '<div class="empty">' +
-   'لا توجد رسائل بعد' +
-   '</div>';
-
-  return;
- }
-
- messages.forEach(function(message){
-
-  addMessage(message);
- });
-
- scrollMessages();
-}
-
-function addMessage(message){
-
- if(!message){
-  return;
- }
-
- if(
-  document.querySelector(
-   '[data-message-id="' +
-   message.id +
-   '"]'
-  )
- ){
-  return;
- }
-
- const mine =
-  message.sender ===
-  currentUser;
-
- const element =
-  document.createElement("div");
-
- element.className =
-  "msg " +
-  (mine ? "mine" : "theirs") +
-  (
-   message.deleted_for_all
-    ? " deleted"
-    : ""
-  );
-
- element.dataset.messageId =
-  message.id;
-
- let body = "";
-
- if(message.deleted_for_all){
-
-  body =
-   '<div class="msg-text">' +
-   'تم حذف الرسالة' +
-   '</div>';
-
- }else if(
-  message.kind === "image" &&
-  message.file_id
- ){
-
-  body =
-   '<img src="' +
-   fileUrl(message.file_id) +
-   '" alt="صورة">';
-
- }else if(
-  message.kind === "video" &&
-  message.file_id
- ){
-
-  body =
-   '<video controls src="' +
-   fileUrl(message.file_id) +
-   '"></video>';
-
- }else if(
-  message.kind === "audio" &&
-  message.file_id
- ){
-
-  body =
-   '<audio controls src="' +
-   fileUrl(message.file_id) +
-   '"></audio>';
-
- }else if(
-  message.kind === "file" &&
-  message.file_id
- ){
-
-  body =
-   '<a class="file-link" target="_blank" href="' +
-   fileUrl(message.file_id) +
-   '">' +
-   '📎 ' +
-   esc(
-    message.file_name ||
-    "ملف"
-   ) +
-   '</a>';
-
- }else{
-
-  body =
-   '<div class="msg-text">' +
-   esc(message.text || "") +
-   '</div>';
- }
-
- element.innerHTML =
-  body +
-  '<div class="msg-time">' +
-  formatTime(
-   message.created_at
-  ) +
-  (
-   message.edited_at
-    ? " · تم التعديل"
-    : ""
-  ) +
-  '</div>';
-
- $("messages")
-  .appendChild(element);
-}
-
-function fileUrl(id){
-
- return "/api/file?token=" +
-  encodeURIComponent(token) +
-  "&id=" +
-  encodeURIComponent(id);
-}
-
-function scrollMessages(){
-
- $("messages").scrollTop =
-  $("messages").scrollHeight;
-}
-
-/* =========================
-   إرسال الرسائل
-========================= */
-
-$("sendBtn").onclick =
- function(){
-  sendText();
- };
-
-$("messageInput").addEventListener(
- "keydown",
- function(event){
-
-  if(
-   event.key === "Enter" &&
-   !event.shiftKey
-  ){
-
-   event.preventDefault();
-
-   sendText();
-  }
- }
-);
-
-$("messageInput").addEventListener(
- "input",
- function(){
-
-  if(!selectedUser){
-   return;
-  }
-
-  sendWS({
-   type:"typing",
-   to:selectedUser,
-   value:true
-  });
-
-  clearTimeout(
-   typingTimer
-  );
-
-  typingTimer =
-   setTimeout(
-    function(){
-
-     sendWS({
-      type:"typing",
-      to:selectedUser,
-      value:false
-     });
-
-    },
-    900
-   );
- }
-);
-
-function sendText(){
-
- const text =
-  $("messageInput")
-   .value
-   .trim();
-
- if(!text || !selectedUser){
-  return;
- }
-
- const sent =
-  sendWS({
-   type:"message",
-   to:selectedUser,
-   text:text
-  });
-
- if(!sent){
-
-  $("typing").textContent =
-   "الاتصال غير متاح";
-
-  setTimeout(
-   function(){
-    $("typing").textContent = "";
-   },
-   1500
-  );
-
-  return;
- }
-
- $("messageInput").value = "";
-}
-
-/* =========================
-   الملفات
-========================= */
-
-$("fileBtn").onclick =
- function(){
-
-  if(!selectedUser){
-
-   alert(
-    "اختر مستخدمًا أولًا"
-   );
-
-   return;
-  }
-
-  $("fileInput").click();
- };
-
-$("fileInput").onchange =
- async function(){
-
-  const file =
-   $("fileInput").files[0];
-
-  $("fileInput").value = "";
-
-  if(!file || !selectedUser){
-   return;
-  }
-
-  await uploadFile(file);
- };
-
-async function uploadFile(file){
-
- if(file.size > ${MAX_FILE_SIZE}){
-
-  alert(
-   "حجم الملف أكبر من 20 ميجابايت"
-  );
-
-  return;
- }
-
- try{
-
-  $("typing").textContent =
-   "جاري إرسال الملف...";
-
-  const response =
-   await fetch(
-    "/api/upload?token=" +
-    encodeURIComponent(token) +
-    "&to=" +
-    encodeURIComponent(selectedUser) +
-    "&name=" +
-    encodeURIComponent(file.name) +
-    "&mime=" +
-    encodeURIComponent(
-     file.type ||
-     "application/octet-stream"
-    ),
-    {
-     method:"POST",
-     headers:{
-      "Content-Type":
-       "application/octet-stream"
-     },
-     body:file
+  if(data.type === "edit"){
+
+    const row =
+      document.querySelector(
+        '[data-message-id="' +
+        CSS.escape(String(data.id)) +
+        '"]'
+      );
+
+    if(row){
+
+      const text =
+        row.querySelector(".message-text");
+
+      if(text){
+        text.textContent = data.text || "";
+      }
     }
-   );
 
-  const data =
-   await response.json()
-    .catch(function(){
-     return {};
-    });
-
-  $("typing").textContent = "";
-
-  if(!response.ok){
-
-   alert(
-    data.error ||
-    "تعذر إرسال الملف"
-   );
-
-   return;
+    return;
   }
 
-  addMessage(
-   data.message
-  );
+  if(data.type === "delete"){
 
-  scrollMessages();
+    const row =
+      document.querySelector(
+        '[data-message-id="' +
+        CSS.escape(String(data.id)) +
+        '"]'
+      );
 
- }catch{
+    if(row){
+      row.remove();
+    }
 
-  $("typing").textContent = "";
+    return;
+  }
 
-  alert(
-   "تعذر الاتصال أثناء إرسال الملف"
-  );
- }
+  if(data.type === "typing"){
+
+    if(data.from === selectedUser){
+
+      typingBox.textContent =
+        data.value ? "يكتب الآن..." : "";
+
+    }
+
+    return;
+  }
+
+  if(data.type === "users"){
+
+    renderUsers(data.users || []);
+    return;
+  }
+
+  if(data.type === "call"){
+
+    handleIncomingCall(data);
+    return;
+  }
+
+  if(data.type === "offer" ||
+     data.type === "answer" ||
+     data.type === "ice" ||
+     data.type === "hangup"){
+
+    handleCallSignal(data);
+    return;
+  }
+
 }
 
-/* =========================
-   تسجيل صوتي
-========================= */
+/* CALLS */
 
-$("recordBtn").onclick =
- async function(){
-
-  if(
-   mediaRecorder &&
-   mediaRecorder.state ===
-   "recording"
-  ){
-
-   mediaRecorder.stop();
-
-   return;
-  }
+async function startCall(video){
 
   if(!selectedUser){
-
-   alert(
-    "اختر مستخدمًا أولًا"
-   );
-
-   return;
+    alert("اختر مستخدمًا أولًا");
+    return;
   }
 
   try{
 
-   const stream =
-    await navigator
-     .mediaDevices
-     .getUserMedia({
-      audio:true
-     });
-
-   audioChunks = [];
-
-   mediaRecorder =
-    new MediaRecorder(stream);
-
-   mediaRecorder.ondataavailable =
-    function(event){
-
-     if(event.data.size){
-      audioChunks.push(
-       event.data
-      );
-     }
-    };
-
-   mediaRecorder.onstop =
-    async function(){
-
-     stream
-      .getTracks()
-      .forEach(function(track){
-       track.stop();
+    localStream =
+      await navigator.mediaDevices.getUserMedia({
+        audio:true,
+        video
       });
 
-     $("recordBtn")
-      .classList
-      .remove("recording");
+    showCallScreen(video);
 
-     const blob =
-      new Blob(
-       audioChunks,
-       {
-        type:
-         mediaRecorder.mimeType ||
-         "audio/webm"
-       }
-      );
+    createPeerConnection();
 
-     const file =
-      new File(
-       [blob],
-       "voice-" +
-       Date.now() +
-       ".webm",
-       {
-        type:blob.type
-       }
-      );
-
-     await uploadFile(file);
-    };
-
-   mediaRecorder.start();
-
-   $("recordBtn")
-    .classList
-    .add("recording");
-
-  }catch{
-
-   alert(
-    "تعذر تشغيل الميكروفون"
-   );
-  }
- };
-
-/* =========================
-   المكالمات
-========================= */
-
-$("audioCallBtn").onclick =
- function(){
-  startCall("audio");
- };
-
-$("videoCallBtn").onclick =
- function(){
-  startCall("video");
- };
-
-async function createPeer(){
-
- callPC =
-  new RTCPeerConnection(
-   RTC_CONFIG
-  );
-
- remoteStream =
-  new MediaStream();
-
- $("remoteVideo").srcObject =
-  remoteStream;
-
- $("remoteAudio").srcObject =
-  remoteStream;
-
- callPC.ontrack =
-  function(event){
-
-   event.streams[0]
-    .getTracks()
-    .forEach(function(track){
-
-     remoteStream.addTrack(
-      track
-     );
+    localStream.getTracks().forEach(track => {
+      peerConnection.addTrack(track,localStream);
     });
 
-   $("remoteVideo")
-    .play()
-    .catch(function(){});
+    const offer =
+      await peerConnection.createOffer();
 
-   $("remoteAudio")
-    .play()
-    .catch(function(){});
-  };
-
- callPC.onicecandidate =
-  function(event){
-
-   if(event.candidate){
+    await peerConnection.setLocalDescription(offer);
 
     sendWS({
-     type:"signal",
-     to:callTarget,
-     signal:{
-      type:"rtc_candidate",
-      candidate:event.candidate
-     }
+      type:"call",
+      to:selectedUser,
+      video,
+      offer
     });
-   }
-  };
-
- callPC.onconnectionstatechange =
-  function(){
-
-   if(!callPC){
-    return;
-   }
-
-   const state =
-    callPC.connectionState;
-
-   if(state === "connected"){
-
-    $("callText").textContent =
-     "متصل";
-   }
-
-   if(
-    state === "failed" ||
-    state === "disconnected"
-   ){
-
-    $("callText").textContent =
-     "انقطع الاتصال";
-   }
-  };
-}
-
-async function startCall(type){
-
- if(!selectedUser){
-
-  alert(
-   "اختر مستخدمًا أولًا"
-  );
-
-  return;
- }
-
- const target =
-  users.find(function(user){
-   return user.username ===
-    selectedUser;
-  });
-
- if(!target || !target.online){
-
-  alert(
-   "المستخدم غير متصل الآن"
-  );
-
-  return;
- }
-
- try{
-
-  callType = type;
-
-  callTarget =
-   selectedUser;
-
-  pendingCandidates = [];
-
-  callStream =
-   await navigator
-    .mediaDevices
-    .getUserMedia({
-     audio:true,
-     video:
-      type === "video"
-    });
-
-  $("localVideo").srcObject =
-   callStream;
-
-  $("localVideo").style.display =
-   type === "video"
-    ? "block"
-    : "none";
-
-  await createPeer();
-
-  callStream
-   .getTracks()
-   .forEach(function(track){
-
-    callPC.addTrack(
-     track,
-     callStream
-    );
-   });
-
-  const offer =
-   await callPC.createOffer();
-
-  await callPC.setLocalDescription(
-   offer
-  );
-
-  sendWS({
-   type:"signal",
-   to:callTarget,
-   signal:{
-    type:"rtc_offer",
-    callType:type,
-    offer:offer
-   }
-  });
-
-  $("callModal")
-   .classList
-   .remove("hidden");
-
-  $("callText").textContent =
-   "جاري الاتصال...";
-
- }catch{
-
-  endCall(false);
-
-  alert(
-   "تعذر تشغيل المكالمة. تأكد من السماح بالكاميرا والميكروفون."
-  );
- }
-}
-
-async function handleSignal(data){
-
- if(!data || !data.signal){
-  return;
- }
-
- const signal =
-  data.signal;
-
- if(signal.type === "rtc_offer"){
-
-  incomingCall = {
-   from:data.from,
-   offer:signal.offer,
-   callType:
-    signal.callType ||
-    "audio"
-  };
-
-  callTarget =
-   data.from;
-
-  $("incomingTitle").textContent =
-   "مكالمة من " +
-   data.from;
-
-  $("incomingType").textContent =
-   signal.callType === "video"
-    ? "مكالمة فيديو"
-    : "مكالمة صوتية";
-
-  $("incoming")
-   .classList
-   .remove("hidden");
-
-  return;
- }
-
- if(signal.type === "rtc_candidate"){
-
-  if(
-   callPC &&
-   callPC.remoteDescription
-  ){
-
-   try{
-
-    await callPC
-     .addIceCandidate(
-      signal.candidate
-     );
-
-   }catch{}
-
-  }else{
-
-   pendingCandidates.push(
-    signal.candidate
-   );
-  }
-
-  return;
- }
-
- if(signal.type === "rtc_answer"){
-
-  if(!callPC){
-   return;
-  }
-
-  try{
-
-   await callPC
-    .setRemoteDescription(
-     new RTCSessionDescription(
-      signal.answer
-     )
-    );
 
   }catch{
-   return;
+
+    alert("تعذر بدء المكالمة. تأكد من السماح للكاميرا والميكروفون.");
+
   }
-
-  for(
-   const candidate
-   of pendingCandidates
-  ){
-
-   try{
-
-    await callPC
-     .addIceCandidate(
-      candidate
-     );
-
-   }catch{}
-  }
-
-  pendingCandidates = [];
-
-  return;
- }
-
- if(signal.type === "rtc_end"){
-
-  endCall(false);
-
-  incomingCall = null;
-
-  $("incoming")
-   .classList
-   .add("hidden");
- }
 }
 
-/* =========================
-   قبول المكالمة
-========================= */
+$("audioCallBtn").onclick = () => startCall(false);
+$("videoCallBtn").onclick = () => startCall(true);
 
-$("acceptCall").onclick =
- async function(){
+function createPeerConnection(){
 
-  if(!incomingCall){
-   return;
+  peerConnection =
+    new RTCPeerConnection({
+      iceServers:[
+        {urls:"stun:stun.l.google.com:19302"},
+        {urls:"stun:stun1.l.google.com:19302"}
+      ]
+    });
+
+  peerConnection.onicecandidate = event => {
+
+    if(event.candidate){
+
+      sendWS({
+        type:"ice",
+        to:selectedUser,
+        candidate:event.candidate
+      });
+
+    }
+
+  };
+
+  peerConnection.ontrack = event => {
+
+    if(event.streams && event.streams[0]){
+      remoteVideo.srcObject = event.streams[0];
+    }
+
+  };
+
+  peerConnection.onconnectionstatechange = () => {
+
+    if(
+      peerConnection &&
+      ["failed","closed","disconnected"].includes(
+        peerConnection.connectionState
+      )
+    ){
+      endCall(false);
+    }
+
+  };
+
+  if(localStream){
+    localVideo.srcObject = localStream;
+  }
+}
+
+function showCallScreen(video){
+
+  callScreen.classList.remove("hidden");
+
+  if(!video){
+    localVideo.style.display = "none";
+  }else{
+    localVideo.style.display = "block";
   }
 
-  $("incoming")
-   .classList
-   .add("hidden");
+}
 
-  const incoming =
-   incomingCall;
+function handleIncomingCall(data){
 
-  incomingCall = null;
+  incomingCallData = data;
 
-  callTarget =
-   incoming.from;
+  incomingText.textContent =
+    "مكالمة من " + (data.from || "مستخدم");
 
-  callType =
-   incoming.callType ||
-   "audio";
+  incomingCall.classList.remove("hidden");
+}
+
+$("rejectCallBtn").onclick = () => {
+
+  if(incomingCallData){
+
+    sendWS({
+      type:"hangup",
+      to:incomingCallData.from
+    });
+
+  }
+
+  incomingCallData = null;
+  incomingCall.classList.add("hidden");
+};
+
+$("acceptCallBtn").onclick = async () => {
+
+  if(!incomingCallData) return;
+
+  const data = incomingCallData;
+
+  incomingCallData = null;
+  incomingCall.classList.add("hidden");
+
+  selectedUser = data.from;
 
   try{
 
-   callStream =
-    await navigator
-     .mediaDevices
-     .getUserMedia({
-      audio:true,
-      video:
-       callType === "video"
-     });
+    localStream =
+      await navigator.mediaDevices.getUserMedia({
+        audio:true,
+        video:!!data.video
+      });
 
-   $("localVideo").srcObject =
-    callStream;
+    showCallScreen(!!data.video);
 
-   $("localVideo").style.display =
-    callType === "video"
-     ? "block"
-     : "none";
+    createPeerConnection();
 
-   await createPeer();
-
-   callStream
-    .getTracks()
-    .forEach(function(track){
-
-     callPC.addTrack(
-      track,
-      callStream
-     );
+    localStream.getTracks().forEach(track => {
+      peerConnection.addTrack(track,localStream);
     });
 
-   await callPC
-    .setRemoteDescription(
-     new RTCSessionDescription(
-      incoming.offer
-     )
+    await peerConnection.setRemoteDescription(
+      new RTCSessionDescription(data.offer)
     );
 
-   for(
-    const candidate
-    of pendingCandidates
-   ){
+    const answer =
+      await peerConnection.createAnswer();
 
-    try{
+    await peerConnection.setLocalDescription(answer);
 
-     await callPC
-      .addIceCandidate(
-       candidate
+    sendWS({
+      type:"answer",
+      to:data.from,
+      answer
+    });
+
+  }catch{
+
+    alert("تعذر قبول المكالمة");
+    endCall(false);
+
+  }
+};
+
+async function handleCallSignal(data){
+
+  try{
+
+    if(data.type === "offer"){
+      return;
+    }
+
+    if(!peerConnection){
+      return;
+    }
+
+    if(data.type === "answer"){
+
+      await peerConnection.setRemoteDescription(
+        new RTCSessionDescription(data.answer)
       );
 
-    }catch{}
-   }
+    }else if(data.type === "ice"){
 
-   pendingCandidates = [];
+      if(data.candidate){
 
-   const answer =
-    await callPC.createAnswer();
+        await peerConnection.addIceCandidate(
+          new RTCIceCandidate(data.candidate)
+        );
 
-   await callPC
-    .setLocalDescription(
-     answer
-    );
+      }
 
-   sendWS({
-    type:"signal",
-    to:callTarget,
-    signal:{
-     type:"rtc_answer",
-     answer:answer
+    }else if(data.type === "hangup"){
+
+      endCall(false);
+
     }
-   });
 
-   $("callModal")
-    .classList
-    .remove("hidden");
-
-   $("callText").textContent =
-    "متصل...";
-
-  }catch{
-
-   endCall(false);
-
-   alert(
-    "تعذر قبول المكالمة"
-   );
-  }
-};
-
-$("rejectCall").onclick =
- function(){
-
-  if(
-   incomingCall &&
-   incomingCall.from
-  ){
-
-   sendWS({
-    type:"signal",
-    to:incomingCall.from,
-    signal:{
-     type:"rtc_end"
-    }
-   });
-  }
-
-  incomingCall = null;
-
-  $("incoming")
-   .classList
-   .add("hidden");
- };
-
-$("endCallBtn").onclick =
- function(){
-  endCall(true);
- };
-
-function endCall(sendSignal){
-
- if(
-  sendSignal &&
-  callTarget
- ){
-
-  sendWS({
-   type:"signal",
-   to:callTarget,
-   signal:{
-    type:"rtc_end"
-   }
-  });
- }
-
- if(callPC){
-
-  try{
-   callPC.close();
   }catch{}
- }
 
- callPC = null;
-
- if(callStream){
-
-  callStream
-   .getTracks()
-   .forEach(function(track){
-    track.stop();
-   });
- }
-
- callStream = null;
-
- remoteStream = null;
-
- pendingCandidates = [];
-
- $("remoteVideo").srcObject =
-  null;
-
- $("remoteAudio").srcObject =
-  null;
-
- $("localVideo").srcObject =
-  null;
-
- $("callModal")
-  .classList
-  .add("hidden");
-
- callTarget = "";
 }
 
-$("muteBtn").onclick =
- function(){
+function endCall(sendSignal = true){
 
-  if(!callStream){
-   return;
+  if(sendSignal && selectedUser){
+
+    sendWS({
+      type:"hangup",
+      to:selectedUser
+    });
+
   }
 
-  const track =
-   callStream
-    .getAudioTracks()[0];
-
-  if(!track){
-   return;
-  }
-
-  track.enabled =
-   !track.enabled;
-
-  $("muteBtn").textContent =
-   track.enabled
-    ? "🎤 كتم"
-    : "🔇 تشغيل الصوت";
- };
-
-$("cameraBtn").onclick =
- function(){
-
-  if(!callStream){
-   return;
-  }
-
-  const track =
-   callStream
-    .getVideoTracks()[0];
-
-  if(!track){
-   return;
-  }
-
-  track.enabled =
-   !track.enabled;
-
-  $("cameraBtn").textContent =
-   track.enabled
-    ? "📷 إيقاف الكاميرا"
-    : "📷 تشغيل الكاميرا";
- };
-
-/* =========================
-   الإعدادات
-========================= */
-
-$("settingsBtn").onclick =
- function(){
-
-  $("settings")
-   .classList
-   .remove("hidden");
- };
-
-$("closeSettings").onclick =
- function(){
-
-  $("settings")
-   .classList
-   .add("hidden");
- };
-
-$("darkMode").onchange =
- function(){
-
-  const enabled =
-   $("darkMode").checked;
-
-  document.body
-   .classList
-   .toggle(
-    "dark",
-    enabled
-   );
-
-  localStorage.setItem(
-   "darkMode",
-   enabled ? "1" : "0"
-  );
- };
-
-if(
- localStorage.getItem(
-  "darkMode"
- ) === "1"
-){
-
- $("darkMode").checked =
-  true;
-
- document.body
-  .classList
-  .add("dark");
-}
-
-/* =========================
-   حذف الحساب بدون تأكيد
-========================= */
-
-$("deleteAccountBtn").onclick =
- async function(){
-
-  try{
-
-   const response =
-    await jsonFetch(
-     "/api/delete-account",
-     {
-      method:"POST",
-      body:JSON.stringify({
-       token:token
-      })
-     }
-    );
-
-   const data =
-    await response.json()
-     .catch(function(){
-      return {};
-     });
-
-   if(!response.ok){
-
-    alert(
-     data.error ||
-     "تعذر حذف الحساب"
-    );
-
-    return;
-   }
-
-   shouldReconnect = false;
-
-   if(ws){
+  if(peerConnection){
 
     try{
-     ws.close();
+      peerConnection.close();
     }catch{}
-   }
 
-   endCall(false);
-
-   clearSession();
-
-   $("settings")
-    .classList
-    .add("hidden");
-
-   showAuth();
-
-  }catch{
-
-   alert(
-    "تعذر الاتصال بالخادم"
-   );
+    peerConnection = null;
   }
+
+  if(localStream){
+
+    localStream.getTracks().forEach(track => {
+      try{
+        track.stop();
+      }catch{}
+    });
+
+    localStream = null;
+  }
+
+  localVideo.srcObject = null;
+  remoteVideo.srcObject = null;
+
+  callScreen.classList.add("hidden");
+}
+
+$("endCallBtn").onclick = () => endCall(true);
+
+$("muteBtn").onclick = () => {
+
+  if(!localStream) return;
+
+  const track =
+    localStream.getAudioTracks()[0];
+
+  if(!track) return;
+
+  track.enabled = !track.enabled;
+
+  $("muteBtn").textContent =
+    track.enabled ? "🎤" : "🔇";
 };
 
-/* =========================
-   خروج
-========================= */
+$("cameraBtn").onclick = () => {
 
-$("logoutBtn").onclick =
- async function(){
+  if(!localStream) return;
+
+  const track =
+    localStream.getVideoTracks()[0];
+
+  if(!track) return;
+
+  track.enabled = !track.enabled;
+
+  $("cameraBtn").textContent =
+    track.enabled ? "📷" : "🚫";
+};
+
+/* SETTINGS */
+
+$("settingsBtn").onclick = () => {
+
+  $("settingsUsername").textContent = currentUser;
+
+  $("settingsModal").classList.remove("hidden");
+
+};
+
+$("closeSettings").onclick = () => {
+  $("settingsModal").classList.add("hidden");
+};
+
+$("darkMode").checked =
+  localStorage.getItem("darkMode") === "1";
+
+function applyDarkMode(){
+
+  document.body.classList.toggle(
+    "dark",
+    $("darkMode").checked
+  );
+
+  localStorage.setItem(
+    "darkMode",
+    $("darkMode").checked ? "1" : "0"
+  );
+}
+
+$("darkMode").onchange = applyDarkMode;
+
+applyDarkMode();
+
+/* DELETE ACCOUNT */
+
+$("deleteAccountBtn").onclick = async () => {
 
   try{
 
-   await jsonFetch(
-    "/api/logout",
-    {
-     method:"POST",
-     body:JSON.stringify({
-      token:token
-     })
+    const response = await fetch(
+      "/api/delete-account",
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({token})
+      }
+    );
+
+    const data = await response.json();
+
+    if(!response.ok){
+      throw new Error(data.error || "فشل حذف الحساب");
     }
-   );
+
+    await logout();
+
+  }catch(error){
+
+    alert(error.message);
+
+  }
+
+};
+
+/* LOGOUT */
+
+$("logoutBtn").onclick = logout;
+
+async function logout(){
+
+  try{
+
+    if(token){
+
+      await fetch("/api/logout",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({token})
+      });
+
+    }
 
   }catch{}
 
-  shouldReconnect = false;
+  token = "";
+  currentUser = "";
+  selectedUser = "";
+
+  localStorage.removeItem("chatToken");
+  localStorage.removeItem("chatUser");
 
   if(ws){
 
-   try{
-    ws.close();
-   }catch{}
+    try{
+      ws.close();
+    }catch{}
+
+    ws = null;
   }
 
   endCall(false);
 
-  clearSession();
+  messagesBox.innerHTML =
+    '<div class="empty-chat">اختر مستخدمًا لبدء المحادثة</div>';
+
+  chatTitle.textContent = "اختر مستخدمًا";
+  chatAvatar.textContent = "?";
 
   showAuth();
- };
-
-function forceLogout(){
-
- shouldReconnect = false;
-
- if(ws){
-
-  try{
-   ws.close();
-  }catch{}
- }
-
- endCall(false);
-
- clearSession();
-
- showAuth();
-
- setError(
-  "انتهت الجلسة، سجل الدخول مرة أخرى"
- );
 }
 
-/* =========================
-   تشغيل
-========================= */
+/* START */
 
 restoreSession();
-
 </script>
 
 </body>
 </html>`;
 
-/* =========================================================
-   Worker
-========================================================= */
+function json(data, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "no-store"
+    }
+  });
+}
+
+function cors(response) {
+  const headers = new Headers(response.headers);
+  headers.set("Access-Control-Allow-Origin", "*");
+  headers.set("Access-Control-Allow-Headers", "Content-Type");
+  headers.set("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+  return new Response(response.body, {
+    status: response.status,
+    headers
+  });
+}
+
+function randomToken() {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+
+  return Array.from(bytes)
+    .map(x => x.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function normalizeUsername(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+async function hashPassword(password, salt) {
+
+  const encoder = new TextEncoder();
+
+  const baseKey = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(password),
+    "PBKDF2",
+    false,
+    ["deriveBits"]
+  );
+
+  const bits = await crypto.subtle.deriveBits(
+    {
+      name: "PBKDF2",
+      salt,
+      iterations: PBKDF2_ITERATIONS,
+      hash: "SHA-256"
+    },
+    baseKey,
+    256
+  );
+
+  return new Uint8Array(bits);
+}
+
+function bytesToBase64(bytes) {
+  let binary = "";
+
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
+  }
+
+  return btoa(binary);
+}
+
+function base64ToBytes(value) {
+  const binary = atob(value);
+  const bytes = new Uint8Array(binary.length);
+
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+
+  return bytes;
+}
+
+async function verifyPassword(password, saltBase64, hashBase64) {
+
+  const salt = base64ToBytes(saltBase64);
+
+  const calculated = await hashPassword(password, salt);
+
+  const expected = base64ToBytes(hashBase64);
+
+  if (calculated.length !== expected.length) {
+    return false;
+  }
+
+  let difference = 0;
+
+  for (let i = 0; i < calculated.length; i++) {
+    difference |= calculated[i] ^ expected[i];
+  }
+
+  return difference === 0;
+}
+
+function safeJSON(value) {
+  try {
+    return JSON.parse(value);
+  } catch {
+    return {};
+  }
+}
 
 export default {
+  async fetch(request, env) {
 
- async fetch(request,env){
-
-  const url =
-   new URL(request.url);
-
-  if(
-   request.method === "GET" &&
-   url.pathname === "/"
-  ){
-
-   return new Response(
-    HTML,
-    {
-     headers:{
-      "content-type":
-       "text/html;charset=UTF-8",
-      "cache-control":
-       "no-store"
-     }
+    if (request.method === "OPTIONS") {
+      return cors(new Response(null, { status: 204 }));
     }
-   );
-  }
 
-  const id =
-   env.CHAT.getByName("main");
+    const url = new URL(request.url);
 
-  if(url.pathname === "/ws"){
+    try {
 
-   return id.fetch(
-    new Request(
-     new URL(
-      "/websocket" +
-      url.search,
-      url.origin
-     ),
-     request
-    )
-   );
-  }
+      if (url.pathname === "/" || url.pathname === "/index.html") {
+        return new Response(HTML, {
+          headers: {
+            "Content-Type": "text/html; charset=utf-8",
+            "Cache-Control": "no-store"
+          }
+        });
+      }
 
-  const apiPaths = [
+      const id = env.CHAT.idFromName("main");
+      const room = env.CHAT.get(id);
 
-   "/api/register",
-   "/api/login",
-   "/api/logout",
-   "/api/me",
-   "/api/users",
-   "/api/history",
-   "/api/upload",
-   "/api/file",
-   "/api/delete-account"
+      const response = await room.fetch(request);
 
-  ];
+      return cors(response);
 
-  if(
-   apiPaths.includes(
-    url.pathname
-   )
-  ){
+    } catch (error) {
 
-   return id.fetch(
-    new Request(
-     new URL(
-      url.pathname +
-      url.search,
-      url.origin
-     ),
-     request
-    )
-   );
-  }
-
-  return new Response(
-   "Not Found",
-   {
-    status:404
-   }
-  );
- }
-};
-
-/* =========================================================
-   Durable Object
-========================================================= */
-
-export class Chat extends DurableObject {
-
- constructor(ctx,env){
-
-  super(ctx,env);
-
-  this.ctx = ctx;
-
-  this.env = env;
-
-  this.sessions =
-   new Map();
-
-  this.ensureSchema();
- }
-
- sql(){
-
-  return this.ctx
-   .storage
-   .sql;
- }
-
- columns(table){
-
-  try{
-
-   return this.sql()
-    .exec(
-     "PRAGMA table_info(" +
-     table +
-     ")"
-    )
-    .toArray()
-    .map(function(row){
-     return row.name;
-    });
-
-  }catch{
-
-   return [];
-  }
- }
-
- ensureSchema(){
-
-  this.sql().exec(`
-   CREATE TABLE IF NOT EXISTS accounts(
-    username TEXT PRIMARY KEY,
-    password_hash TEXT NOT NULL,
-    salt TEXT NOT NULL,
-    created_at INTEGER NOT NULL DEFAULT 0,
-    last_seen INTEGER NOT NULL DEFAULT 0
-   );
-
-   CREATE TABLE IF NOT EXISTS sessions(
-    token TEXT PRIMARY KEY,
-    username TEXT NOT NULL,
-    created_at INTEGER NOT NULL DEFAULT 0,
-    expires_at INTEGER NOT NULL DEFAULT ${SESSION_FOREVER}
-   );
-
-   CREATE TABLE IF NOT EXISTS messages(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    sender TEXT NOT NULL,
-    receiver TEXT NOT NULL,
-    text TEXT NOT NULL DEFAULT '',
-    kind TEXT NOT NULL DEFAULT 'text',
-    file_id TEXT,
-    file_name TEXT,
-    file_mime TEXT,
-    created_at INTEGER NOT NULL,
-    edited_at INTEGER,
-    deleted_for_all INTEGER NOT NULL DEFAULT 0,
-    read_at INTEGER
-   );
-
-   CREATE TABLE IF NOT EXISTS files(
-    id TEXT PRIMARY KEY,
-    owner TEXT NOT NULL,
-    receiver TEXT NOT NULL,
-    name TEXT NOT NULL,
-    mime TEXT NOT NULL,
-    size INTEGER NOT NULL,
-    created_at INTEGER NOT NULL
-   );
-  `);
-
-  this.repairTable(
-   "accounts",
-   [
-    [
-     "created_at",
-     "INTEGER NOT NULL DEFAULT 0"
-    ],
-    [
-     "last_seen",
-     "INTEGER NOT NULL DEFAULT 0"
-    ]
-   ]
-  );
-
-  this.repairTable(
-   "sessions",
-   [
-    [
-     "created_at",
-     "INTEGER NOT NULL DEFAULT 0"
-    ],
-    [
-     "expires_at",
-     "INTEGER NOT NULL DEFAULT " +
-     SESSION_FOREVER
-    ]
-   ]
-  );
-
-  this.repairTable(
-   "messages",
-   [
-    [
-     "file_id",
-     "TEXT"
-    ],
-    [
-     "file_name",
-     "TEXT"
-    ],
-    [
-     "file_mime",
-     "TEXT"
-    ],
-    [
-     "edited_at",
-     "INTEGER"
-    ],
-    [
-     "deleted_for_all",
-     "INTEGER NOT NULL DEFAULT 0"
-    ],
-    [
-     "read_at",
-     "INTEGER"
-    ]
-   ]
-  );
-
-  try{
-
-   this.sql().exec(
-    "UPDATE sessions " +
-    "SET expires_at=? " +
-    "WHERE expires_at IS NULL",
-    SESSION_FOREVER
-   );
-
-  }catch{}
-
-  try{
-
-   this.sql().exec(
-    "UPDATE sessions " +
-    "SET created_at=? " +
-    "WHERE created_at IS NULL",
-    Date.now()
-   );
-
-  }catch{}
- }
-
- repairTable(
-  table,
-  items
- ){
-
-  const columns =
-   this.columns(table);
-
-  for(
-   const item of items
-  ){
-
-   const name =
-    item[0];
-
-   const type =
-    item[1];
-
-   if(
-    columns.includes(name)
-   ){
-    continue;
-   }
-
-   try{
-
-    this.sql().exec(
-     "ALTER TABLE " +
-     table +
-     " ADD COLUMN " +
-     name +
-     " " +
-     type
-    );
-
-   }catch{}
-  }
- }
-
- json(
-  data,
-  status
- ){
-
-  return new Response(
-   JSON.stringify(data),
-   {
-    status:status || 200,
-    headers:{
-     "content-type":
-      "application/json;charset=UTF-8",
-     "cache-control":
-      "no-store"
-    }
-   }
-  );
- }
-
- /* =======================================================
-    Fetch داخل Durable Object
- ======================================================= */
-
- async fetch(request){
-
-  const url =
-   new URL(request.url);
-
-  try{
-
-   if(
-    url.pathname ===
-    "/websocket"
-   ){
-
-    return await this.openWebSocket(
-     request
-    );
-   }
-
-   if(
-    url.pathname ===
-    "/api/register"
-   ){
-
-    return await this.register(
-     request
-    );
-   }
-
-   if(
-    url.pathname ===
-    "/api/login"
-   ){
-
-    return await this.login(
-     request
-    );
-   }
-
-   if(
-    url.pathname ===
-    "/api/logout"
-   ){
-
-    return await this.logout(
-     request
-    );
-   }
-
-   if(
-    url.pathname ===
-    "/api/me"
-   ){
-
-    return await this.me(
-     request
-    );
-   }
-
-   if(
-    url.pathname ===
-    "/api/users"
-   ){
-
-    return await this.users(
-     request
-    );
-   }
-
-   if(
-    url.pathname ===
-    "/api/history"
-   ){
-
-    return await this.history(
-     request
-    );
-   }
-
-   if(
-    url.pathname ===
-    "/api/upload"
-   ){
-
-    return await this.upload(
-     request
-    );
-   }
-
-   if(
-    url.pathname ===
-    "/api/file"
-   ){
-
-    return await this.file(
-     request
-    );
-   }
-
-   if(
-    url.pathname ===
-    "/api/delete-account"
-   ){
-
-    return await this.deleteAccount(
-     request
-    );
-   }
-
-   return new Response(
-    "Not Found",
-    {
-     status:404
-    }
-   );
-
-  }catch(error){
-
-   return this.json(
-    {
-     error:
-      "حدث خطأ في الخادم"
-    },
-    500
-   );
-  }
- }
-
- /* =======================================================
-    تشفير كلمة المرور
- ======================================================= */
-
- async hashPassword(
-  password,
-  saltBytes
- ){
-
-  const key =
-   await crypto.subtle.importKey(
-    "raw",
-    new TextEncoder().encode(
-     password
-    ),
-    {
-     name:"PBKDF2"
-    },
-    false,
-    [
-     "deriveBits"
-    ]
-   );
-
-  const bits =
-   await crypto.subtle.deriveBits(
-    {
-     name:"PBKDF2",
-     salt:saltBytes,
-     iterations:
-      PBKDF2_ITERATIONS,
-     hash:"SHA-256"
-    },
-    key,
-    256
-   );
-
-  return this.hex(
-   new Uint8Array(bits)
-  );
- }
-
- hex(bytes){
-
-  return Array
-   .from(bytes)
-   .map(function(byte){
-
-    return byte
-     .toString(16)
-     .padStart(2,"0");
-
-   })
-   .join("");
- }
-
- randomToken(){
-
-  const bytes =
-   new Uint8Array(32);
-
-  crypto.getRandomValues(
-   bytes
-  );
-
-  return this.hex(bytes);
- }
-
- randomSalt(){
-
-  const bytes =
-   new Uint8Array(16);
-
-  crypto.getRandomValues(
-   bytes
-  );
-
-  return this.hex(bytes);
- }
-
- saltBytes(value){
-
-  const output =
-   new Uint8Array(
-    value.length / 2
-   );
-
-  for(
-   let i=0;
-   i<output.length;
-   i++
-  ){
-
-   output[i] =
-    parseInt(
-     value.substr(i * 2,2),
-     16
-    );
-  }
-
-  return output;
- }
-
- validUsername(username){
-
-  return /^[a-zA-Z0-9_\u0600-\u06FF]{3,20}$/
-   .test(username);
- }
-
- /* =======================================================
-    التسجيل
- ======================================================= */
-
- async register(request){
-
-  let body;
-
-  try{
-
-   body =
-    await request.json();
-
-  }catch{
-
-   return this.json(
-    {
-     error:
-      "بيانات غير صحيحة"
-    },
-    400
-   );
-  }
-
-  const username =
-   String(
-    body.username || ""
-   ).trim();
-
-  const password =
-   String(
-    body.password || ""
-   );
-
-  if(
-   !this.validUsername(
-    username
-   )
-  ){
-
-   return this.json(
-    {
-     error:
-      "اسم المستخدم غير صالح"
-    },
-    400
-   );
-  }
-
-  if(password.length < 6){
-
-   return this.json(
-    {
-     error:
-      "كلمة المرور يجب أن تكون 6 أحرف على الأقل"
-    },
-    400
-   );
-  }
-
-  try{
-
-   const existing =
-    this.sql()
-     .exec(
-      "SELECT username " +
-      "FROM accounts " +
-      "WHERE username=? " +
-      "COLLATE NOCASE " +
-      "LIMIT 1",
-      username
-     )
-     .toArray();
-
-   if(existing.length){
-
-    return this.json(
-     {
-      error:
-       "اسم المستخدم موجود بالفعل"
-     },
-     409
-    );
-   }
-
-   const salt =
-    this.randomSalt();
-
-   const hash =
-    await this.hashPassword(
-     password,
-     this.saltBytes(salt)
-    );
-
-   const now =
-    Date.now();
-
-   this.sql().exec(
-    "INSERT INTO accounts " +
-    "(username,password_hash,salt,created_at,last_seen) " +
-    "VALUES(?,?,?,?,?)",
-    username,
-    hash,
-    salt,
-    now,
-    now
-   );
-
-   const token =
-    this.randomToken();
-
-   this.sql().exec(
-    "INSERT INTO sessions " +
-    "(token,username,created_at,expires_at) " +
-    "VALUES(?,?,?,?)",
-    token,
-    username,
-    now,
-    SESSION_FOREVER
-   );
-
-   this.broadcastUsers();
-
-   return this.json(
-    {
-     ok:true,
-     token:token,
-     username:username
-    }
-   );
-
-  }catch(error){
-
-   const message =
-    String(error || "");
-
-   if(
-    message
-     .toLowerCase()
-     .includes("constraint")
-   ){
-
-    return this.json(
-     {
-      error:
-       "اسم المستخدم موجود بالفعل أو بيانات الحساب غير صالحة"
-     },
-     409
-    );
-   }
-
-   return this.json(
-    {
-     error:
-      "تعذر إنشاء الحساب"
-    },
-    500
-   );
-  }
- }
-
- /* =======================================================
-    تسجيل الدخول
- ======================================================= */
-
- async login(request){
-
-  let body;
-
-  try{
-
-   body =
-    await request.json();
-
-  }catch{
-
-   return this.json(
-    {
-     error:
-      "بيانات غير صحيحة"
-    },
-    400
-   );
-  }
-
-  const username =
-   String(
-    body.username || ""
-   ).trim();
-
-  const password =
-   String(
-    body.password || ""
-   );
-
-  try{
-
-   const rows =
-    this.sql()
-     .exec(
-      "SELECT username,password_hash,salt " +
-      "FROM accounts " +
-      "WHERE username=? " +
-      "COLLATE NOCASE " +
-      "LIMIT 1",
-      username
-     )
-     .toArray();
-
-   if(!rows.length){
-
-    return this.json(
-     {
-      error:
-       "اسم المستخدم أو كلمة المرور غير صحيحة"
-     },
-     401
-    );
-   }
-
-   const account =
-    rows[0];
-
-   if(
-    !account.salt ||
-    !account.password_hash
-   ){
-
-    return this.json(
-     {
-      error:
-       "الحساب القديم غير صالح، أنشئ حسابًا جديدًا"
-     },
-     400
-    );
-   }
-
-   const hash =
-    await this.hashPassword(
-     password,
-     this.saltBytes(
-      account.salt
-     )
-    );
-
-   if(
-    hash !==
-    account.password_hash
-   ){
-
-    return this.json(
-     {
-      error:
-       "اسم المستخدم أو كلمة المرور غير صحيحة"
-     },
-     401
-    );
-   }
-
-   const token =
-    this.randomToken();
-
-   const now =
-    Date.now();
-
-   this.sql().exec(
-    "INSERT INTO sessions " +
-    "(token,username,created_at,expires_at) " +
-    "VALUES(?,?,?,?)",
-    token,
-    account.username,
-    now,
-    SESSION_FOREVER
-   );
-
-   this.sql().exec(
-    "UPDATE accounts " +
-    "SET last_seen=? " +
-    "WHERE username=?",
-    now,
-    account.username
-   );
-
-   return this.json(
-    {
-     ok:true,
-     token:token,
-     username:
-      account.username
-    }
-   );
-
-  }catch{
-
-   return this.json(
-    {
-     error:
-      "تعذر تسجيل الدخول"
-    },
-    500
-   );
-  }
- }
-
- /* =======================================================
-    التحقق من الجلسة
- ======================================================= */
-
- async getUser(token){
-
-  if(!token){
-   return null;
-  }
-
-  const rows =
-   this.sql()
-    .exec(
-     "SELECT s.username,s.expires_at " +
-     "FROM sessions s " +
-     "JOIN accounts a " +
-     "ON a.username=s.username " +
-     "WHERE s.token=? " +
-     "LIMIT 1",
-     token
-    )
-    .toArray();
-
-  if(!rows.length){
-   return null;
-  }
-
-  const row =
-   rows[0];
-
-  if(
-   row.expires_at &&
-   Number(row.expires_at) <
-   Date.now()
-  ){
-
-   this.sql().exec(
-    "DELETE FROM sessions " +
-    "WHERE token=?",
-    token
-   );
-
-   return null;
-  }
-
-  return row.username;
- }
-
- async me(request){
-
-  const url =
-   new URL(request.url);
-
-  const username =
-   await this.getUser(
-    url.searchParams.get(
-     "token"
-    )
-   );
-
-  if(!username){
-
-   return this.json(
-    {
-     error:
-      "جلسة غير صالحة"
-    },
-    401
-   );
-  }
-
-  return this.json(
-   {
-    ok:true,
-    username:username
-   }
-  );
- }
-
- async logout(request){
-
-  let body = {};
-
-  try{
-
-   body =
-    await request.json();
-
-  }catch{}
-
-  const token =
-   String(
-    body.token || ""
-   );
-
-  if(token){
-
-   this.sql().exec(
-    "DELETE FROM sessions " +
-    "WHERE token=?",
-    token
-   );
-  }
-
-  return this.json(
-   {
-    ok:true
-   }
-  );
- }
-
- /* =======================================================
-    المستخدمون
- ======================================================= */
-
- async users(request){
-
-  const url =
-   new URL(request.url);
-
-  const current =
-   await this.getUser(
-    url.searchParams.get(
-     "token"
-    )
-   );
-
-  if(!current){
-
-   return this.json(
-    {
-     error:
-      "جلسة غير صالحة"
-    },
-    401
-   );
-  }
-
-  const query =
-   String(
-    url.searchParams.get("q") ||
-    ""
-   )
-   .trim()
-   .toLowerCase();
-
-  const rows =
-   this.sql()
-    .exec(
-     "SELECT username,last_seen " +
-     "FROM accounts " +
-     "ORDER BY username COLLATE NOCASE"
-    )
-    .toArray();
-
-  const online =
-   new Set();
-
-  for(
-   const socket
-   of this.ctx.getWebSockets()
-  ){
-
-   const session =
-    this.sessions.get(
-     socket
-    );
-
-   if(session){
-    online.add(
-     session.username
-    );
-   }
-  }
-
-  const result =
-   rows
-    .filter(function(row){
-
-     return row.username !==
-      current;
-    })
-    .filter(function(row){
-
-     return !query ||
-      row.username
-       .toLowerCase()
-       .includes(query);
-    })
-    .map(function(row){
-
-     return {
-      username:
-       row.username,
-
-      online:
-       online.has(
-        row.username
-       ),
-
-      last_seen:
-       row.last_seen || 0
-     };
-    });
-
-  return this.json(
-   {
-    users:result
-   }
-  );
- }
-
- /* =======================================================
-    المحادثة
- ======================================================= */
-
- async history(request){
-
-  const url =
-   new URL(request.url);
-
-  const current =
-   await this.getUser(
-    url.searchParams.get(
-     "token"
-    )
-   );
-
-  if(!current){
-
-   return this.json(
-    {
-     error:
-      "جلسة غير صالحة"
-    },
-    401
-   );
-  }
-
-  const other =
-   String(
-    url.searchParams.get(
-     "user"
-    ) || ""
-   );
-
-  if(!other){
-
-   return this.json(
-    {
-     messages:[]
-    }
-   );
-  }
-
-  const rows =
-   this.sql()
-    .exec(
-     "SELECT " +
-     "id,sender,receiver,text,kind," +
-     "file_id,file_name,file_mime," +
-     "created_at,edited_at," +
-     "deleted_for_all,read_at " +
-     "FROM messages " +
-     "WHERE " +
-     "(sender=? AND receiver=?) " +
-     "OR " +
-     "(sender=? AND receiver=?) " +
-     "ORDER BY id ASC " +
-     "LIMIT 500",
-     current,
-     other,
-     other,
-     current
-    )
-    .toArray();
-
-  try{
-
-   this.sql().exec(
-    "UPDATE messages " +
-    "SET read_at=? " +
-    "WHERE sender=? " +
-    "AND receiver=? " +
-    "AND read_at IS NULL",
-    Date.now(),
-    other,
-    current
-   );
-
-  }catch{}
-
-  return this.json(
-   {
-    messages:rows
-   }
-  );
- }
-
- /* =======================================================
-    رفع الملفات
- ======================================================= */
-
- async upload(request){
-
-  const url =
-   new URL(request.url);
-
-  const current =
-   await this.getUser(
-    url.searchParams.get(
-     "token"
-    )
-   );
-
-  if(!current){
-
-   return this.json(
-    {
-     error:
-      "جلسة غير صالحة"
-    },
-    401
-   );
-  }
-
-  const receiver =
-   String(
-    url.searchParams.get(
-     "to"
-    ) || ""
-   );
-
-  const name =
-   String(
-    url.searchParams.get(
-     "name"
-    ) || "file"
-   );
-
-  const mime =
-   String(
-    url.searchParams.get(
-     "mime"
-    ) ||
-    "application/octet-stream"
-   );
-
-  if(!receiver){
-
-   return this.json(
-    {
-     error:
-      "لم يتم تحديد المستخدم"
-    },
-    400
-   );
-  }
-
-  const target =
-   this.sql()
-    .exec(
-     "SELECT username " +
-     "FROM accounts " +
-     "WHERE username=? " +
-     "COLLATE NOCASE " +
-     "LIMIT 1",
-     receiver
-    )
-    .toArray();
-
-  if(!target.length){
-
-   return this.json(
-    {
-     error:
-      "المستخدم غير موجود"
-    },
-    404
-   );
-  }
-
-  const body =
-   await request.arrayBuffer();
-
-  if(
-   body.byteLength >
-   MAX_FILE_SIZE
-  ){
-
-   return this.json(
-    {
-     error:
-      "حجم الملف أكبر من 20 ميجابايت"
-    },
-    413
-   );
-  }
-
-  const fileId =
-   this.randomToken();
-
-  const now =
-   Date.now();
-
-  let kind = "file";
-
-  if(
-   mime.startsWith("image/")
-  ){
-
-   kind = "image";
-
-  }else if(
-   mime.startsWith("video/")
-  ){
-
-   kind = "video";
-
-  }else if(
-   mime.startsWith("audio/")
-  ){
-
-   kind = "audio";
-  }
-
-  await this.ctx.storage.put(
-   "file:" + fileId,
-   body
-  );
-
-  this.sql().exec(
-   "INSERT INTO files " +
-   "(id,owner,receiver,name,mime,size,created_at) " +
-   "VALUES(?,?,?,?,?,?,?)",
-   fileId,
-   current,
-   receiver,
-   name,
-   mime,
-   body.byteLength,
-   now
-  );
-
-  const result =
-   this.sql().exec(
-    "INSERT INTO messages " +
-    "(sender,receiver,text,kind,file_id,file_name,file_mime,created_at) " +
-    "VALUES(?,?,?,?,?,?,?,?)",
-    current,
-    receiver,
-    "",
-    kind,
-    fileId,
-    name,
-    mime,
-    now
-   );
-
-  const messageId =
-   Number(
-    result.lastInsertRowId
-   );
-
-  const message = {
-
-   id:messageId,
-
-   sender:current,
-
-   receiver:receiver,
-
-   text:"",
-
-   kind:kind,
-
-   file_id:fileId,
-
-   file_name:name,
-
-   file_mime:mime,
-
-   created_at:now,
-
-   edited_at:null,
-
-   deleted_for_all:0,
-
-   read_at:null
-  };
-
-  this.sendToUser(
-   receiver,
-   {
-    type:"message",
-    message:message
-   }
-  );
-
-  this.sendToUser(
-   current,
-   {
-    type:"message",
-    message:message
-   }
-  );
-
-  return this.json(
-   {
-    ok:true,
-    message:message
-   }
-  );
- }
-
- /* =======================================================
-    تحميل الملفات
- ======================================================= */
-
- async file(request){
-
-  const url =
-   new URL(request.url);
-
-  const current =
-   await this.getUser(
-    url.searchParams.get(
-     "token"
-    )
-   );
-
-  if(!current){
-
-   return new Response(
-    "Unauthorized",
-    {
-     status:401
-    }
-   );
-  }
-
-  const id =
-   String(
-    url.searchParams.get(
-     "id"
-    ) || ""
-   );
-
-  if(!id){
-
-   return new Response(
-    "Not Found",
-    {
-     status:404
-    }
-   );
-  }
-
-  const rows =
-   this.sql()
-    .exec(
-     "SELECT " +
-     "id,owner,receiver,name,mime " +
-     "FROM files " +
-     "WHERE id=? " +
-     "LIMIT 1",
-     id
-    )
-    .toArray();
-
-  if(!rows.length){
-
-   return new Response(
-    "Not Found",
-    {
-     status:404
-    }
-   );
-  }
-
-  const file =
-   rows[0];
-
-  if(
-   file.owner !== current &&
-   file.receiver !== current
-  ){
-
-   return new Response(
-    "Forbidden",
-    {
-     status:403
-    }
-   );
-  }
-
-  const data =
-   await this.ctx.storage.get(
-    "file:" + id,
-    "arrayBuffer"
-   );
-
-  if(!data){
-
-   return new Response(
-    "Not Found",
-    {
-     status:404
-    }
-   );
-  }
-
-  const safeName =
-   file.name.replace(
-    /["\\\\]/g,
-    "_"
-   );
-
-  return new Response(
-   data,
-   {
-    headers:{
-     "content-type":
-      file.mime,
-
-     "content-length":
-      String(
-       data.byteLength
-      ),
-
-     "content-disposition":
-      'inline; filename="' +
-      safeName +
-      '"',
-
-     "cache-control":
-      "private, max-age=3600"
-    }
-   }
-  );
- }
-
- /* =======================================================
-    حذف الحساب
- ======================================================= */
-
- async deleteAccount(request){
-
-  let body = {};
-
-  try{
-
-   body =
-    await request.json();
-
-  }catch{}
-
-  const username =
-   await this.getUser(
-    String(
-     body.token || ""
-    )
-   );
-
-  if(!username){
-
-   return this.json(
-    {
-     error:
-      "جلسة غير صالحة"
-    },
-    401
-   );
-  }
-
-  const files =
-   this.sql()
-    .exec(
-     "SELECT file_id " +
-     "FROM messages " +
-     "WHERE sender=? OR receiver=?",
-     username,
-     username
-    )
-    .toArray();
-
-  for(
-   const file
-   of files
-  ){
-
-   if(file.file_id){
-
-    try{
-
-     await this.ctx.storage.delete(
-      "file:" +
-      file.file_id
-     );
-
-    }catch{}
-   }
-  }
-
-  this.sql().exec(
-   "DELETE FROM sessions " +
-   "WHERE username=?",
-   username
-  );
-
-  this.sql().exec(
-   "DELETE FROM messages " +
-   "WHERE sender=? OR receiver=?",
-   username,
-   username
-  );
-
-  this.sql().exec(
-   "DELETE FROM files " +
-   "WHERE owner=? OR receiver=?",
-   username,
-   username
-  );
-
-  this.sql().exec(
-   "DELETE FROM accounts " +
-   "WHERE username=?",
-   username
-  );
-
-  for(
-   const socket
-   of this.ctx.getWebSockets()
-  ){
-
-   const session =
-    this.sessions.get(
-     socket
-    );
-
-   if(
-    session &&
-    session.username ===
-    username
-   ){
-
-    this.sessions.delete(
-     socket
-    );
-
-    try{
-
-     socket.close(
-      1000,
-      "account deleted"
-     );
-
-    }catch{}
-   }
-  }
-
-  this.broadcastUsers();
-
-  return this.json(
-   {
-    ok:true
-   }
-  );
- }
-
- /* =======================================================
-    WebSocket
- ======================================================= */
-
- async openWebSocket(request){
-
-  const url =
-   new URL(request.url);
-
-  const token =
-   url.searchParams.get(
-    "token"
-   );
-
-  const username =
-   await this.getUser(
-    token
-   );
-
-  if(!username){
-
-   return new Response(
-    "Unauthorized",
-    {
-     status:401
-    }
-   );
-  }
-
-  const pair =
-   new WebSocketPair();
-
-  const client =
-   pair[0];
-
-  const server =
-   pair[1];
-
-  this.ctx.acceptWebSocket(
-   server
-  );
-
-  this.sessions.set(
-   server,
-   {
-    username:username,
-    token:token
-   }
-  );
-
-  this.sql().exec(
-   "UPDATE accounts " +
-   "SET last_seen=? " +
-   "WHERE username=?",
-   Date.now(),
-   username
-  );
-
-  try{
-
-   server.send(
-    JSON.stringify({
-     type:"connected",
-     username:username
-    })
-   );
-
-  }catch{}
-
-  this.broadcastUsers();
-
-  return new Response(
-   null,
-   {
-    status:101,
-    webSocket:client
-   }
-  );
- }
-
- sendToUser(
-  username,
-  data
- ){
-
-  const message =
-   JSON.stringify(data);
-
-  for(
-   const socket
-   of this.ctx.getWebSockets()
-  ){
-
-   const session =
-    this.sessions.get(
-     socket
-    );
-
-   if(
-    session &&
-    session.username ===
-    username
-   ){
-
-    try{
-
-     socket.send(
-      message
-     );
-
-    }catch{}
-   }
-  }
- }
-
- broadcastUsers(){
-
-  const online =
-   new Set();
-
-  for(
-   const socket
-   of this.ctx.getWebSockets()
-  ){
-
-   const session =
-    this.sessions.get(
-     socket
-    );
-
-   if(session){
-
-    online.add(
-     session.username
-    );
-   }
-  }
-
-  let rows = [];
-
-  try{
-
-   rows =
-    this.sql()
-     .exec(
-      "SELECT username,last_seen " +
-      "FROM accounts " +
-      "ORDER BY username COLLATE NOCASE"
-     )
-     .toArray();
-
-  }catch{}
-
-  const users =
-   rows.map(function(row){
-
-    return {
-     username:
-      row.username,
-
-     online:
-      online.has(
-       row.username
-      ),
-
-     last_seen:
-      row.last_seen || 0
-    };
-   });
-
-  const payload =
-   JSON.stringify({
-    type:"users",
-    users:users
-   });
-
-  for(
-   const socket
-   of this.ctx.getWebSockets()
-  ){
-
-   try{
-
-    socket.send(
-     payload
-    );
-
-   }catch{}
-  }
- }
-
- /* =======================================================
-    استقبال WebSocket
-    مهم: async تم إضافتها هنا
- ======================================================= */
-
- async webSocketMessage(
-  socket,
-  message
- ){
-
-  const session =
-   this.sessions.get(
-    socket
-   );
-
-  if(!session){
-   return;
-  }
-
-  let data;
-
-  try{
-
-   data =
-    JSON.parse(
-     message
-    );
-
-  }catch{
-
-   return;
-  }
-
-  const username =
-   session.username;
-
-  /* ---------- رسالة ---------- */
-
-  if(
-   data.type === "message"
-  ){
-
-   const receiver =
-    String(
-     data.to || ""
-    );
-
-   const text =
-    String(
-     data.text || ""
-    ).trim();
-
-   if(
-    !receiver ||
-    !text
-   ){
-    return;
-   }
-
-   const target =
-    this.sql()
-     .exec(
-      "SELECT username " +
-      "FROM accounts " +
-      "WHERE username=? " +
-      "COLLATE NOCASE " +
-      "LIMIT 1",
-      receiver
-     )
-     .toArray();
-
-   if(!target.length){
-    return;
-   }
-
-   const now =
-    Date.now();
-
-   const result =
-    this.sql().exec(
-     "INSERT INTO messages " +
-     "(sender,receiver,text,kind,created_at) " +
-     "VALUES(?,?,?,?,?)",
-     username,
-     receiver,
-     text,
-     "text",
-     now
-    );
-
-   const id =
-    Number(
-     result.lastInsertRowId
-    );
-
-   const messageObject = {
-
-    id:id,
-
-    sender:username,
-
-    receiver:receiver,
-
-    text:text,
-
-    kind:"text",
-
-    file_id:null,
-
-    file_name:null,
-
-    file_mime:null,
-
-    created_at:now,
-
-    edited_at:null,
-
-    deleted_for_all:0,
-
-    read_at:null
-   };
-
-   this.sendToUser(
-    receiver,
-    {
-     type:"message",
-     message:messageObject
-    }
-   );
-
-   this.sendToUser(
-    username,
-    {
-     type:"message",
-     message:messageObject
-    }
-   );
-
-   return;
-  }
-
-  /* ---------- Typing ---------- */
-
-  if(
-   data.type === "typing"
-  ){
-
-   if(data.to){
-
-    this.sendToUser(
-     String(data.to),
-     {
-      type:"typing",
-      from:username,
-      value:
-       !!data.value
-     }
-    );
-   }
-
-   return;
-  }
-
-  /* ---------- Read ---------- */
-
-  if(
-   data.type === "read"
-  ){
-
-   const id =
-    Number(
-     data.id || 0
-    );
-
-   if(id){
-
-    this.sql().exec(
-     "UPDATE messages " +
-     "SET read_at=? " +
-     "WHERE id=? " +
-     "AND receiver=?",
-     Date.now(),
-     id,
-     username
-    );
-   }
-
-   return;
-  }
-
-  /* ---------- Edit ---------- */
-
-  if(
-   data.type === "edit"
-  ){
-
-   const id =
-    Number(
-     data.id || 0
-    );
-
-   const text =
-    String(
-     data.text || ""
-    ).trim();
-
-   if(
-    !id ||
-    !text
-   ){
-    return;
-   }
-
-   const rows =
-    this.sql()
-     .exec(
-      "SELECT sender,receiver " +
-      "FROM messages " +
-      "WHERE id=? " +
-      "LIMIT 1",
-      id
-     )
-     .toArray();
-
-   if(!rows.length){
-    return;
-   }
-
-   const messageRow =
-    rows[0];
-
-   if(
-    messageRow.sender !==
-    username
-   ){
-    return;
-   }
-
-   const editedAt =
-    Date.now();
-
-   this.sql().exec(
-    "UPDATE messages " +
-    "SET text=?,edited_at=? " +
-    "WHERE id=?",
-    text,
-    editedAt,
-    id
-   );
-
-   this.sendToUser(
-    messageRow.receiver,
-    {
-     type:
-      "message_edited",
-     id:id,
-     text:text
-    }
-   );
-
-   this.sendToUser(
-    username,
-    {
-     type:
-      "message_edited",
-     id:id,
-     text:text
-    }
-   );
-
-   return;
-  }
-
-  /* ---------- Delete ---------- */
-
-  if(
-   data.type === "delete"
-  ){
-
-   const id =
-    Number(
-     data.id || 0
-    );
-
-   if(!id){
-    return;
-   }
-
-   const rows =
-    this.sql()
-     .exec(
-      "SELECT sender,receiver,file_id " +
-      "FROM messages " +
-      "WHERE id=? " +
-      "LIMIT 1",
-      id
-     )
-     .toArray();
-
-   if(!rows.length){
-    return;
-   }
-
-   const messageRow =
-    rows[0];
-
-   if(
-    messageRow.sender !==
-    username &&
-    messageRow.receiver !==
-    username
-   ){
-    return;
-   }
-
-   this.sql().exec(
-    "UPDATE messages " +
-    "SET deleted_for_all=1," +
-    "text=''," +
-    "edited_at=? " +
-    "WHERE id=?",
-    Date.now(),
-    id
-   );
-
-   if(
-    messageRow.file_id
-   ){
-
-    try{
-
-     await this.ctx
-      .storage
-      .delete(
-       "file:" +
-       messageRow.file_id
+      return cors(
+        json({
+          error: error?.message || "Server error"
+        }, 500)
       );
 
-    }catch{}
-
-    try{
-
-     this.sql().exec(
-      "DELETE FROM files " +
-      "WHERE id=?",
-      messageRow.file_id
-     );
-
-    }catch{}
-   }
-
-   this.sendToUser(
-    messageRow.sender,
-    {
-     type:
-      "message_deleted",
-     id:id
     }
-   );
+  }
+};
 
-   this.sendToUser(
-    messageRow.receiver,
-    {
-     type:
-      "message_deleted",
-     id:id
-    }
-   );
+export class ChatRoom extends DurableObject {
 
-   return;
+  constructor(ctx, env) {
+    super(ctx, env);
+
+    this.ctx = ctx;
+    this.env = env;
+    this.sessions = new Map();
+
+    this.ensureSchema();
   }
 
-  /* ---------- WebRTC ---------- */
+  ensureSchema() {
 
-  if(
-   data.type === "signal"
-  ){
+    try {
 
-   const receiver =
-    String(
-     data.to || ""
+      this.ctx.storage.sql.exec(`
+        CREATE TABLE IF NOT EXISTS accounts (
+          username TEXT PRIMARY KEY,
+          password_hash TEXT NOT NULL,
+          salt TEXT NOT NULL,
+          created_at INTEGER NOT NULL
+        )
+      `);
+
+      this.ctx.storage.sql.exec(`
+        CREATE TABLE IF NOT EXISTS sessions (
+          token TEXT PRIMARY KEY,
+          username TEXT NOT NULL,
+          expires_at INTEGER NOT NULL
+        )
+      `);
+
+      this.ctx.storage.sql.exec(`
+        CREATE TABLE IF NOT EXISTS messages (
+          id TEXT PRIMARY KEY,
+          sender TEXT NOT NULL,
+          receiver TEXT NOT NULL,
+          text TEXT,
+          file_id TEXT,
+          file_name TEXT,
+          mime TEXT,
+          created_at INTEGER NOT NULL,
+          edited INTEGER DEFAULT 0
+        )
+      `);
+
+      this.ctx.storage.sql.exec(`
+        CREATE TABLE IF NOT EXISTS files (
+          id TEXT PRIMARY KEY,
+          owner TEXT NOT NULL,
+          receiver TEXT,
+          name TEXT NOT NULL,
+          mime TEXT NOT NULL,
+          data BLOB NOT NULL,
+          created_at INTEGER NOT NULL
+        )
+      `);
+
+    } catch (error) {
+      console.error("schema error", error);
+    }
+  }
+
+  async fetch(request) {
+
+    this.ensureSchema();
+
+    const url = new URL(request.url);
+
+    if (url.pathname === "/ws") {
+      return this.handleWebSocket(request, url);
+    }
+
+    if (url.pathname === "/api/register") {
+      return this.register(request);
+    }
+
+    if (url.pathname === "/api/login") {
+      return this.login(request);
+    }
+
+    if (url.pathname === "/api/me") {
+      return this.me(url);
+    }
+
+    if (url.pathname === "/api/logout") {
+      return this.logout(request);
+    }
+
+    if (url.pathname === "/api/users") {
+      return this.users(url);
+    }
+
+    if (url.pathname === "/api/history") {
+      return this.history(url);
+    }
+
+    if (url.pathname === "/api/upload") {
+      return this.upload(request, url);
+    }
+
+    if (url.pathname === "/api/file") {
+      return this.file(url);
+    }
+
+    if (url.pathname === "/api/delete-account") {
+      return this.deleteAccount(request);
+    }
+
+    return new Response("Not Found", { status: 404 });
+  }
+
+  async register(request) {
+
+    let body;
+
+    try {
+      body = await request.json();
+    } catch {
+      return json({ error: "بيانات غير صحيحة" }, 400);
+    }
+
+    const usernameRaw = String(body.username || "").trim();
+    const username = normalizeUsername(usernameRaw);
+    const password = String(body.password || "");
+
+    if (!username || username.length < 3) {
+      return json({
+        error: "اسم المستخدم يجب أن يكون 3 أحرف على الأقل"
+      }, 400);
+    }
+
+    if (!/^[a-zA-Z0-9_\u0600-\u06FF]+$/.test(username)) {
+      return json({
+        error: "اسم المستخدم يحتوي على رموز غير مسموحة"
+      }, 400);
+    }
+
+    if (password.length < 4) {
+      return json({
+        error: "كلمة المرور قصيرة جدًا"
+      }, 400);
+    }
+
+    const existing = this.ctx.storage.sql
+      .exec(
+        `SELECT username FROM accounts WHERE username = ?`,
+        username
+      )
+      .toArray();
+
+    if (existing.length) {
+      return json({
+        error: "اسم المستخدم موجود بالفعل"
+      }, 409);
+    }
+
+    const salt = new Uint8Array(16);
+    crypto.getRandomValues(salt);
+
+    const hash = await hashPassword(password, salt);
+
+    const createdAt = Date.now();
+
+    try {
+
+      this.ctx.storage.sql.exec(
+        `
+        INSERT INTO accounts
+        (username,password_hash,salt,created_at)
+        VALUES (?,?,?,?)
+        `,
+        username,
+        bytesToBase64(hash),
+        bytesToBase64(salt),
+        createdAt
+      );
+
+    } catch (error) {
+
+      return json({
+        error: "تعذر إنشاء الحساب: " + error.message
+      }, 500);
+    }
+
+    const token = randomToken();
+
+    this.ctx.storage.sql.exec(
+      `
+      INSERT INTO sessions
+      (token,username,expires_at)
+      VALUES (?,?,?)
+      `,
+      token,
+      username,
+      SESSION_FOREVER
     );
 
-   if(
-    !receiver ||
-    !data.signal
-   ){
-    return;
-   }
-
-   this.sendToUser(
-    receiver,
-    {
-     type:"signal",
-     from:username,
-     signal:data.signal
-    }
-   );
-
-   return;
+    return json({
+      ok: true,
+      username,
+      token
+    });
   }
- }
 
- /* =======================================================
-    إغلاق WebSocket
- ======================================================= */
+  async login(request) {
 
- webSocketClose(socket){
+    let body;
 
-  const session =
-   this.sessions.get(
-    socket
-   );
+    try {
+      body = await request.json();
+    } catch {
+      return json({ error: "بيانات غير صحيحة" }, 400);
+    }
 
-  this.sessions.delete(
-   socket
-  );
+    const username = normalizeUsername(body.username);
+    const password = String(body.password || "");
 
-  if(session){
+    const rows = this.ctx.storage.sql
+      .exec(
+        `
+        SELECT username,password_hash,salt
+        FROM accounts
+        WHERE username = ?
+        `,
+        username
+      )
+      .toArray();
 
-   try{
+    if (!rows.length) {
+      return json({
+        error: "اسم المستخدم أو كلمة المرور غير صحيحة"
+      }, 401);
+    }
 
-    this.sql().exec(
-     "UPDATE accounts " +
-     "SET last_seen=? " +
-     "WHERE username=?",
-     Date.now(),
-     session.username
+    const account = rows[0];
+
+    let valid = false;
+
+    try {
+
+      valid = await verifyPassword(
+        password,
+        account.salt,
+        account.password_hash
+      );
+
+    } catch {
+      valid = false;
+    }
+
+    if (!valid) {
+      return json({
+        error: "اسم المستخدم أو كلمة المرور غير صحيحة"
+      }, 401);
+    }
+
+    const token = randomToken();
+
+    this.ctx.storage.sql.exec(
+      `
+      INSERT INTO sessions
+      (token,username,expires_at)
+      VALUES (?,?,?)
+      `,
+      token,
+      account.username,
+      SESSION_FOREVER
     );
 
-   }catch{}
+    return json({
+      ok: true,
+      username: account.username,
+      token
+    });
   }
 
-  this.broadcastUsers();
- }
+  getUser(token) {
 
- webSocketError(socket){
+    if (!token) return null;
 
-  this.webSocketClose(
-   socket
-  );
- }
-   }
+    const rows = this.ctx.storage.sql
+      .exec(
+        `
+        SELECT
+          sessions.token,
+          sessions.username,
+          sessions.expires_at
+        FROM sessions
+        INNER JOIN accounts
+          ON accounts.username = sessions.username
+        WHERE sessions.token = ?
+        `,
+        token
+      )
+      .toArray();
+
+    if (!rows.length) {
+      return null;
+    }
+
+    const session = rows[0];
+
+    if (
+      session.expires_at &&
+      Number(session.expires_at) < Date.now()
+    ) {
+      this.ctx.storage.sql.exec(
+        `DELETE FROM sessions WHERE token = ?`,
+        token
+      );
+
+      return null;
+    }
+
+    return session.username;
+  }
+
+  async me(url) {
+
+    const token = url.searchParams.get("token");
+    const username = this.getUser(token);
+
+    if (!username) {
+      return json({
+        error: "الجلسة غير صالحة"
+      }, 401);
+    }
+
+    return json({
+      ok: true,
+      username
+    });
+  }
+
+  async logout(request) {
+
+    let body = {};
+
+    try {
+      body = await request.json();
+    } catch {}
+
+    const token = body.token;
+
+    if (token) {
+
+      const username = this.getUser(token);
+
+      this.ctx.storage.sql.exec(
+        `DELETE FROM sessions WHERE token = ?`,
+        token
+      );
+
+      if (username) {
+        this.removeSessionSockets(username);
+      }
+    }
+
+    return json({ ok: true });
+  }
+
+  async users(url) {
+
+    const token = url.searchParams.get("token");
+    const current = this.getUser(token);
+
+    if (!current) {
+      return json({
+        error: "الجلسة غير صالحة"
+      }, 401);
+    }
+
+    const rows = this.ctx.storage.sql
+      .exec(
+        `
+        SELECT username
+        FROM accounts
+        ORDER BY username COLLATE NOCASE
+        `
+      )
+      .toArray();
+
+    const onlineUsers = new Set(
+      Array.from(this.sessions.keys())
+    );
+
+    const users = rows.map(row => ({
+      username: row.username,
+      online: onlineUsers.has(row.username)
+    }));
+
+    return json(users);
+  }
+
+  async history(url) {
+
+    const token = url.searchParams.get("token");
+    const current = this.getUser(token);
+
+    if (!current) {
+      return json({
+        error: "الجلسة غير صالحة"
+      }, 401);
+    }
+
+    const other = normalizeUsername(
+      url.searchParams.get("user")
+    );
+
+    if (!other) {
+      return json([]);
+    }
+
+    const rows = this.ctx.storage.sql
+      .exec(
+        `
+        SELECT
+          id,
+          sender,
+          receiver,
+          text,
+          file_id,
+          file_name,
+          mime,
+          created_at,
+          edited
+        FROM messages
+        WHERE
+          (sender = ? AND receiver = ?)
+          OR
+          (sender = ? AND receiver = ?)
+        ORDER BY created_at ASC
+        LIMIT 1000
+        `,
+        current,
+        other,
+        other,
+        current
+      )
+      .toArray();
+
+    return json(rows);
+  }
+
+  async upload(request, url) {
+
+    const token = url.searchParams.get("token");
+    const current = this.getUser(token);
+
+    if (!current) {
+      return json({
+        error: "الجلسة غير صالحة"
+      }, 401);
+    }
+
+    const form = await request.formData();
+
+    const file = form.get("file");
+    const to = normalizeUsername(form.get("to"));
+
+    if (!(file instanceof File)) {
+      return json({
+        error: "لم يتم إرسال ملف"
+      }, 400);
+    }
+
+    if (!to) {
+      return json({
+        error: "المستلم غير موجود"
+      }, 400);
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      return json({
+        error: "حجم الملف أكبر من 20 ميجابايت"
+      }, 400);
+    }
+
+    const account = this.ctx.storage.sql
+      .exec(
+        `SELECT username FROM accounts WHERE username = ?`,
+        to
+      )
+      .toArray();
+
+    if (!account.length) {
+      return json({
+        error: "المستخدم غير موجود"
+      }, 404);
+    }
+
+    const id = randomToken();
+
+    const buffer = await file.arrayBuffer();
+
+    this.ctx.storage.sql.exec(
+      `
+      INSERT INTO files
+      (id,owner,receiver,name,mime,data,created_at)
+      VALUES (?,?,?,?,?,?,?)
+      `,
+      id,
+      current,
+      to,
+      file.name || "file",
+      file.type || "application/octet-stream",
+      new Uint8Array(buffer),
+      Date.now()
+    );
+
+    const messageId = randomToken();
+
+    this.ctx.storage.sql.exec(
+      `
+      INSERT INTO messages
+      (id,sender,receiver,text,file_id,file_name,mime,created_at,edited)
+      VALUES (?,?,?,?,?,?,?,?,?)
+      `,
+      messageId,
+      current,
+      to,
+      "",
+      id,
+      file.name || "file",
+      file.type || "application/octet-stream",
+      Date.now(),
+      0
+    );
+
+    const message = {
+      id: messageId,
+      sender: current,
+      receiver: to,
+      text: "",
+      file_id: id,
+      file_name: file.name || "file",
+      mime: file.type || "application/octet-stream",
+      created_at: Date.now(),
+      edited: 0
+    };
+
+    this.sendToUser(current, {
+      type: "message",
+      message
+    });
+
+    this.sendToUser(to, {
+      type: "message",
+      message
+    });
+
+    return json({
+      ok: true,
+      id,
+      messageId
+    });
+  }
+
+  async file(url) {
+
+    const token = url.searchParams.get("token");
+    const current = this.getUser(token);
+
+    if (!current) {
+      return new Response("Unauthorized", {
+        status: 401
+      });
+    }
+
+    const id = url.searchParams.get("id");
+
+    if (!id) {
+      return new Response("Missing file", {
+        status: 400
+      });
+    }
+
+    const rows = this.ctx.storage.sql
+      .exec(
+        `
+        SELECT
+          owner,
+          receiver,
+          name,
+          mime,
+          data
+        FROM files
+        WHERE id = ?
+        `,
+        id
+      )
+      .toArray();
+
+    if (!rows.length) {
+      return new Response("File not found", {
+        status: 404
+      });
+    }
+
+    const file = rows[0];
+
+    if (
+      file.owner !== current &&
+      file.receiver !== current
+    ) {
+      return new Response("Forbidden", {
+        status: 403
+      });
+    }
+
+    return new Response(file.data, {
+      headers: {
+        "Content-Type":
+          file.mime || "application/octet-stream",
+        "Content-Disposition":
+          `inline; filename*=UTF-8''${encodeURIComponent(file.name)}`
+      }
+    });
+  }
+
+  async deleteAccount(request) {
+
+    let body = {};
+
+    try {
+      body = await request.json();
+    } catch {}
+
+    const token = body.token;
+    const username = this.getUser(token);
+
+    if (!username) {
+      return json({
+        error: "الجلسة غير صالحة"
+      }, 401);
+    }
+
+    try {
+
+      this.ctx.storage.sql.exec(
+        `DELETE FROM sessions WHERE username = ?`,
+        username
+      );
+
+      this.ctx.storage.sql.exec(
+        `
+        DELETE FROM files
+        WHERE owner = ? OR receiver = ?
+        `,
+        username,
+        username
+      );
+
+      this.ctx.storage.sql.exec(
+        `
+        DELETE FROM messages
+        WHERE sender = ? OR receiver = ?
+        `,
+        username,
+        username
+      );
+
+      this.ctx.storage.sql.exec(
+        `
+        DELETE FROM accounts
+        WHERE username = ?
+        `,
+        username
+      );
+
+      this.removeSessionSockets(username);
+
+      return json({
+        ok: true
+      });
+
+    } catch (error) {
+
+      return json({
+        error: "تعذر حذف الحساب: " + error.message
+      }, 500);
+    }
+  }
+
+  async handleWebSocket(request, url) {
+
+    if (request.headers.get("Upgrade") !== "websocket") {
+      return new Response("Expected WebSocket", {
+        status: 426
+      });
+    }
+
+    const token = url.searchParams.get("token");
+    const username = this.getUser(token);
+
+    if (!username) {
+      return new Response("Unauthorized", {
+        status: 401
+      });
+    }
+
+    const pair = new WebSocketPair();
+
+    const client = pair[0];
+    const server = pair[1];
+
+    this.ctx.acceptWebSocket(server);
+
+    server.serializeAttachment({
+      username,
+      token
+    });
+
+    if (!this.sessions.has(username)) {
+      this.sessions.set(username, new Set());
+    }
+
+    this.sessions.get(username).add(server);
+
+    this.broadcastUsers();
+
+    return new Response(null, {
+      status: 101,
+      webSocket: client
+    });
+  }
+
+  async webSocketMessage(socket, message) {
+
+    let data;
+
+    try {
+
+      data =
+        typeof message === "string"
+          ? JSON.parse(message)
+          : JSON.parse(new TextDecoder().decode(message));
+
+    } catch {
+
+      return;
+    }
+
+    const attachment = socket.deserializeAttachment();
+    const username = attachment?.username;
+
+    if (!username) return;
+
+    if (data.type === "message") {
+
+      await this.handleMessage(socket, username, data);
+      return;
+    }
+
+    if (data.type === "typing") {
+
+      this.sendToUser(data.to, {
+        type: "typing",
+        from: username,
+        value: !!data.value
+      });
+
+      return;
+    }
+
+    if (data.type === "edit") {
+
+      await this.editMessage(username, data);
+      return;
+    }
+
+    if (data.type === "delete") {
+
+      await this.deleteMessage(username, data);
+      return;
+    }
+
+    if (
+      data.type === "call" ||
+      data.type === "offer" ||
+      data.type === "answer" ||
+      data.type === "ice" ||
+      data.type === "hangup"
+    ) {
+
+      this.forwardCall(username, data);
+      return;
+    }
+  }
+
+  async webSocketClose(socket) {
+
+    this.removeSocket(socket);
+    this.broadcastUsers();
+  }
+
+  async webSocketError(socket) {
+
+    this.removeSocket(socket);
+    this.broadcastUsers();
+  }
+
+  removeSocket(socket) {
+
+    const attachment = socket.deserializeAttachment();
+    const username = attachment?.username;
+
+    if (!username) return;
+
+    const set = this.sessions.get(username);
+
+    if (!set) return;
+
+    set.delete(socket);
+
+    if (!set.size) {
+      this.sessions.delete(username);
+    }
+  }
+
+  removeSessionSockets(username) {
+
+    const set = this.sessions.get(username);
+
+    if (!set) return;
+
+    for (const socket of set) {
+
+      try {
+        socket.close(1000, "logout");
+      } catch {}
+    }
+
+    this.sessions.delete(username);
+  }
+
+  async handleMessage(socket, sender, data) {
+
+    const receiver = normalizeUsername(data.to);
+    const text = String(data.text || "");
+
+    if (!receiver) return;
+
+    if (!text.trim()) return;
+
+    const account = this.ctx.storage.sql
+      .exec(
+        `SELECT username FROM accounts WHERE username = ?`,
+        receiver
+      )
+      .toArray();
+
+    if (!account.length) {
+      return;
+    }
+
+    const id = randomToken();
+    const now = Date.now();
+
+    this.ctx.storage.sql.exec(
+      `
+      INSERT INTO messages
+      (id,sender,receiver,text,file_id,file_name,mime,created_at,edited)
+      VALUES (?,?,?,?,?,?,?,?,?)
+      `,
+      id,
+      sender,
+      receiver,
+      text,
+      null,
+      null,
+      null,
+      now,
+      0
+    );
+
+    const message = {
+      id,
+      sender,
+      receiver,
+      text,
+      file_id: null,
+      file_name: null,
+      mime: null,
+      created_at: now,
+      edited: 0
+    };
+
+    this.sendToUser(sender, {
+      type: "message",
+      message
+    });
+
+    this.sendToUser(receiver, {
+      type: "message",
+      message
+    });
+  }
+
+  async editMessage(username, data) {
+
+    const id = String(data.id || "");
+    const text = String(data.text || "");
+
+    if (!id) return;
+
+    const rows = this.ctx.storage.sql
+      .exec(
+        `
+        SELECT sender,receiver
+        FROM messages
+        WHERE id = ?
+        `,
+        id
+      )
+      .toArray();
+
+    if (!rows.length) return;
+
+    const message = rows[0];
+
+    if (message.sender !== username) {
+      return;
+    }
+
+    this.ctx.storage.sql.exec(
+      `
+      UPDATE messages
+      SET text = ?, edited = 1
+      WHERE id = ?
+      `,
+      text,
+      id
+    );
+
+    const payload = {
+      type: "edit",
+      id,
+      text
+    };
+
+    this.sendToUser(message.sender, payload);
+    this.sendToUser(message.receiver, payload);
+  }
+
+  async deleteMessage(username, data) {
+
+    const id = String(data.id || "");
+
+    if (!id) return;
+
+    const rows = this.ctx.storage.sql
+      .exec(
+        `
+        SELECT sender,receiver,file_id
+        FROM messages
+        WHERE id = ?
+        `,
+        id
+      )
+      .toArray();
+
+    if (!rows.length) return;
+
+    const message = rows[0];
+
+    if (message.sender !== username) {
+      return;
+    }
+
+    if (message.file_id) {
+
+      this.ctx.storage.sql.exec(
+        `DELETE FROM files WHERE id = ?`,
+        message.file_id
+      );
+    }
+
+    this.ctx.storage.sql.exec(
+      `DELETE FROM messages WHERE id = ?`,
+      id
+    );
+
+    const payload = {
+      type: "delete",
+      id
+    };
+
+    this.sendToUser(message.sender, payload);
+    this.sendToUser(message.receiver, payload);
+  }
+
+  forwardCall(username, data) {
+
+    const receiver = normalizeUsername(data.to);
+
+    if (!receiver) return;
+
+    this.sendToUser(receiver, {
+      ...data,
+      from: username
+    });
+  }
+
+  sendToUser(username, data) {
+
+    const set = this.sessions.get(
+      normalizeUsername(username)
+    );
+
+    if (!set) return;
+
+    const text = JSON.stringify(data);
+
+    for (const socket of set) {
+
+      try {
+        socket.send(text);
+      } catch {
+        this.removeSocket(socket);
+      }
+    }
+  }
+
+  broadcastUsers() {
+
+    const rows = this.ctx.storage.sql
+      .exec(
+        `
+        SELECT username
+        FROM accounts
+        ORDER BY username COLLATE NOCASE
+        `
+      )
+      .toArray();
+
+    const online = new Set(
+      Array.from(this.sessions.keys())
+    );
+
+    const users = rows.map(row => ({
+      username: row.username,
+      online: online.has(row.username)
+    }));
+
+    const data = JSON.stringify({
+      type: "users",
+      users
+    });
+
+    for (const set of this.sessions.values()) {
+
+      for (const socket of set) {
+
+        try {
+          socket.send(data);
+        } catch {
+          this.removeSocket(socket);
+        }
+      }
+    }
+  }
+}
