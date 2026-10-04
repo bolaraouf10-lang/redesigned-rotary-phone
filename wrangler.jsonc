@@ -10,5 +10,12 @@
         "class_name": "ChatRoom"
       }
     ]
+  },
+
+  "exports": {
+    "ChatRoom": {
+      "type": "durable-object",
+      "storage": "sqlite"
+    }
   }
 }
