@@ -1,8 +1,15 @@
 import { DurableObject } from "cloudflare:workers";
 
-/* =========================
+/* =========================================================
+   إعدادات
+========================================================= */
+
+const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20 MB
+const SESSION_FOREVER = 9999999999999;
+
+/* =========================================================
    HTML
-========================= */
+========================================================= */
 
 const HTML = `<!doctype html>
 <html lang="ar" dir="rtl">
@@ -18,27 +25,32 @@ body{
   margin:0;
   font-family:Arial,sans-serif;
   background:#e5ddd5;
+  color:#222;
 }
 
 button,input{
   font-family:inherit;
 }
 
-.auth{
+button{
+  cursor:pointer;
+}
+
+#auth{
   min-height:100vh;
   display:flex;
-  align-items:center;
   justify-content:center;
+  align-items:center;
   padding:20px;
 }
 
 .auth-box{
   width:100%;
-  max-width:380px;
+  max-width:390px;
   background:white;
   padding:25px;
   border-radius:18px;
-  box-shadow:0 8px 30px rgba(0,0,0,.15);
+  box-shadow:0 8px 30px #0002;
 }
 
 .auth-box h2{
@@ -52,38 +64,30 @@ button,input{
   margin:7px 0;
   border:1px solid #ddd;
   border-radius:10px;
-  font-size:16px;
   outline:none;
 }
 
 .auth-box button{
   width:100%;
   padding:13px;
+  margin-top:8px;
   border:0;
   border-radius:10px;
   background:#128c7e;
   color:white;
   font-size:16px;
-  cursor:pointer;
-  margin-top:8px;
 }
 
-.auth-box button:hover{
-  background:#075e54;
-}
-
-.switch{
-  text-align:center;
-  margin-top:14px;
-  color:#075e54;
-  cursor:pointer;
+#switchAuth{
+  background:#eee;
+  color:#333;
 }
 
 #error{
   color:#d00;
-  text-align:center;
   min-height:22px;
   margin-top:8px;
+  text-align:center;
 }
 
 #app{
@@ -93,8 +97,8 @@ button,input{
 }
 
 .layout{
-  height:100%;
   display:flex;
+  height:100%;
 }
 
 .sidebar{
@@ -105,39 +109,31 @@ button,input{
   flex-direction:column;
 }
 
-.sidebar-header{
-  height:64px;
+.side-head{
   background:#075e54;
   color:white;
+  padding:13px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:0 10px;
 }
 
-.sidebar-header strong{
-  font-size:19px;
+.side-head-title{
+  font-size:20px;
+  font-weight:bold;
 }
 
-.header-buttons{
+.head-actions{
   display:flex;
   gap:5px;
 }
 
-.header-btn{
+.head-actions button{
   border:0;
+  background:#ffffff22;
   color:white;
-  padding:8px 10px;
   border-radius:8px;
-  cursor:pointer;
-}
-
-.settings-btn{
-  background:#128c7e;
-}
-
-.logout{
-  background:#d9534f;
+  padding:8px;
 }
 
 #users{
@@ -146,21 +142,20 @@ button,input{
 }
 
 .user{
+  padding:13px;
+  border-bottom:1px solid #eee;
   display:flex;
   align-items:center;
   gap:10px;
-  padding:13px;
-  border-bottom:1px solid #eee;
   cursor:pointer;
 }
 
 .user:hover{
-  background:#f3f3f3;
+  background:#f4f4f4;
 }
 
-.user.self{
-  background:#e8f5e9;
-  cursor:default;
+.user.active{
+  background:#e8f5f3;
 }
 
 .avatar{
@@ -170,44 +165,33 @@ button,input{
   background:#128c7e;
   color:white;
   display:flex;
-  align-items:center;
   justify-content:center;
+  align-items:center;
   font-weight:bold;
-  flex-shrink:0;
 }
 
 .user-info{
-  min-width:0;
   flex:1;
 }
 
-.username{
+.user-name{
   font-weight:bold;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
 }
 
 .status{
-  color:#777;
   font-size:12px;
-  margin-top:4px;
-}
-
-.status.online{
-  color:#128c7e;
+  color:#777;
+  margin-top:3px;
 }
 
 .dot{
-  display:inline-block;
-  width:9px;
-  height:9px;
+  width:10px;
+  height:10px;
   border-radius:50%;
-  margin-left:5px;
 }
 
 .online-dot{
-  background:#20c65a;
+  background:#20c55a;
 }
 
 .offline-dot{
@@ -221,355 +205,247 @@ button,input{
   min-width:0;
 }
 
-.chat-header{
-  height:64px;
+.chat-head{
   background:#075e54;
   color:white;
+  padding:10px 14px;
   display:flex;
   align-items:center;
   gap:10px;
-  padding:8px 12px;
 }
 
 .chat-head-info{
   flex:1;
-  min-width:0;
 }
 
-.chat-title{
-  font-size:17px;
+#chatTitle{
   font-weight:bold;
 }
 
-.chat-status{
+#chatStatus{
   font-size:12px;
-  opacity:.9;
-  margin-top:3px;
+  opacity:.8;
 }
 
-.call-buttons{
+.call-actions{
   display:flex;
-  gap:6px;
+  gap:5px;
 }
 
-.call-btn{
-  width:42px;
-  height:42px;
+.call-actions button{
   border:0;
-  border-radius:50%;
-  background:rgba(255,255,255,.15);
+  background:#ffffff22;
   color:white;
-  font-size:19px;
-  cursor:pointer;
+  padding:8px 10px;
+  border-radius:8px;
 }
 
-.call-btn:hover{
-  background:rgba(255,255,255,.25);
-}
-
-.messages{
+#messages{
   flex:1;
   overflow:auto;
   padding:15px;
-  background:
-    radial-gradient(circle at 20% 20%,rgba(255,255,255,.3),transparent 20%),
-    #e5ddd5;
 }
 
-.empty{
-  text-align:center;
-  color:#777;
-  margin-top:30px;
-}
-
-.msg{
+.message{
   max-width:75%;
-  padding:9px 12px;
-  border-radius:10px;
   margin:6px 0;
-  clear:both;
+  padding:9px 12px;
+  border-radius:12px;
   word-break:break-word;
-  box-shadow:0 1px 1px rgba(0,0,0,.08);
+  position:relative;
 }
 
-.msg.mine{
-  float:right;
+.message.me{
+  margin-right:auto;
   background:#dcf8c6;
 }
 
-.msg.theirs{
-  float:left;
+.message.other{
+  margin-left:auto;
   background:white;
 }
 
-.msg-time{
-  display:block;
+.message-time{
   font-size:10px;
   color:#777;
   margin-top:4px;
 }
 
-.msg audio{
+.file-message{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.file-message a{
+  color:#075e54;
+  font-weight:bold;
+  text-decoration:none;
+}
+
+.audio-message audio{
   max-width:230px;
 }
 
-.typing{
-  min-height:22px;
-  padding:0 12px;
-  color:#666;
+#typing{
+  min-height:20px;
+  padding:0 15px;
+  color:#777;
   font-size:12px;
-  background:#e5ddd5;
 }
 
 .composer{
-  min-height:62px;
-  background:#f0f0f0;
+  background:#eee;
+  padding:8px;
   display:flex;
-  align-items:center;
   gap:7px;
-  padding:9px;
+  align-items:center;
 }
 
 .composer input{
   flex:1;
   border:0;
-  outline:none;
-  border-radius:22px;
+  border-radius:20px;
   padding:12px 15px;
-  font-size:15px;
-  background:white;
+  outline:none;
 }
 
-.action-btn{
-  width:45px;
-  height:45px;
+.composer button{
+  width:43px;
+  height:43px;
   border:0;
   border-radius:50%;
-  cursor:pointer;
-  font-size:19px;
-}
-
-.record{
-  background:#ddd;
-}
-
-.record.recording{
-  background:#e53935;
-  color:white;
-}
-
-.send{
   background:#128c7e;
   color:white;
+  font-size:18px;
 }
 
-/* =========================
-   SETTINGS
-========================= */
+#fileInput{
+  display:none;
+}
 
-.settings-overlay{
+.modal{
+  display:none;
   position:fixed;
   inset:0;
-  z-index:3000;
-  background:rgba(0,0,0,.65);
-  display:none;
+  background:#0008;
+  z-index:100;
   align-items:center;
   justify-content:center;
   padding:20px;
 }
 
-.settings-box{
+.modal-box{
   width:100%;
-  max-width:400px;
+  max-width:390px;
   background:white;
   border-radius:18px;
-  padding:22px;
+  padding:20px;
 }
 
-.settings-box h2{
+.modal-box h3{
   margin-top:0;
 }
 
-.settings-user{
-  background:#f1f1f1;
-  padding:13px;
-  border-radius:10px;
-  margin:12px 0 18px;
-}
-
-.close-settings{
+.modal-box button{
   width:100%;
   padding:12px;
-  border:0;
-  border-radius:10px;
-  background:#ddd;
-  cursor:pointer;
   margin-top:8px;
-}
-
-.delete-account{
-  width:100%;
-  padding:13px;
   border:0;
   border-radius:10px;
-  background:#d32f2f;
-  color:white;
-  cursor:pointer;
-  font-size:15px;
 }
 
-/* =========================
-   CALL
-========================= */
+.danger{
+  background:#d93025;
+  color:white;
+}
 
-.call-screen{
+.cancel{
+  background:#eee;
+}
+
+#incomingCall,
+#activeCall{
+  display:none;
   position:fixed;
   inset:0;
-  z-index:1000;
-  background:#101010;
-  color:white;
-  display:none;
-  flex-direction:column;
-}
-
-.call-top{
-  height:60px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:18px;
-  background:#151515;
-  z-index:3;
-}
-
-.video-area{
-  flex:1;
-  position:relative;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
+  z-index:200;
   background:#111;
+  color:white;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  padding:20px;
+}
+
+.call-box{
+  text-align:center;
+}
+
+.call-avatar{
+  width:90px;
+  height:90px;
+  border-radius:50%;
+  background:#128c7e;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:40px;
+  margin:auto;
+}
+
+.call-buttons{
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  margin-top:25px;
+}
+
+.call-buttons button{
+  border:0;
+  border-radius:50%;
+  width:55px;
+  height:55px;
+  font-size:20px;
+}
+
+.accept{
+  background:#20c55a;
+  color:white;
+}
+
+.reject{
+  background:#d93025;
+  color:white;
+}
+
+.end{
+  background:#d93025;
+  color:white;
 }
 
 #remoteVideo{
-  width:100%;
-  height:100%;
-  object-fit:contain;
-  background:#111;
+  width:90%;
+  max-width:700px;
+  max-height:65vh;
+  background:#000;
+  border-radius:12px;
 }
 
 #localVideo{
   position:absolute;
-  left:15px;
-  top:15px;
   width:130px;
   height:180px;
   object-fit:cover;
-  border-radius:12px;
-  border:2px solid white;
-  background:#222;
-  z-index:2;
-}
-
-.call-avatar{
-  width:100px;
-  height:100px;
-  border-radius:50%;
-  background:#128c7e;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:38px;
-}
-
-.call-controls{
-  min-height:85px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:14px;
-  background:#151515;
-}
-
-.call-control{
-  width:58px;
-  height:58px;
-  border:0;
-  border-radius:50%;
-  cursor:pointer;
-  background:#333;
-  color:white;
-  font-size:22px;
-}
-
-.call-control.end{
-  background:#e53935;
-}
-
-.incoming{
-  position:fixed;
-  inset:0;
-  z-index:2000;
-  background:rgba(0,0,0,.75);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-}
-
-.incoming-box{
-  width:100%;
-  max-width:350px;
-  background:white;
-  border-radius:18px;
-  padding:25px;
-  text-align:center;
-}
-
-.incoming-avatar{
-  width:75px;
-  height:75px;
-  border-radius:50%;
-  background:#128c7e;
-  color:white;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  margin:auto;
-  font-size:30px;
-}
-
-.incoming-box h3{
-  margin:15px 0 5px;
-}
-
-.incoming-box p{
-  color:#666;
-}
-
-.incoming-buttons{
-  display:flex;
-  gap:10px;
-  margin-top:20px;
-}
-
-.incoming-buttons button{
-  flex:1;
-  padding:12px;
-  border:0;
+  bottom:110px;
+  right:20px;
+  background:#000;
   border-radius:10px;
-  cursor:pointer;
-  color:white;
-  font-size:15px;
 }
 
-.accept{
-  background:#20a04b;
-}
-
-.reject{
-  background:#e53935;
+.call-type{
+  margin-top:15px;
+  color:#bbb;
 }
 
 @media(max-width:700px){
@@ -577,17 +453,8 @@ button,input{
     width:180px;
   }
 
-  .msg{
+  .message{
     max-width:85%;
-  }
-
-  .header-buttons{
-    gap:2px;
-  }
-
-  .header-btn{
-    padding:7px 6px;
-    font-size:11px;
   }
 }
 
@@ -596,18 +463,12 @@ button,input{
     width:155px;
   }
 
-  .call-buttons{
-    gap:2px;
+  .side-head-title{
+    font-size:16px;
   }
 
-  .call-btn{
-    width:37px;
-    height:37px;
-  }
-
-  #localVideo{
-    width:100px;
-    height:140px;
+  .call-actions button{
+    padding:7px;
   }
 }
 </style>
@@ -615,40 +476,19 @@ button,input{
 
 <body>
 
-<!-- AUTH -->
-
-<div id="auth" class="auth">
+<div id="auth">
   <div class="auth-box">
-
     <h2 id="authTitle">إنشاء حساب</h2>
 
-    <input
-      id="username"
-      autocomplete="username"
-      placeholder="اسم المستخدم"
-    >
+    <input id="username" placeholder="اسم المستخدم" autocomplete="username">
+    <input id="password" type="password" placeholder="كلمة المرور" autocomplete="current-password">
 
-    <input
-      id="password"
-      type="password"
-      autocomplete="current-password"
-      placeholder="كلمة المرور"
-    >
-
-    <button id="authButton">
-      إنشاء الحساب
-    </button>
-
-    <div id="switchAuth" class="switch">
-      عندك حساب؟ تسجيل الدخول
-    </div>
+    <button id="authButton">إنشاء الحساب</button>
+    <button id="switchAuth">عندك حساب؟ تسجيل الدخول</button>
 
     <div id="error"></div>
-
   </div>
 </div>
-
-<!-- APP -->
 
 <div id="app">
 
@@ -656,29 +496,13 @@ button,input{
 
     <aside class="sidebar">
 
-      <div class="sidebar-header">
+      <div class="side-head">
+        <div class="side-head-title">المستخدمون</div>
 
-        <strong>المستخدمون</strong>
-
-        <div class="header-buttons">
-
-          <button
-            id="settingsBtn"
-            class="header-btn settings-btn"
-            title="الإعدادات"
-          >
-            ⚙️
-          </button>
-
-          <button
-            id="logoutBtn"
-            class="header-btn logout"
-          >
-            خروج
-          </button>
-
+        <div class="head-actions">
+          <button id="settingsBtn" title="الإعدادات">⚙️</button>
+          <button id="logoutBtn" title="خروج">خروج</button>
         </div>
-
       </div>
 
       <div id="users"></div>
@@ -687,74 +511,41 @@ button,input{
 
     <main class="chat">
 
-      <div class="chat-header">
+      <div class="chat-head">
 
-        <div id="chatAvatar" class="avatar">
-          ?
-        </div>
+        <div class="avatar" id="chatAvatar">?</div>
 
         <div class="chat-head-info">
-
-          <div id="chatTitle" class="chat-title">
-            اختر مستخدمًا
-          </div>
-
-          <div id="chatStatus" class="chat-status"></div>
-
+          <div id="chatTitle">اختر مستخدمًا</div>
+          <div id="chatStatus"></div>
         </div>
 
-        <div class="call-buttons">
-
-          <button
-            id="voiceCallBtn"
-            class="call-btn"
-            title="مكالمة صوتية"
-          >
-            📞
-          </button>
-
-          <button
-            id="videoCallBtn"
-            class="call-btn"
-            title="مكالمة فيديو"
-          >
-            📹
-          </button>
-
+        <div class="call-actions">
+          <button id="voiceCallBtn" title="مكالمة صوتية">📞</button>
+          <button id="videoCallBtn" title="مكالمة فيديو">📹</button>
         </div>
 
       </div>
 
-      <div id="messages" class="messages">
-        <div class="empty">
-          اختر مستخدمًا لبدء المحادثة
-        </div>
+      <div id="messages">
+        اختر مستخدمًا لبدء المحادثة
       </div>
 
-      <div id="typing" class="typing"></div>
+      <div id="typing"></div>
 
       <div class="composer">
 
-        <button
-          id="recordBtn"
-          class="action-btn record"
-          title="تسجيل صوتي"
-        >
-          🎙️
-        </button>
+        <label for="fileInput">
+          <button id="fileBtn" type="button">📎</button>
+        </label>
 
-        <input
-          id="messageInput"
-          placeholder="اكتب رسالة..."
-          autocomplete="off"
-        >
+        <input id="fileInput" type="file">
 
-        <button
-          id="sendBtn"
-          class="action-btn send"
-        >
-          ➤
-        </button>
+        <button id="recordBtn" title="تسجيل صوتي">🎙️</button>
+
+        <input id="messageInput" placeholder="اكتب رسالة...">
+
+        <button id="sendBtn">➤</button>
 
       </div>
 
@@ -764,146 +555,52 @@ button,input{
 
 </div>
 
-<!-- SETTINGS -->
+<div class="modal" id="settingsModal">
+  <div class="modal-box">
+    <h3>الإعدادات</h3>
 
-<div id="settingsOverlay" class="settings-overlay">
+    <p>الحساب: <b id="settingsUsername"></b></p>
 
-  <div class="settings-box">
-
-    <h2>⚙️ الإعدادات</h2>
-
-    <div id="settingsUser" class="settings-user"></div>
-
-    <button
-      id="deleteAccountBtn"
-      class="delete-account"
-    >
-      🗑️ إغلاق الحساب نهائيًا
+    <button class="danger" id="deleteAccountBtn">
+      إغلاق الحساب نهائيًا
     </button>
 
-    <button
-      id="closeSettingsBtn"
-      class="close-settings"
-    >
-      إغلاق
+    <button class="cancel" id="closeSettingsBtn">
+      إلغاء
     </button>
+  </div>
+</div>
 
+<div id="incomingCall">
+  <div class="call-box">
+    <div class="call-avatar">📞</div>
+    <h2 id="incomingCaller">مكالمة واردة</h2>
+    <div class="call-type" id="incomingType"></div>
+
+    <div class="call-buttons">
+      <button class="accept" id="acceptCallBtn">✓</button>
+      <button class="reject" id="rejectCallBtn">✕</button>
+    </div>
+  </div>
+</div>
+
+<div id="activeCall">
+
+  <video id="remoteVideo" autoplay playsinline></video>
+  <video id="localVideo" autoplay muted playsinline></video>
+
+  <div id="callInfo">المكالمة جارية</div>
+
+  <div class="call-buttons">
+    <button id="muteBtn">🎤</button>
+    <button id="cameraBtn">📷</button>
+    <button class="end" id="endCallBtn">☎</button>
   </div>
 
 </div>
-
-<!-- INCOMING CALL -->
-
-<div id="incomingCall" class="incoming">
-
-  <div class="incoming-box">
-
-    <div
-      id="incomingAvatar"
-      class="incoming-avatar"
-    >
-      ?
-    </div>
-
-    <h3 id="incomingName">
-      مكالمة واردة
-    </h3>
-
-    <p id="incomingType">
-      مكالمة صوتية واردة
-    </p>
-
-    <div class="incoming-buttons">
-
-      <button
-        id="acceptCallBtn"
-        class="accept"
-      >
-        قبول
-      </button>
-
-      <button
-        id="rejectCallBtn"
-        class="reject"
-      >
-        رفض
-      </button>
-
-    </div>
-
-  </div>
-
-</div>
-
-<!-- ACTIVE CALL -->
-
-<div id="callScreen" class="call-screen">
-
-  <div id="callTop" class="call-top">
-    مكالمة
-  </div>
-
-  <div class="video-area">
-
-    <div
-      id="callAvatar"
-      class="call-avatar"
-    >
-      ?
-    </div>
-
-    <video
-      id="remoteVideo"
-      autoplay
-      playsinline
-    ></video>
-
-    <video
-      id="localVideo"
-      autoplay
-      muted
-      playsinline
-    ></video>
-
-  </div>
-
-  <div class="call-controls">
-
-    <button
-      id="muteBtn"
-      class="call-control"
-      title="كتم الميكروفون"
-    >
-      🎙️
-    </button>
-
-    <button
-      id="cameraBtn"
-      class="call-control"
-      title="الكاميرا"
-    >
-      📹
-    </button>
-
-    <button
-      id="endCallBtn"
-      class="call-control end"
-      title="إنهاء المكالمة"
-    >
-      ☎
-    </button>
-
-  </div>
-
-</div>
-
-<audio
-  id="remoteAudio"
-  autoplay
-  playsinline
-></audio>
 
 <script>
+
 let token = localStorage.getItem("chat_token") || "";
 let currentUser = "";
 let selectedUser = "";
@@ -918,8 +615,6 @@ let mediaRecorder = null;
 let audioChunks = [];
 let isRecording = false;
 
-/* CALL */
-
 let peerConnection = null;
 let localStream = null;
 let remoteStream = null;
@@ -932,173 +627,85 @@ let pendingOffer = null;
 let pendingCaller = "";
 let pendingCallId = "";
 let pendingCallType = "";
-
 let pendingCandidates = [];
 
 let microphoneEnabled = true;
 let cameraEnabled = true;
 
-/* DOM */
+const MAX_FILE_SIZE = 20 * 1024 * 1024;
 
-const auth = document.getElementById("auth");
-const app = document.getElementById("app");
-
-const authTitle = document.getElementById("authTitle");
 const usernameInput = document.getElementById("username");
 const passwordInput = document.getElementById("password");
 const authButton = document.getElementById("authButton");
 const switchAuth = document.getElementById("switchAuth");
+const authTitle = document.getElementById("authTitle");
 const errorBox = document.getElementById("error");
+
+const auth = document.getElementById("auth");
+const app = document.getElementById("app");
 
 const usersBox = document.getElementById("users");
 
-const chatAvatar = document.getElementById("chatAvatar");
 const chatTitle = document.getElementById("chatTitle");
+const chatAvatar = document.getElementById("chatAvatar");
 const chatStatus = document.getElementById("chatStatus");
 
-const messagesBox = document.getElementById("messages");
-const typingBox = document.getElementById("typing");
-
+const messages = document.getElementById("messages");
 const messageInput = document.getElementById("messageInput");
 const sendBtn = document.getElementById("sendBtn");
+const typingBox = document.getElementById("typing");
+
+const fileInput = document.getElementById("fileInput");
+const fileBtn = document.getElementById("fileBtn");
+
 const recordBtn = document.getElementById("recordBtn");
 
-const voiceCallBtn = document.getElementById("voiceCallBtn");
-const videoCallBtn = document.getElementById("videoCallBtn");
-
-const settingsBtn = document.getElementById("settingsBtn");
-const settingsOverlay = document.getElementById("settingsOverlay");
-const settingsUser = document.getElementById("settingsUser");
-const closeSettingsBtn = document.getElementById("closeSettingsBtn");
-const deleteAccountBtn = document.getElementById("deleteAccountBtn");
+const settingsModal = document.getElementById("settingsModal");
+const settingsUsername = document.getElementById("settingsUsername");
 
 const incomingCall = document.getElementById("incomingCall");
-const incomingAvatar = document.getElementById("incomingAvatar");
-const incomingName = document.getElementById("incomingName");
+const incomingCaller = document.getElementById("incomingCaller");
 const incomingType = document.getElementById("incomingType");
 
-const acceptCallBtn = document.getElementById("acceptCallBtn");
-const rejectCallBtn = document.getElementById("rejectCallBtn");
-
-const callScreen = document.getElementById("callScreen");
-const callTop = document.getElementById("callTop");
-const callAvatar = document.getElementById("callAvatar");
-
+const activeCall = document.getElementById("activeCall");
 const remoteVideo = document.getElementById("remoteVideo");
 const localVideo = document.getElementById("localVideo");
-const remoteAudio = document.getElementById("remoteAudio");
-
-const muteBtn = document.getElementById("muteBtn");
-const cameraBtn = document.getElementById("cameraBtn");
-const endCallBtn = document.getElementById("endCallBtn");
-
-/* =========================
-   HELPERS
-========================= */
 
 function showError(text){
   errorBox.textContent = text || "";
 }
 
-function firstLetter(name){
-  return String(name || "?").charAt(0).toUpperCase();
+function escapeHtml(value){
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
 }
 
-function sendWS(data){
-
-  if(!ws || ws.readyState !== WebSocket.OPEN){
-    return false;
-  }
-
-  try{
-    ws.send(JSON.stringify(data));
-    return true;
-  }catch(e){
-    return false;
-  }
+function api(path, options){
+  return fetch(path, Object.assign({
+    cache:"no-store"
+  }, options || {}));
 }
 
-function formatTime(timestamp){
-
-  try{
-
-    return new Date(timestamp).toLocaleTimeString(
-      "ar-EG",
-      {
-        hour:"2-digit",
-        minute:"2-digit"
-      }
-    );
-
-  }catch(e){
-
-    return "";
-  }
-}
-
-/* =========================
-   WAIT FOR WEBSOCKET
-========================= */
-
-function waitForWebSocket(timeout){
-
-  return new Promise(function(resolve){
-
-    const start = Date.now();
-
-    function check(){
-
-      if(
-        ws &&
-        ws.readyState === WebSocket.OPEN
-      ){
-
-        resolve(true);
-        return;
-      }
-
-      if(Date.now() - start >= timeout){
-
-        resolve(false);
-        return;
-      }
-
-      if(
-        !ws ||
-        ws.readyState === WebSocket.CLOSED
-      ){
-
-        connectWS();
-      }
-
-      setTimeout(check,100);
-    }
-
-    check();
-  });
-}
-
-/* =========================
+/* =========================================================
    AUTH
-========================= */
+========================================================= */
 
 switchAuth.onclick = function(){
 
   registerMode = !registerMode;
 
   if(registerMode){
-
     authTitle.textContent = "إنشاء حساب";
     authButton.textContent = "إنشاء الحساب";
-    switchAuth.textContent =
-      "عندك حساب؟ تسجيل الدخول";
-
+    switchAuth.textContent = "عندك حساب؟ تسجيل الدخول";
   }else{
-
     authTitle.textContent = "تسجيل الدخول";
     authButton.textContent = "تسجيل الدخول";
-    switchAuth.textContent =
-      "مفيش حساب؟ إنشاء حساب";
+    switchAuth.textContent = "ليس لديك حساب؟ إنشاء حساب";
   }
 
   showError("");
@@ -1106,313 +713,1326 @@ switchAuth.onclick = function(){
 
 authButton.onclick = async function(){
 
-  const username =
-    usernameInput.value.trim();
+  const username = usernameInput.value.trim();
+  const password = passwordInput.value;
 
-  const password =
-    passwordInput.value;
-
-  if(!username || !password){
-
-    showError(
-      "اكتب اسم المستخدم وكلمة المرور"
-    );
-
+  if(username.length < 2){
+    showError("اسم المستخدم قصير جدًا");
     return;
   }
 
-  showError("جاري التحميل...");
+  if(password.length < 4){
+    showError("كلمة المرور قصيرة جدًا");
+    return;
+  }
+
+  authButton.disabled = true;
+  showError("");
 
   try{
 
-    const endpoint =
-      registerMode
-        ? "/api/register"
-        : "/api/login";
+    const endpoint = registerMode ? "/api/register" : "/api/login";
 
-    const response =
-      await fetch(
-        endpoint,
-        {
-          method:"POST",
-          headers:{
-            "Content-Type":"application/json"
-          },
-          body:JSON.stringify({
-            username,
-            password
-          })
-        }
-      );
+    const res = await api(endpoint,{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        username,
+        password
+      })
+    });
 
-    const data =
-      await response.json();
+    const data = await res.json();
 
-    if(!response.ok){
-
-      throw new Error(
-        data.error || "حدث خطأ"
-      );
+    if(!res.ok || !data.ok){
+      showError(data.error || "حدث خطأ");
+      authButton.disabled = false;
+      return;
     }
 
     token = data.token;
-    currentUser =
-      data.username || username;
+    currentUser = data.username || username;
 
-    localStorage.setItem(
-      "chat_token",
-      token
-    );
+    localStorage.setItem("chat_token",token);
 
     usernameInput.value = "";
     passwordInput.value = "";
 
-    showError("");
-
     auth.style.display = "none";
     app.style.display = "block";
 
-    updateSettings();
+    settingsUsername.textContent = currentUser;
 
     await loadUsers();
 
     connectWS();
 
-  }catch(error){
+  }catch(e){
 
-    showError(
-      error.message || "حدث خطأ"
-    );
+    showError("تعذر الاتصال بالخادم");
+
+  }finally{
+
+    authButton.disabled = false;
+
   }
 };
 
-/* =========================
-   SESSION
-========================= */
-
-async function showApp(){
+async function restoreSession(){
 
   if(!token){
-
-    auth.style.display = "flex";
-    app.style.display = "none";
-
     return;
   }
 
   try{
 
-    const response =
-      await fetch(
-        "/api/me?token=" +
-        encodeURIComponent(token),
-        {
-          cache:"no-store"
-        }
-      );
+    const res = await api("/api/me?token=" + encodeURIComponent(token));
 
-    if(!response.ok){
-
+    if(!res.ok){
       throw new Error("invalid");
     }
 
-    const data =
-      await response.json();
+    const data = await res.json();
 
-    currentUser =
-      data.username;
+    if(!data.ok){
+      throw new Error("invalid");
+    }
+
+    currentUser = data.username;
 
     auth.style.display = "none";
     app.style.display = "block";
 
-    updateSettings();
+    settingsUsername.textContent = currentUser;
 
     await loadUsers();
 
     connectWS();
 
-  }catch(error){
+  }catch(e){
 
     token = "";
-    currentUser = "";
-
-    localStorage.removeItem(
-      "chat_token"
-    );
+    localStorage.removeItem("chat_token");
 
     auth.style.display = "flex";
     app.style.display = "none";
+
   }
 }
 
-/* =========================
-   SETTINGS
-========================= */
+restoreSession();
 
-function updateSettings(){
+/* =========================================================
+   USERS
+========================================================= */
 
-  settingsUser.textContent =
-    "الحساب الحالي: " +
-    (currentUser || "");
-}
+async function loadUsers(){
 
-settingsBtn.onclick = function(){
-
-  updateSettings();
-
-  settingsOverlay.style.display =
-    "flex";
-};
-
-closeSettingsBtn.onclick = function(){
-
-  settingsOverlay.style.display =
-    "none";
-};
-
-settingsOverlay.addEventListener(
-  "click",
-  function(event){
-
-    if(event.target === settingsOverlay){
-
-      settingsOverlay.style.display =
-        "none";
-    }
-  }
-);
-
-/* =========================
-   DELETE ACCOUNT
-========================= */
-
-deleteAccountBtn.onclick = async function(){
-
-  if(!token){
-    return;
-  }
-
-  const answer =
-    confirm(
-      "هل أنت متأكد؟ سيتم حذف حسابك ورسائلك وجلساتك نهائيًا ولا يمكن التراجع."
-    );
-
-  if(!answer){
-    return;
-  }
-
-  deleteAccountBtn.disabled = true;
-  deleteAccountBtn.textContent =
-    "جاري حذف الحساب...";
+  if(!token) return;
 
   try{
 
-    const response =
-      await fetch(
-        "/api/delete-account",
-        {
-          method:"POST",
-          headers:{
-            "Content-Type":"application/json"
-          },
-          body:JSON.stringify({
-            token
-          })
+    const res = await api("/api/users?token=" + encodeURIComponent(token));
+
+    if(res.status === 401){
+      logoutLocal();
+      return;
+    }
+
+    const data = await res.json();
+
+    renderUsers(data.users || []);
+
+  }catch(e){
+
+  }
+}
+
+function renderUsers(list){
+
+  usersBox.innerHTML = "";
+
+  let foundCurrent = false;
+
+  list.forEach(user => {
+
+    if(!user || !user.username) return;
+
+    if(user.username === currentUser){
+      foundCurrent = true;
+    }
+
+    const row = document.createElement("div");
+
+    row.className = "user";
+
+    if(user.username === selectedUser){
+      row.classList.add("active");
+    }
+
+    const avatar = document.createElement("div");
+    avatar.className = "avatar";
+    avatar.textContent = user.username.charAt(0).toUpperCase();
+
+    const info = document.createElement("div");
+    info.className = "user-info";
+
+    const name = document.createElement("div");
+    name.className = "user-name";
+
+    name.textContent =
+      user.username === currentUser
+      ? user.username + " (أنت)"
+      : user.username;
+
+    const status = document.createElement("div");
+    status.className = "status";
+    status.textContent =
+      user.online
+      ? "🟢 متصل الآن"
+      : "⚪ غير متصل";
+
+    const dot = document.createElement("div");
+    dot.className = user.online
+      ? "dot online-dot"
+      : "dot offline-dot";
+
+    info.appendChild(name);
+    info.appendChild(status);
+
+    row.appendChild(avatar);
+    row.appendChild(info);
+    row.appendChild(dot);
+
+    row.onclick = function(){
+
+      if(user.username === currentUser){
+        return;
+      }
+
+      selectedUser = user.username;
+
+      document.querySelectorAll(".user").forEach(x=>{
+        x.classList.remove("active");
+      });
+
+      row.classList.add("active");
+
+      chatTitle.textContent = selectedUser;
+      chatAvatar.textContent = selectedUser.charAt(0).toUpperCase();
+
+      loadHistory(selectedUser);
+
+    };
+
+    usersBox.appendChild(row);
+
+  });
+
+  if(!foundCurrent && currentUser){
+
+    const row = document.createElement("div");
+    row.className = "user";
+
+    row.innerHTML =
+      '<div class="avatar">' +
+      escapeHtml(currentUser.charAt(0).toUpperCase()) +
+      '</div>' +
+      '<div class="user-info">' +
+      '<div class="user-name">' +
+      escapeHtml(currentUser) +
+      ' (أنت)</div>' +
+      '<div class="status">🟢 متصل الآن</div>' +
+      '</div>' +
+      '<div class="dot online-dot"></div>';
+
+    usersBox.prepend(row);
+  }
+}
+
+/* =========================================================
+   WEBSOCKET
+========================================================= */
+
+function connectWS(){
+
+  if(!token) return;
+
+  if(ws &&
+    (ws.readyState === WebSocket.OPEN ||
+     ws.readyState === WebSocket.CONNECTING)){
+    return;
+  }
+
+  const protocol =
+    location.protocol === "https:"
+    ? "wss:"
+    : "ws:";
+
+  ws = new WebSocket(
+    protocol +
+    "//" +
+    location.host +
+    "/ws?token=" +
+    encodeURIComponent(token)
+  );
+
+  ws.onopen = function(){
+
+    clearTimeout(reconnectTimer);
+
+    loadUsers();
+
+  };
+
+  ws.onmessage = function(event){
+
+    try{
+
+      const data = JSON.parse(event.data);
+
+      handleSocketMessage(data);
+
+    }catch(e){}
+
+  };
+
+  ws.onclose = function(){
+
+    if(token){
+
+      clearTimeout(reconnectTimer);
+
+      reconnectTimer = setTimeout(function(){
+        connectWS();
+      },1500);
+
+    }
+
+  };
+
+  ws.onerror = function(){
+
+    try{
+      ws.close();
+    }catch(e){}
+
+  };
+}
+
+async function ensureWebSocket(timeout){
+
+  timeout = timeout || 7000;
+
+  if(ws && ws.readyState === WebSocket.OPEN){
+    return true;
+  }
+
+  connectWS();
+
+  const start = Date.now();
+
+  while(Date.now() - start < timeout){
+
+    if(ws && ws.readyState === WebSocket.OPEN){
+      return true;
+    }
+
+    await new Promise(function(resolve){
+      setTimeout(resolve,150);
+    });
+
+  }
+
+  return false;
+}
+
+function sendWS(data){
+
+  if(ws && ws.readyState === WebSocket.OPEN){
+
+    ws.send(JSON.stringify(data));
+
+    return true;
+  }
+
+  return false;
+}
+
+/* =========================================================
+   SOCKET MESSAGES
+========================================================= */
+
+function handleSocketMessage(data){
+
+  if(data.type === "message"){
+
+    if(
+      data.from === selectedUser ||
+      data.to === selectedUser
+    ){
+
+      addMessage(data);
+
+    }
+
+    loadUsers();
+
+  }
+
+  else if(data.type === "history"){
+
+    renderHistory(data.messages || []);
+
+  }
+
+  else if(data.type === "typing"){
+
+    if(data.from === selectedUser){
+
+      typingBox.textContent =
+        data.value
+        ? "يكتب الآن..."
+        : "";
+
+    }
+
+  }
+
+  else if(data.type === "users_changed"){
+
+    loadUsers();
+
+  }
+
+  else if(data.type === "call_offer"){
+
+    handleIncomingOffer(data);
+
+  }
+
+  else if(data.type === "call_answer"){
+
+    handleCallAnswer(data);
+
+  }
+
+  else if(data.type === "call_candidate"){
+
+    handleCandidate(data);
+
+  }
+
+  else if(data.type === "call_reject"){
+
+    alert("تم رفض المكالمة");
+
+    endCall(false);
+
+  }
+
+  else if(data.type === "call_end"){
+
+    endCall(false);
+
+  }
+
+  else if(data.type === "call_error"){
+
+    alert(data.error || "تعذر بدء المكالمة");
+
+    endCall(false);
+
+  }
+
+}
+
+/* =========================================================
+   TEXT CHAT
+========================================================= */
+
+sendBtn.onclick = sendMessage;
+
+messageInput.addEventListener("keydown",function(e){
+
+  if(e.key === "Enter"){
+    e.preventDefault();
+    sendMessage();
+  }
+
+});
+
+messageInput.addEventListener("input",function(){
+
+  if(!selectedUser) return;
+
+  sendWS({
+    type:"typing",
+    to:selectedUser,
+    value:true
+  });
+
+  clearTimeout(typingTimer);
+
+  typingTimer = setTimeout(function(){
+
+    sendWS({
+      type:"typing",
+      to:selectedUser,
+      value:false
+    });
+
+  },700);
+
+});
+
+function sendMessage(){
+
+  const text = messageInput.value.trim();
+
+  if(!text || !selectedUser){
+    return;
+  }
+
+  if(!sendWS({
+    type:"message",
+    to:selectedUser,
+    text:text
+  })){
+    alert("الاتصال بالخادم غير جاهز");
+    connectWS();
+    return;
+  }
+
+  messageInput.value = "";
+
+}
+
+async function loadHistory(username){
+
+  messages.innerHTML = "جاري تحميل الرسائل...";
+
+  const ready = await ensureWebSocket();
+
+  if(!ready){
+    messages.innerHTML = "تعذر الاتصال بالخادم";
+    return;
+  }
+
+  sendWS({
+    type:"history",
+    with:username
+  });
+
+}
+
+function renderHistory(list){
+
+  messages.innerHTML = "";
+
+  if(!list.length){
+
+    messages.textContent = "لا توجد رسائل بعد";
+
+    return;
+  }
+
+  list.forEach(addMessage);
+
+  messages.scrollTop = messages.scrollHeight;
+
+}
+
+function addMessage(msg){
+
+  const box = document.createElement("div");
+
+  box.className =
+    "message " +
+    (msg.sender === currentUser ? "me" : "other");
+
+  if(msg.kind === "file"){
+
+    const fileBox = document.createElement("div");
+    fileBox.className = "file-message";
+
+    const name = document.createElement("div");
+    name.textContent = msg.fileName || "ملف";
+
+    const link = document.createElement("a");
+
+    link.href =
+      "/api/file/" +
+      encodeURIComponent(msg.fileId) +
+      "?token=" +
+      encodeURIComponent(token);
+
+    link.target = "_blank";
+    link.textContent = "⬇️ فتح الملف";
+
+    fileBox.appendChild(name);
+    fileBox.appendChild(link);
+
+    box.appendChild(fileBox);
+
+  }
+
+  else if(msg.kind === "audio"){
+
+    const audioBox = document.createElement("div");
+    audioBox.className = "audio-message";
+
+    const audio = document.createElement("audio");
+
+    audio.controls = true;
+
+    audio.src =
+      "/api/file/" +
+      encodeURIComponent(msg.fileId) +
+      "?token=" +
+      encodeURIComponent(token);
+
+    audioBox.appendChild(audio);
+
+    box.appendChild(audioBox);
+
+  }
+
+  else{
+
+    const text = document.createElement("div");
+    text.textContent = msg.text || "";
+
+    box.appendChild(text);
+
+  }
+
+  const time = document.createElement("div");
+
+  time.className = "message-time";
+
+  time.textContent =
+    msg.createdAt
+    ? new Date(msg.createdAt).toLocaleTimeString("ar-EG",{
+        hour:"2-digit",
+        minute:"2-digit"
+      })
+    : "";
+
+  box.appendChild(time);
+
+  messages.appendChild(box);
+
+  messages.scrollTop = messages.scrollHeight;
+
+}
+
+/* =========================================================
+   FILE UPLOAD
+========================================================= */
+
+fileBtn.onclick = function(){
+  fileInput.click();
+};
+
+fileInput.onchange = async function(){
+
+  const file = fileInput.files[0];
+
+  if(!file) return;
+
+  if(!selectedUser){
+
+    alert("اختر مستخدمًا أولًا");
+    fileInput.value = "";
+    return;
+
+  }
+
+  if(file.size > MAX_FILE_SIZE){
+
+    alert("الحد الأقصى للملف هو 20 ميجابايت");
+    fileInput.value = "";
+    return;
+
+  }
+
+  const ready = await ensureWebSocket();
+
+  if(!ready){
+
+    alert("الاتصال بالخادم غير متاح");
+    fileInput.value = "";
+    return;
+
+  }
+
+  const form = new FormData();
+
+  form.append("file",file);
+  form.append("to",selectedUser);
+
+  try{
+
+    fileBtn.disabled = true;
+
+    const res = await api("/api/upload?token=" + encodeURIComponent(token),{
+      method:"POST",
+      body:form
+    });
+
+    const data = await res.json();
+
+    if(!res.ok || !data.ok){
+
+      alert(data.error || "فشل رفع الملف");
+      return;
+
+    }
+
+    loadHistory(selectedUser);
+
+  }catch(e){
+
+    alert("تعذر رفع الملف");
+
+  }finally{
+
+    fileBtn.disabled = false;
+    fileInput.value = "";
+
+  }
+
+};
+
+/* =========================================================
+   VOICE MESSAGE
+========================================================= */
+
+recordBtn.onclick = async function(){
+
+  if(isRecording){
+
+    stopRecording();
+    return;
+
+  }
+
+  if(!selectedUser){
+
+    alert("اختر مستخدمًا أولًا");
+    return;
+
+  }
+
+  try{
+
+    const stream =
+      await navigator.mediaDevices.getUserMedia({
+        audio:true
+      });
+
+    audioChunks = [];
+
+    mediaRecorder =
+      new MediaRecorder(stream);
+
+    mediaRecorder.ondataavailable =
+      function(e){
+
+        if(e.data.size > 0){
+          audioChunks.push(e.data);
         }
+
+      };
+
+    mediaRecorder.onstop =
+      async function(){
+
+        const blob =
+          new Blob(
+            audioChunks,
+            {type:"audio/webm"}
+          );
+
+        stream.getTracks().forEach(
+          track => track.stop()
+        );
+
+        await uploadAudio(blob);
+
+      };
+
+    mediaRecorder.start();
+
+    isRecording = true;
+
+    recordBtn.textContent = "⏹️";
+
+  }catch(e){
+
+    alert("تعذر استخدام الميكروفون");
+
+  }
+
+};
+
+function stopRecording(){
+
+  if(mediaRecorder){
+
+    mediaRecorder.stop();
+
+  }
+
+  isRecording = false;
+
+  recordBtn.textContent = "🎙️";
+
+}
+
+async function uploadAudio(blob){
+
+  if(blob.size > MAX_FILE_SIZE){
+
+    alert("الرسالة الصوتية أكبر من 20 ميجابايت");
+    return;
+
+  }
+
+  const form = new FormData();
+
+  form.append(
+    "file",
+    blob,
+    "voice.webm"
+  );
+
+  form.append("to",selectedUser);
+  form.append("kind","audio");
+
+  try{
+
+    const res = await api(
+      "/api/upload?token=" +
+      encodeURIComponent(token),
+      {
+        method:"POST",
+        body:form
+      }
+    );
+
+    const data = await res.json();
+
+    if(!res.ok || !data.ok){
+
+      alert(data.error || "فشل إرسال الرسالة الصوتية");
+      return;
+
+    }
+
+    loadHistory(selectedUser);
+
+  }catch(e){
+
+    alert("تعذر إرسال الرسالة الصوتية");
+
+  }
+
+}
+
+/* =========================================================
+   CALLS
+========================================================= */
+
+document.getElementById("voiceCallBtn").onclick =
+  function(){
+    startCall("audio");
+  };
+
+document.getElementById("videoCallBtn").onclick =
+  function(){
+    startCall("video");
+  };
+
+async function startCall(type){
+
+  if(!selectedUser){
+
+    alert("اختر مستخدمًا أولًا");
+    return;
+
+  }
+
+  const ready = await ensureWebSocket(8000);
+
+  if(!ready){
+
+    alert("الاتصال بالخادم غير متاح، حاول مرة أخرى");
+    return;
+
+  }
+
+  callPartner = selectedUser;
+  callType = type;
+  callId =
+    Date.now().toString(36) +
+    Math.random().toString(36).slice(2);
+
+  try{
+
+    await preparePeer(type);
+
+    const offer =
+      await peerConnection.createOffer();
+
+    await peerConnection.setLocalDescription(offer);
+
+    sendWS({
+      type:"call_offer",
+      to:callPartner,
+      callId:callId,
+      callType:type,
+      offer:offer
+    });
+
+    showActiveCall();
+
+  }catch(e){
+
+    alert("تعذر تشغيل المكالمة: " + e.message);
+
+    endCall(false);
+
+  }
+
+}
+
+async function preparePeer(type){
+
+  peerConnection =
+    new RTCPeerConnection({
+      iceServers:[
+        {urls:"stun:stun.l.google.com:19302"},
+        {urls:"stun:stun1.l.google.com:19302"}
+      ]
+    });
+
+  remoteStream =
+    new MediaStream();
+
+  remoteVideo.srcObject =
+    remoteStream;
+
+  peerConnection.ontrack =
+    function(event){
+
+      event.streams[0]
+        .getTracks()
+        .forEach(function(track){
+
+          remoteStream.addTrack(track);
+
+        });
+
+    };
+
+  peerConnection.onicecandidate =
+    function(event){
+
+      if(event.candidate && callPartner){
+
+        sendWS({
+          type:"call_candidate",
+          to:callPartner,
+          callId:callId,
+          candidate:event.candidate
+        });
+
+      }
+
+    };
+
+  localStream =
+    await navigator.mediaDevices.getUserMedia({
+      audio:true,
+      video:type === "video"
+    });
+
+  localStream.getTracks().forEach(function(track){
+
+    peerConnection.addTrack(
+      track,
+      localStream
+    );
+
+  });
+
+  localVideo.srcObject =
+    type === "video"
+    ? localStream
+    : null;
+
+  microphoneEnabled = true;
+  cameraEnabled = true;
+
+}
+
+function showActiveCall(){
+
+  activeCall.style.display = "flex";
+
+  document.getElementById("callInfo").textContent =
+    callType === "video"
+    ? "مكالمة فيديو مع " + callPartner
+    : "مكالمة صوتية مع " + callPartner;
+
+}
+
+async function handleIncomingOffer(data){
+
+  pendingOffer = data.offer;
+  pendingCaller = data.from;
+  pendingCallId = data.callId;
+  pendingCallType = data.callType;
+
+  incomingCaller.textContent =
+    data.from;
+
+  incomingType.textContent =
+    data.callType === "video"
+    ? "مكالمة فيديو"
+    : "مكالمة صوتية";
+
+  incomingCall.style.display = "flex";
+
+}
+
+document.getElementById("acceptCallBtn").onclick =
+  async function(){
+
+    incomingCall.style.display = "none";
+
+    callPartner = pendingCaller;
+    callId = pendingCallId;
+    callType = pendingCallType;
+
+    try{
+
+      await preparePeer(callType);
+
+      await peerConnection.setRemoteDescription(
+        new RTCSessionDescription(pendingOffer)
       );
 
-    const data =
-      await response.json();
+      for(
+        const candidate of pendingCandidates
+      ){
 
-    if(!response.ok){
+        try{
+          await peerConnection.addIceCandidate(candidate);
+        }catch(e){}
 
-      throw new Error(
-        data.error ||
-        "تعذر حذف الحساب"
-      );
+      }
+
+      pendingCandidates = [];
+
+      const answer =
+        await peerConnection.createAnswer();
+
+      await peerConnection.setLocalDescription(answer);
+
+      sendWS({
+        type:"call_answer",
+        to:callPartner,
+        callId:callId,
+        answer:answer
+      });
+
+      showActiveCall();
+
+    }catch(e){
+
+      alert("تعذر قبول المكالمة");
+
+      endCall(false);
+
+    }
+
+  };
+
+document.getElementById("rejectCallBtn").onclick =
+  function(){
+
+    if(pendingCaller){
+
+      sendWS({
+        type:"call_reject",
+        to:pendingCaller,
+        callId:pendingCallId
+      });
+
+    }
+
+    incomingCall.style.display = "none";
+
+    pendingOffer = null;
+    pendingCaller = "";
+    pendingCallId = "";
+    pendingCallType = "";
+    pendingCandidates = [];
+
+  };
+
+async function handleCallAnswer(data){
+
+  if(!peerConnection) return;
+
+  if(data.callId !== callId) return;
+
+  try{
+
+    await peerConnection.setRemoteDescription(
+      new RTCSessionDescription(data.answer)
+    );
+
+  }catch(e){}
+
+}
+
+async function handleCandidate(data){
+
+  if(data.callId !== callId &&
+     data.callId !== pendingCallId){
+
+    return;
+
+  }
+
+  const candidate =
+    new RTCIceCandidate(data.candidate);
+
+  if(peerConnection &&
+     peerConnection.remoteDescription){
+
+    try{
+
+      await peerConnection.addIceCandidate(candidate);
+
+    }catch(e){}
+
+  }else{
+
+    pendingCandidates.push(candidate);
+
+  }
+
+}
+
+document.getElementById("endCallBtn").onclick =
+  function(){
+
+    if(callPartner){
+
+      sendWS({
+        type:"call_end",
+        to:callPartner,
+        callId:callId
+      });
+
     }
 
     endCall(false);
 
-    if(ws){
+  };
 
-      try{
-        ws.close();
-      }catch(e){}
+document.getElementById("muteBtn").onclick =
+  function(){
 
-    }
+    if(!localStream) return;
 
-    ws = null;
+    microphoneEnabled =
+      !microphoneEnabled;
 
-    token = "";
-    currentUser = "";
-    selectedUser = "";
+    localStream.getAudioTracks()
+      .forEach(function(track){
 
-    localStorage.removeItem(
-      "chat_token"
-    );
+        track.enabled =
+          microphoneEnabled;
 
-    settingsOverlay.style.display =
-      "none";
+      });
 
-    app.style.display = "none";
-    auth.style.display = "flex";
+    document.getElementById("muteBtn")
+      .textContent =
+        microphoneEnabled
+        ? "🎤"
+        : "🔇";
 
-    messagesBox.innerHTML =
-      '<div class="empty">اختر مستخدمًا لبدء المحادثة</div>';
+  };
 
-    chatTitle.textContent =
-      "اختر مستخدمًا";
+document.getElementById("cameraBtn").onclick =
+  function(){
 
-    chatStatus.textContent = "";
+    if(!localStream) return;
 
-    chatAvatar.textContent = "?";
+    cameraEnabled =
+      !cameraEnabled;
 
-    alert("تم إغلاق الحساب نهائيًا.");
+    localStream.getVideoTracks()
+      .forEach(function(track){
 
-  }catch(error){
+        track.enabled =
+          cameraEnabled;
 
-    alert(
-      error.message ||
-      "تعذر حذف الحساب"
-    );
+      });
 
-  }finally{
+    document.getElementById("cameraBtn")
+      .textContent =
+        cameraEnabled
+        ? "📷"
+        : "🚫";
 
-    deleteAccountBtn.disabled = false;
+  };
 
-    deleteAccountBtn.textContent =
-      "🗑️ إغلاق الحساب نهائيًا";
+function endCall(sendSignal){
+
+  if(sendSignal && callPartner){
+
+    sendWS({
+      type:"call_end",
+      to:callPartner,
+      callId:callId
+    });
+
   }
-};
 
-/* =========================
-   LOGOUT
-========================= */
+  if(peerConnection){
 
-document.getElementById(
-  "logoutBtn"
-).onclick = async function(){
+    try{
+      peerConnection.close();
+    }catch(e){}
 
-  try{
+  }
 
-    if(token){
+  if(localStream){
 
-      await fetch(
-        "/api/logout",
-        {
-          method:"POST",
-          headers:{
-            "Content-Type":"application/json"
-          },
-          body:JSON.stringify({
-            token
-          })
-        }
+    localStream.getTracks()
+      .forEach(track=>track.stop());
+
+  }
+
+  peerConnection = null;
+  localStream = null;
+  remoteStream = null;
+
+  callPartner = "";
+  callId = "";
+  callType = "";
+
+  pendingOffer = null;
+  pendingCaller = "";
+  pendingCallId = "";
+  pendingCallType = "";
+  pendingCandidates = [];
+
+  remoteVideo.srcObject = null;
+  localVideo.srcObject = null;
+
+  incomingCall.style.display = "none";
+  activeCall.style.display = "none";
+
+}
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+document.getElementById("settingsBtn").onclick =
+  function(){
+
+    settingsUsername.textContent =
+      currentUser;
+
+    settingsModal.style.display = "flex";
+
+  };
+
+document.getElementById("closeSettingsBtn").onclick =
+  function(){
+
+    settingsModal.style.display = "none";
+
+  };
+
+document.getElementById("deleteAccountBtn").onclick =
+  async function(){
+
+    const yes =
+      confirm(
+        "هل أنت متأكد؟ سيتم حذف الحساب والرسائل نهائيًا."
       );
+
+    if(!yes) return;
+
+    try{
+
+      const res = await api("/api/delete-account",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          token:token
+        })
+      });
+
+      const data = await res.json();
+
+      if(!res.ok || !data.ok){
+
+        alert(data.error || "تعذر حذف الحساب");
+        return;
+
+      }
+
+      logoutLocal();
+
+    }catch(e){
+
+      alert("تعذر الاتصال بالخادم");
+
     }
 
-  }catch(e){}
+  };
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+document.getElementById("logoutBtn").onclick =
+  async function(){
+
+    try{
+
+      await api("/api/logout",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          token:token
+        })
+      });
+
+    }catch(e){}
+
+    logoutLocal();
+
+  };
+
+function logoutLocal(){
 
   endCall(false);
 
@@ -1430,1621 +2050,23 @@ document.getElementById(
   currentUser = "";
   selectedUser = "";
 
-  localStorage.removeItem(
-    "chat_token"
-  );
+  localStorage.removeItem("chat_token");
 
   app.style.display = "none";
   auth.style.display = "flex";
 
-  messagesBox.innerHTML =
-    '<div class="empty">اختر مستخدمًا لبدء المحادثة</div>';
+  messages.textContent =
+    "اختر مستخدمًا لبدء المحادثة";
+
+  usersBox.innerHTML = "";
 
   chatTitle.textContent =
     "اختر مستخدمًا";
 
-  chatStatus.textContent = "";
-
   chatAvatar.textContent = "?";
-};
 
-/* =========================
-   USERS
-========================= */
-
-async function loadUsers(){
-
-  if(!token){
-    return;
-  }
-
-  try{
-
-    const response =
-      await fetch(
-        "/api/users?token=" +
-        encodeURIComponent(token),
-        {
-          cache:"no-store"
-        }
-      );
-
-    if(response.status === 401){
-
-      return;
-    }
-
-    const data =
-      await response.json();
-
-    renderUsers(
-      Array.isArray(data.users)
-        ? data.users
-        : []
-    );
-
-  }catch(error){
-
-    console.error(error);
-  }
+  settingsModal.style.display = "none";
 }
-
-function renderUsers(list){
-
-  const users =
-    Array.isArray(list)
-      ? list.slice()
-      : [];
-
-  const foundCurrent =
-    users.some(function(user){
-      return user.username === currentUser;
-    });
-
-  if(
-    currentUser &&
-    !foundCurrent
-  ){
-
-    users.unshift({
-      username:currentUser,
-      online:true
-    });
-  }
-
-  users.sort(function(a,b){
-
-    if(a.username === currentUser){
-      return -1;
-    }
-
-    if(b.username === currentUser){
-      return 1;
-    }
-
-    return String(a.username).localeCompare(
-      String(b.username),
-      "ar"
-    );
-  });
-
-  usersBox.innerHTML = "";
-
-  if(users.length === 0){
-
-    usersBox.innerHTML =
-      '<div class="empty">لا يوجد مستخدمون</div>';
-
-    return;
-  }
-
-  users.forEach(function(user){
-
-    const row =
-      document.createElement("div");
-
-    row.className = "user";
-
-    if(user.username === currentUser){
-
-      row.classList.add("self");
-    }
-
-    const avatar =
-      document.createElement("div");
-
-    avatar.className = "avatar";
-    avatar.textContent =
-      firstLetter(user.username);
-
-    const info =
-      document.createElement("div");
-
-    info.className = "user-info";
-
-    const name =
-      document.createElement("div");
-
-    name.className = "username";
-
-    name.textContent =
-      user.username === currentUser
-        ? user.username + " (أنت)"
-        : user.username;
-
-    const status =
-      document.createElement("div");
-
-    if(user.username === currentUser){
-
-      status.className =
-        "status online";
-
-      status.innerHTML =
-        '<span class="dot online-dot"></span>أنت متصل الآن';
-
-    }else if(user.online){
-
-      status.className =
-        "status online";
-
-      status.innerHTML =
-        '<span class="dot online-dot"></span>متصل الآن';
-
-    }else{
-
-      status.className =
-        "status";
-
-      status.innerHTML =
-        '<span class="dot offline-dot"></span>غير متصل';
-    }
-
-    info.appendChild(name);
-    info.appendChild(status);
-
-    row.appendChild(avatar);
-    row.appendChild(info);
-
-    if(user.username !== currentUser){
-
-      row.onclick = function(){
-
-        selectUser(
-          user.username,
-          user.online
-        );
-      };
-    }
-
-    usersBox.appendChild(row);
-  });
-}
-
-/* =========================
-   SELECT CHAT
-========================= */
-
-function selectUser(username,online){
-
-  selectedUser = username;
-
-  chatAvatar.textContent =
-    firstLetter(username);
-
-  chatTitle.textContent =
-    username;
-
-  chatStatus.textContent =
-    online
-      ? "متصل الآن"
-      : "غير متصل";
-
-  messagesBox.innerHTML =
-    '<div class="empty">جاري تحميل الرسائل...</div>';
-
-  typingBox.textContent = "";
-
-  sendWS({
-    type:"history",
-    with:username
-  });
-}
-
-/* =========================
-   WEBSOCKET
-========================= */
-
-function connectWS(){
-
-  if(!token){
-    return;
-  }
-
-  if(
-    ws &&
-    (
-      ws.readyState === WebSocket.OPEN ||
-      ws.readyState === WebSocket.CONNECTING
-    )
-  ){
-
-    return;
-  }
-
-  const protocol =
-    location.protocol === "https:"
-      ? "wss:"
-      : "ws:";
-
-  ws =
-    new WebSocket(
-      protocol +
-      "//" +
-      location.host +
-      "/ws?token=" +
-      encodeURIComponent(token)
-    );
-
-  ws.onopen = function(){
-
-    clearTimeout(reconnectTimer);
-
-    loadUsers();
-
-    if(selectedUser){
-
-      sendWS({
-        type:"history",
-        with:selectedUser
-      });
-    }
-  };
-
-  ws.onmessage = function(event){
-
-    try{
-
-      const data =
-        JSON.parse(event.data);
-
-      handleWSMessage(data);
-
-    }catch(error){
-
-      console.error(error);
-    }
-  };
-
-  ws.onclose = function(){
-
-    loadUsers();
-
-    if(token){
-
-      clearTimeout(
-        reconnectTimer
-      );
-
-      reconnectTimer =
-        setTimeout(
-          function(){
-            connectWS();
-          },
-          1000
-        );
-    }
-  };
-
-  ws.onerror = function(){};
-}
-
-/* =========================
-   WS MESSAGES
-========================= */
-
-function handleWSMessage(data){
-
-  if(data.type === "message"){
-
-    if(
-      data.sender === selectedUser ||
-      data.receiver === selectedUser
-    ){
-
-      addTextMessage(data);
-    }
-
-    return;
-  }
-
-  if(data.type === "voice"){
-
-    if(
-      data.sender === selectedUser ||
-      data.receiver === selectedUser
-    ){
-
-      addVoiceMessage(data);
-    }
-
-    return;
-  }
-
-  if(data.type === "history"){
-
-    renderHistory(
-      data.messages || []
-    );
-
-    return;
-  }
-
-  if(data.type === "typing"){
-
-    if(data.from === selectedUser){
-
-      typingBox.textContent =
-        data.typing
-          ? data.from + " يكتب..."
-          : "";
-    }
-
-    return;
-  }
-
-  if(data.type === "users_changed"){
-
-    loadUsers();
-
-    return;
-  }
-
-  if(data.type === "call_signal"){
-
-    handleCallSignal(data);
-
-    return;
-  }
-
-  if(data.type === "call_error"){
-
-    alert(
-      data.error ||
-      "تعذر تنفيذ المكالمة"
-    );
-
-    if(
-      data.callId &&
-      data.callId === callId
-    ){
-
-      endCall(false);
-    }
-
-    return;
-  }
-}
-
-/* =========================
-   TEXT
-========================= */
-
-function addTextMessage(data){
-
-  if(
-    messagesBox.querySelector(".empty")
-  ){
-
-    messagesBox.innerHTML = "";
-  }
-
-  const div =
-    document.createElement("div");
-
-  div.className =
-    "msg " +
-    (
-      data.sender === currentUser
-        ? "mine"
-        : "theirs"
-    );
-
-  const text =
-    document.createElement("div");
-
-  text.textContent =
-    data.text || "";
-
-  const time =
-    document.createElement("span");
-
-  time.className =
-    "msg-time";
-
-  time.textContent =
-    formatTime(
-      data.created_at
-    );
-
-  div.appendChild(text);
-  div.appendChild(time);
-
-  messagesBox.appendChild(div);
-
-  messagesBox.scrollTop =
-    messagesBox.scrollHeight;
-}
-
-/* =========================
-   VOICE
-========================= */
-
-function addVoiceMessage(data){
-
-  if(
-    messagesBox.querySelector(".empty")
-  ){
-
-    messagesBox.innerHTML = "";
-  }
-
-  const div =
-    document.createElement("div");
-
-  div.className =
-    "msg " +
-    (
-      data.sender === currentUser
-        ? "mine"
-        : "theirs"
-    );
-
-  const audio =
-    document.createElement("audio");
-
-  audio.controls = true;
-  audio.src =
-    data.audio_data || "";
-
-  const time =
-    document.createElement("span");
-
-  time.className =
-    "msg-time";
-
-  time.textContent =
-    formatTime(
-      data.created_at
-    );
-
-  div.appendChild(audio);
-  div.appendChild(time);
-
-  messagesBox.appendChild(div);
-
-  messagesBox.scrollTop =
-    messagesBox.scrollHeight;
-}
-
-/* =========================
-   HISTORY
-========================= */
-
-function renderHistory(messages){
-
-  messagesBox.innerHTML = "";
-
-  if(!messages.length){
-
-    messagesBox.innerHTML =
-      '<div class="empty">لا توجد رسائل بعد</div>';
-
-    return;
-  }
-
-  messages.forEach(function(message){
-
-    if(
-      message.message_type === "voice"
-    ){
-
-      addVoiceMessage(message);
-
-    }else{
-
-      addTextMessage(message);
-    }
-  });
-
-  messagesBox.scrollTop =
-    messagesBox.scrollHeight;
-}
-
-/* =========================
-   SEND MESSAGE
-========================= */
-
-function sendMessage(){
-
-  const text =
-    messageInput.value.trim();
-
-  if(!text || !selectedUser){
-    return;
-  }
-
-  if(!sendWS({
-    type:"message",
-    to:selectedUser,
-    text:text
-  })){
-
-    alert("الاتصال غير جاهز");
-
-    return;
-  }
-
-  messageInput.value = "";
-
-  sendWS({
-    type:"typing",
-    to:selectedUser,
-    typing:false
-  });
-}
-
-sendBtn.onclick =
-  sendMessage;
-
-messageInput.addEventListener(
-  "keydown",
-  function(event){
-
-    if(event.key === "Enter"){
-
-      event.preventDefault();
-
-      sendMessage();
-
-      return;
-    }
-
-    if(selectedUser){
-
-      sendWS({
-        type:"typing",
-        to:selectedUser,
-        typing:true
-      });
-
-      clearTimeout(
-        typingTimer
-      );
-
-      typingTimer =
-        setTimeout(
-          function(){
-
-            sendWS({
-              type:"typing",
-              to:selectedUser,
-              typing:false
-            });
-
-          },
-          900
-        );
-    }
-  }
-);
-
-/* =========================
-   VOICE RECORD
-========================= */
-
-recordBtn.onclick =
-  async function(){
-
-    if(!selectedUser){
-
-      alert(
-        "اختر مستخدمًا أولًا"
-      );
-
-      return;
-    }
-
-    if(isRecording){
-
-      try{
-        mediaRecorder.stop();
-      }catch(e){}
-
-      return;
-    }
-
-    try{
-
-      const stream =
-        await navigator.mediaDevices
-          .getUserMedia({
-            audio:true
-          });
-
-      audioChunks = [];
-
-      mediaRecorder =
-        new MediaRecorder(stream);
-
-      mediaRecorder.ondataavailable =
-        function(event){
-
-          if(
-            event.data &&
-            event.data.size > 0
-          ){
-
-            audioChunks.push(
-              event.data
-            );
-          }
-        };
-
-      mediaRecorder.onstop =
-        async function(){
-
-          isRecording = false;
-
-          recordBtn.classList.remove(
-            "recording"
-          );
-
-          recordBtn.textContent =
-            "🎙️";
-
-          stream.getTracks()
-            .forEach(function(track){
-              track.stop();
-            });
-
-          const blob =
-            new Blob(
-              audioChunks,
-              {
-                type:
-                  mediaRecorder.mimeType ||
-                  "audio/webm"
-              }
-            );
-
-          if(
-            blob.size >
-            2 * 1024 * 1024
-          ){
-
-            alert(
-              "الرسالة الصوتية كبيرة جدًا"
-            );
-
-            return;
-          }
-
-          const reader =
-            new FileReader();
-
-          reader.onload =
-            function(){
-
-              sendWS({
-                type:"voice",
-                to:selectedUser,
-                audio_data:
-                  reader.result
-              });
-            };
-
-          reader.readAsDataURL(blob);
-        };
-
-      mediaRecorder.start();
-
-      isRecording = true;
-
-      recordBtn.classList.add(
-        "recording"
-      );
-
-      recordBtn.textContent =
-        "⏹️";
-
-    }catch(error){
-
-      alert(
-        "اسمح للمتصفح باستخدام الميكروفون"
-      );
-    }
-  };
-
-/* =========================================================
-   WEBRTC
-========================================================= */
-
-function makeCallId(){
-
-  return (
-    Date.now().toString(36) +
-    Math.random()
-      .toString(36)
-      .slice(2)
-  );
-}
-
-function createPeerConnection(){
-
-  const pc =
-    new RTCPeerConnection({
-      iceServers:[
-        {
-          urls:
-            "stun:stun.l.google.com:19302"
-        },
-        {
-          urls:
-            "stun:stun1.l.google.com:19302"
-        }
-      ]
-    });
-
-  pc.onicecandidate =
-    function(event){
-
-      if(
-        event.candidate &&
-        callPartner
-      ){
-
-        sendWS({
-          type:"call_signal",
-          signalType:"candidate",
-          to:callPartner,
-          callId:callId,
-          callType:callType,
-          candidate:event.candidate
-        });
-      }
-    };
-
-  pc.ontrack =
-    function(event){
-
-      if(!remoteStream){
-
-        remoteStream =
-          new MediaStream();
-      }
-
-      const tracks =
-        event.streams &&
-        event.streams[0]
-          ? event.streams[0].getTracks()
-          : [event.track];
-
-      tracks.forEach(
-        function(track){
-
-          const exists =
-            remoteStream
-              .getTracks()
-              .some(function(t){
-                return t.id === track.id;
-              });
-
-          if(!exists){
-
-            remoteStream.addTrack(
-              track
-            );
-          }
-        }
-      );
-
-      if(callType === "video"){
-
-        remoteVideo.srcObject =
-          remoteStream;
-
-        remoteVideo.style.display =
-          "block";
-
-        callAvatar.style.display =
-          "none";
-
-        remoteVideo.play()
-          .catch(function(){});
-
-      }else{
-
-        remoteAudio.srcObject =
-          remoteStream;
-
-        remoteVideo.style.display =
-          "none";
-
-        callAvatar.style.display =
-          "flex";
-
-        remoteAudio.play()
-          .catch(function(){});
-      }
-    };
-
-  pc.onconnectionstatechange =
-    function(){
-
-      const state =
-        pc.connectionState;
-
-      if(state === "connected"){
-
-        callTop.textContent =
-          "متصل مع " +
-          callPartner;
-      }
-
-      if(
-        state === "failed" ||
-        state === "closed"
-      ){
-
-        endCall(false);
-      }
-
-      if(state === "disconnected"){
-
-        setTimeout(
-          function(){
-
-            if(
-              peerConnection === pc &&
-              pc.connectionState ===
-                "disconnected"
-            ){
-
-              endCall(false);
-            }
-
-          },
-          5000
-        );
-      }
-    };
-
-  return pc;
-}
-
-async function getLocalMedia(type){
-
-  if(localStream){
-
-    return localStream;
-  }
-
-  const constraints =
-    type === "video"
-      ? {
-          audio:true,
-          video:{
-            facingMode:"user"
-          }
-        }
-      : {
-          audio:true,
-          video:false
-        };
-
-  localStream =
-    await navigator.mediaDevices
-      .getUserMedia(
-        constraints
-      );
-
-  localStream
-    .getTracks()
-    .forEach(
-      function(track){
-
-        peerConnection.addTrack(
-          track,
-          localStream
-        );
-      }
-    );
-
-  if(type === "video"){
-
-    localVideo.srcObject =
-      localStream;
-
-    localVideo.style.display =
-      "block";
-
-  }else{
-
-    localVideo.style.display =
-      "none";
-  }
-
-  return localStream;
-}
-
-function showCallScreen(){
-
-  callScreen.style.display =
-    "flex";
-
-  callTop.textContent =
-    "جاري الاتصال بـ " +
-    callPartner;
-
-  callAvatar.textContent =
-    firstLetter(callPartner);
-
-  if(callType === "video"){
-
-    remoteVideo.style.display =
-      "block";
-
-    localVideo.style.display =
-      "block";
-
-    callAvatar.style.display =
-      "none";
-
-  }else{
-
-    remoteVideo.style.display =
-      "none";
-
-    localVideo.style.display =
-      "none";
-
-    callAvatar.style.display =
-      "flex";
-  }
-}
-
-/* =========================
-   START CALL
-========================= */
-
-async function startCall(type){
-
-  if(!selectedUser){
-
-    alert(
-      "اختر مستخدمًا أولًا"
-    );
-
-    return;
-  }
-
-  if(
-    peerConnection ||
-    callPartner
-  ){
-
-    alert(
-      "هناك مكالمة بالفعل"
-    );
-
-    return;
-  }
-
-  const ready =
-    await waitForWebSocket(5000);
-
-  if(!ready){
-
-    alert(
-      "تعذر الاتصال بخادم الشات. حاول مرة أخرى."
-    );
-
-    return;
-  }
-
-  callPartner =
-    selectedUser;
-
-  callType =
-    type === "video"
-      ? "video"
-      : "audio";
-
-  callId =
-    makeCallId();
-
-  try{
-
-    peerConnection =
-      createPeerConnection();
-
-    await getLocalMedia(
-      callType
-    );
-
-    const offer =
-      await peerConnection
-        .createOffer();
-
-    await peerConnection
-      .setLocalDescription(
-        offer
-      );
-
-    showCallScreen();
-
-    const sent =
-      sendWS({
-        type:"call_signal",
-        signalType:"offer",
-        to:callPartner,
-        callId:callId,
-        callType:callType,
-        sdp:
-          peerConnection
-            .localDescription
-      });
-
-    if(!sent){
-
-      endCall(false);
-
-      alert(
-        "تعذر إرسال المكالمة"
-      );
-    }
-
-  }catch(error){
-
-    console.error(error);
-
-    endCall(false);
-
-    alert(
-      "تعذر تشغيل المكالمة. تأكد من السماح بالميكروفون أو الكاميرا."
-    );
-  }
-}
-
-voiceCallBtn.onclick =
-  function(){
-
-    if(
-      peerConnection ||
-      callPartner
-    ){
-
-      endCall(true);
-
-    }else{
-
-      startCall("audio");
-    }
-  };
-
-videoCallBtn.onclick =
-  function(){
-
-    if(
-      peerConnection ||
-      callPartner
-    ){
-
-      endCall(true);
-
-    }else{
-
-      startCall("video");
-    }
-  };
-
-/* =========================
-   INCOMING
-========================= */
-
-function showIncomingCall(data){
-
-  pendingOffer =
-    data.sdp;
-
-  pendingCaller =
-    data.from;
-
-  pendingCallId =
-    data.callId || "";
-
-  pendingCallType =
-    data.callType === "video"
-      ? "video"
-      : "audio";
-
-  incomingAvatar.textContent =
-    firstLetter(
-      pendingCaller
-    );
-
-  incomingName.textContent =
-    pendingCaller;
-
-  incomingType.textContent =
-    pendingCallType === "video"
-      ? "مكالمة فيديو واردة"
-      : "مكالمة صوتية واردة";
-
-  incomingCall.style.display =
-    "flex";
-}
-
-acceptCallBtn.onclick =
-  async function(){
-
-    if(
-      !pendingOffer ||
-      !pendingCaller
-    ){
-
-      hideIncomingCall();
-
-      return;
-    }
-
-    const offer =
-      pendingOffer;
-
-    const caller =
-      pendingCaller;
-
-    const incomingId =
-      pendingCallId;
-
-    const type =
-      pendingCallType;
-
-    hideIncomingCall();
-
-    callPartner =
-      caller;
-
-    callId =
-      incomingId;
-
-    callType =
-      type;
-
-    try{
-
-      peerConnection =
-        createPeerConnection();
-
-      await getLocalMedia(
-        type
-      );
-
-      await peerConnection
-        .setRemoteDescription(
-          new RTCSessionDescription(
-            offer
-          )
-        );
-
-      await addPendingCandidates();
-
-      const answer =
-        await peerConnection
-          .createAnswer();
-
-      await peerConnection
-        .setLocalDescription(
-          answer
-        );
-
-      showCallScreen();
-
-      const sent =
-        sendWS({
-          type:"call_signal",
-          signalType:"answer",
-          to:callPartner,
-          callId:callId,
-          callType:callType,
-          sdp:
-            peerConnection
-              .localDescription
-        });
-
-      if(!sent){
-
-        throw new Error(
-          "الاتصال بالخادم غير متاح"
-        );
-      }
-
-    }catch(error){
-
-      console.error(error);
-
-      sendWS({
-        type:"call_signal",
-        signalType:"reject",
-        to:caller,
-        callId:incomingId,
-        reason:
-          "تعذر تشغيل المكالمة"
-      });
-
-      endCall(false);
-
-      alert(
-        "تعذر تشغيل المكالمة. اسمح بالميكروفون أو الكاميرا."
-      );
-    }
-
-    pendingOffer = null;
-    pendingCaller = "";
-    pendingCallId = "";
-    pendingCallType = "";
-  };
-
-rejectCallBtn.onclick =
-  function(){
-
-    if(pendingCaller){
-
-      sendWS({
-        type:"call_signal",
-        signalType:"reject",
-        to:pendingCaller,
-        callId:pendingCallId,
-        reason:
-          "تم رفض المكالمة"
-      });
-    }
-
-    hideIncomingCall();
-
-    pendingOffer = null;
-    pendingCaller = "";
-    pendingCallId = "";
-    pendingCallType = "";
-  };
-
-function hideIncomingCall(){
-
-  incomingCall.style.display =
-    "none";
-}
-
-/* =========================
-   SIGNAL HANDLER
-========================= */
-
-async function handleCallSignal(data){
-
-  if(data.signalType === "offer"){
-
-    if(
-      peerConnection ||
-      callPartner ||
-      pendingCaller
-    ){
-
-      sendWS({
-        type:"call_signal",
-        signalType:"reject",
-        to:data.from,
-        callId:data.callId || "",
-        reason:"المستخدم مشغول"
-      });
-
-      return;
-    }
-
-    showIncomingCall(data);
-
-    return;
-  }
-
-  if(data.signalType === "answer"){
-
-    if(
-      !peerConnection ||
-      data.callId !== callId
-    ){
-
-      return;
-    }
-
-    try{
-
-      await peerConnection
-        .setRemoteDescription(
-          new RTCSessionDescription(
-            data.sdp
-          )
-        );
-
-      await addPendingCandidates();
-
-    }catch(error){
-
-      console.error(error);
-
-      endCall(false);
-    }
-
-    return;
-  }
-
-  if(data.signalType === "candidate"){
-
-    if(
-      !peerConnection ||
-      data.callId !== callId
-    ){
-
-      return;
-    }
-
-    try{
-
-      if(
-        peerConnection.remoteDescription &&
-        peerConnection.remoteDescription.type
-      ){
-
-        await peerConnection
-          .addIceCandidate(
-            new RTCIceCandidate(
-              data.candidate
-            )
-          );
-
-      }else{
-
-        pendingCandidates.push(
-          data.candidate
-        );
-      }
-
-    }catch(error){
-
-      console.error(
-        "ICE error",
-        error
-      );
-    }
-
-    return;
-  }
-
-  if(data.signalType === "reject"){
-
-    alert(
-      data.reason ||
-      "تم رفض المكالمة"
-    );
-
-    endCall(false);
-
-    return;
-  }
-
-  if(data.signalType === "end"){
-
-    endCall(false);
-
-    return;
-  }
-}
-
-async function addPendingCandidates(){
-
-  if(!peerConnection){
-    return;
-  }
-
-  const list =
-    pendingCandidates.slice();
-
-  pendingCandidates = [];
-
-  for(
-    let i = 0;
-    i < list.length;
-    i++
-  ){
-
-    try{
-
-      await peerConnection
-        .addIceCandidate(
-          new RTCIceCandidate(
-            list[i]
-          )
-        );
-
-    }catch(error){
-
-      console.error(error);
-    }
-  }
-}
-
-/* =========================
-   CALL CONTROLS
-========================= */
-
-muteBtn.onclick =
-  function(){
-
-    if(!localStream){
-      return;
-    }
-
-    const tracks =
-      localStream.getAudioTracks();
-
-    if(!tracks.length){
-      return;
-    }
-
-    microphoneEnabled =
-      !microphoneEnabled;
-
-    tracks.forEach(
-      function(track){
-        track.enabled =
-          microphoneEnabled;
-      }
-    );
-
-    muteBtn.textContent =
-      microphoneEnabled
-        ? "🎙️"
-        : "🔇";
-  };
-
-cameraBtn.onclick =
-  function(){
-
-    if(
-      !localStream ||
-      callType !== "video"
-    ){
-
-      return;
-    }
-
-    const tracks =
-      localStream.getVideoTracks();
-
-    if(!tracks.length){
-      return;
-    }
-
-    cameraEnabled =
-      !cameraEnabled;
-
-    tracks.forEach(
-      function(track){
-        track.enabled =
-          cameraEnabled;
-      }
-    );
-
-    cameraBtn.textContent =
-      cameraEnabled
-        ? "📹"
-        : "🚫";
-  };
-
-endCallBtn.onclick =
-  function(){
-
-    endCall(true);
-  };
-
-function endCall(notify){
-
-  const oldPartner =
-    callPartner;
-
-  const oldCallId =
-    callId;
-
-  if(
-    notify &&
-    oldPartner &&
-    ws &&
-    ws.readyState ===
-      WebSocket.OPEN
-  ){
-
-    sendWS({
-      type:"call_signal",
-      signalType:"end",
-      to:oldPartner,
-      callId:oldCallId,
-      callType:callType
-    });
-  }
-
-  if(peerConnection){
-
-    try{
-
-      peerConnection.ontrack = null;
-      peerConnection.onicecandidate = null;
-      peerConnection.close();
-
-    }catch(e){}
-  }
-
-  peerConnection = null;
-
-  if(localStream){
-
-    localStream
-      .getTracks()
-      .forEach(
-        function(track){
-
-          try{
-            track.stop();
-          }catch(e){}
-        }
-      );
-  }
-
-  localStream = null;
-  remoteStream = null;
-
-  remoteVideo.srcObject = null;
-  localVideo.srcObject = null;
-  remoteAudio.srcObject = null;
-
-  callPartner = "";
-  callId = "";
-  callType = "";
-
-  pendingCandidates = [];
-
-  microphoneEnabled = true;
-  cameraEnabled = true;
-
-  muteBtn.textContent =
-    "🎙️";
-
-  cameraBtn.textContent =
-    "📹";
-
-  callScreen.style.display =
-    "none";
-
-  hideIncomingCall();
-
-  pendingOffer = null;
-  pendingCaller = "";
-  pendingCallId = "";
-  pendingCallType = "";
-}
-
-/* =========================
-   START
-========================= */
-
-showApp();
 
 </script>
 </body>
@@ -3058,910 +2080,444 @@ export default {
 
   async fetch(request, env){
 
-    const url =
-      new URL(request.url);
+    const url = new URL(request.url);
 
     if(
-      request.method === "GET" &&
-      url.pathname === "/"
+      url.pathname === "/ws" &&
+      request.headers.get("Upgrade") === "websocket"
     ){
 
-      return new Response(
-        HTML,
-        {
-          headers:{
-            "Content-Type":
-              "text/html;charset=UTF-8"
-          }
-        }
-      );
+      const id =
+        env.CHAT_ROOM.idFromName("main");
+
+      const room =
+        env.CHAT_ROOM.get(id);
+
+      return room.fetch(request);
+
     }
 
-    if(
-      request.method === "POST" &&
-      url.pathname === "/api/register"
-    ){
-
-      return handleRegister(
-        request,
-        env
-      );
+    if(url.pathname === "/api/register"){
+      return forward(env,request,"register");
     }
 
-    if(
-      request.method === "POST" &&
-      url.pathname === "/api/login"
-    ){
-
-      return handleLogin(
-        request,
-        env
-      );
+    if(url.pathname === "/api/login"){
+      return forward(env,request,"login");
     }
 
-    if(
-      request.method === "POST" &&
-      url.pathname === "/api/logout"
-    ){
-
-      return handleLogout(
-        request,
-        env
-      );
+    if(url.pathname === "/api/logout"){
+      return forward(env,request,"logout");
     }
 
-    if(
-      request.method === "POST" &&
-      url.pathname === "/api/delete-account"
-    ){
-
-      return handleDeleteAccount(
-        request,
-        env
-      );
+    if(url.pathname === "/api/me"){
+      return forward(env,request,"me");
     }
 
-    if(
-      request.method === "GET" &&
-      url.pathname === "/api/me"
-    ){
-
-      return handleMe(
-        request,
-        env
-      );
+    if(url.pathname === "/api/users"){
+      return forward(env,request,"users");
     }
 
-    if(
-      request.method === "GET" &&
-      url.pathname === "/api/users"
-    ){
-
-      return handleUsers(
-        request,
-        env
-      );
+    if(url.pathname === "/api/upload"){
+      return forward(env,request,"upload");
     }
 
-    if(
-      request.method === "GET" &&
-      url.pathname === "/ws"
-    ){
+    if(url.pathname === "/api/delete-account"){
+      return forward(env,request,"delete-account");
+    }
 
-      return handleWebSocket(
+    if(url.pathname.startsWith("/api/file/")){
+
+      return forward(
+        env,
         request,
-        env
+        "file"
       );
+
     }
 
     return new Response(
-      "Not Found",
+      HTML,
       {
-        status:404
+        headers:{
+          "Content-Type":"text/html;charset=UTF-8"
+        }
       }
     );
+
   }
+
 };
 
-/* =========================================================
-   HELPERS
-========================================================= */
-
-function json(data,status=200){
-
-  return new Response(
-    JSON.stringify(data),
-    {
-      status,
-      headers:{
-        "Content-Type":
-          "application/json;charset=UTF-8"
-      }
-    }
-  );
-}
-
-async function readJSON(request){
-
-  try{
-
-    return await request.json();
-
-  }catch(e){
-
-    return {};
-  }
-}
-
-function getRoom(env){
+async function forward(env,request,action){
 
   const id =
-    env.CHAT_ROOM.idFromName(
-      "main"
+    env.CHAT_ROOM.idFromName("main");
+
+  const room =
+    env.CHAT_ROOM.get(id);
+
+  const headers =
+    new Headers(request.headers);
+
+  headers.set(
+    "X-Chat-Action",
+    action
+  );
+
+  const req =
+    new Request(
+      request,
+      {headers}
     );
 
-  return env.CHAT_ROOM.get(id);
-}
+  return room.fetch(req);
 
-/* =========================================================
-   REGISTER
-========================================================= */
-
-async function handleRegister(
-  request,
-  env
-){
-
-  const body =
-    await readJSON(request);
-
-  const username =
-    String(
-      body.username || ""
-    ).trim();
-
-  const password =
-    String(
-      body.password || ""
-    );
-
-  if(!username || !password){
-
-    return json({
-      error:
-        "اسم المستخدم وكلمة المرور مطلوبان"
-    },400);
-  }
-
-  if(username.length < 3){
-
-    return json({
-      error:
-        "اسم المستخدم يجب أن يكون 3 أحرف على الأقل"
-    },400);
-  }
-
-  if(username.length > 30){
-
-    return json({
-      error:
-        "اسم المستخدم طويل جدًا"
-    },400);
-  }
-
-  if(password.length < 4){
-
-    return json({
-      error:
-        "كلمة المرور قصيرة جدًا"
-    },400);
-  }
-
-  const room =
-    getRoom(env);
-
-  return room.fetch(
-    new Request(
-      "https://internal/register",
-      {
-        method:"POST",
-        headers:{
-          "Content-Type":
-            "application/json"
-        },
-        body:JSON.stringify({
-          username,
-          password
-        })
-      }
-    )
-  );
-}
-
-/* =========================================================
-   LOGIN
-========================================================= */
-
-async function handleLogin(
-  request,
-  env
-){
-
-  const body =
-    await readJSON(request);
-
-  const username =
-    String(
-      body.username || ""
-    ).trim();
-
-  const password =
-    String(
-      body.password || ""
-    );
-
-  if(!username || !password){
-
-    return json({
-      error:
-        "اسم المستخدم وكلمة المرور مطلوبان"
-    },400);
-  }
-
-  const room =
-    getRoom(env);
-
-  return room.fetch(
-    new Request(
-      "https://internal/login",
-      {
-        method:"POST",
-        headers:{
-          "Content-Type":
-            "application/json"
-        },
-        body:JSON.stringify({
-          username,
-          password
-        })
-      }
-    )
-  );
-}
-
-/* =========================================================
-   LOGOUT
-========================================================= */
-
-async function handleLogout(
-  request,
-  env
-){
-
-  const body =
-    await readJSON(request);
-
-  const token =
-    String(
-      body.token || ""
-    );
-
-  const room =
-    getRoom(env);
-
-  return room.fetch(
-    new Request(
-      "https://internal/logout",
-      {
-        method:"POST",
-        headers:{
-          "Content-Type":
-            "application/json"
-        },
-        body:JSON.stringify({
-          token
-        })
-      }
-    )
-  );
-}
-
-/* =========================================================
-   DELETE ACCOUNT
-========================================================= */
-
-async function handleDeleteAccount(
-  request,
-  env
-){
-
-  const body =
-    await readJSON(request);
-
-  const token =
-    String(
-      body.token || ""
-    );
-
-  if(!token){
-
-    return json({
-      error:"الجلسة غير صالحة"
-    },401);
-  }
-
-  const room =
-    getRoom(env);
-
-  return room.fetch(
-    new Request(
-      "https://internal/delete-account",
-      {
-        method:"POST",
-        headers:{
-          "Content-Type":
-            "application/json"
-        },
-        body:JSON.stringify({
-          token
-        })
-      }
-    )
-  );
-}
-
-/* =========================================================
-   ME
-========================================================= */
-
-async function handleMe(
-  request,
-  env
-){
-
-  const url =
-    new URL(request.url);
-
-  const token =
-    url.searchParams.get(
-      "token"
-    ) || "";
-
-  const room =
-    getRoom(env);
-
-  return room.fetch(
-    new Request(
-      "https://internal/me?token=" +
-      encodeURIComponent(token)
-    )
-  );
-}
-
-/* =========================================================
-   USERS
-========================================================= */
-
-async function handleUsers(
-  request,
-  env
-){
-
-  const url =
-    new URL(request.url);
-
-  const token =
-    url.searchParams.get(
-      "token"
-    ) || "";
-
-  const room =
-    getRoom(env);
-
-  return room.fetch(
-    new Request(
-      "https://internal/users?token=" +
-      encodeURIComponent(token)
-    )
-  );
-}
-
-/* =========================================================
-   WEBSOCKET
-========================================================= */
-
-async function handleWebSocket(
-  request,
-  env
-){
-
-  if(
-    request.headers.get(
-      "Upgrade"
-    ) !== "websocket"
-  ){
-
-    return new Response(
-      "Expected WebSocket",
-      {
-        status:426
-      }
-    );
-  }
-
-  const room =
-    getRoom(env);
-
-  return room.fetch(
-    new Request(
-      "https://internal/websocket",
-      request
-    )
-  );
 }
 
 /* =========================================================
    DURABLE OBJECT
 ========================================================= */
 
-export class ChatRoom
-  extends DurableObject{
+export class ChatRoom extends DurableObject {
 
   constructor(ctx,env){
 
     super(ctx,env);
 
-    this.ctx = ctx;
     this.env = env;
+    this.sql = ctx.storage.sql;
 
-    this.connections =
-      new Map();
+    this.connections = new Map();
 
-    this.initDatabase();
+    this.setupDatabase();
+
   }
 
-  /* =========================
-     DATABASE
-  ========================= */
+  setupDatabase(){
 
-  initDatabase(){
-
-    this.ctx.storage.sql.exec(`
-      CREATE TABLE IF NOT EXISTS accounts (
+    this.sql.exec(`
+      CREATE TABLE IF NOT EXISTS accounts(
         username TEXT PRIMARY KEY,
         password_hash TEXT NOT NULL,
-        salt TEXT NOT NULL DEFAULT '',
-        created_at INTEGER NOT NULL DEFAULT 0
+        salt TEXT NOT NULL
       )
     `);
 
-    this.ctx.storage.sql.exec(`
-      CREATE TABLE IF NOT EXISTS sessions (
+    this.sql.exec(`
+      CREATE TABLE IF NOT EXISTS sessions(
         token TEXT PRIMARY KEY,
         username TEXT NOT NULL,
         created_at INTEGER NOT NULL DEFAULT 0,
-        expires_at INTEGER NOT NULL DEFAULT 0
+        expires_at INTEGER NOT NULL DEFAULT 9999999999999
       )
     `);
 
-    this.ctx.storage.sql.exec(`
-      CREATE TABLE IF NOT EXISTS messages (
+    this.sql.exec(`
+      CREATE TABLE IF NOT EXISTS messages(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         sender TEXT NOT NULL,
         receiver TEXT NOT NULL,
         text TEXT,
-        message_type TEXT NOT NULL DEFAULT 'text',
-        audio_data TEXT,
-        created_at INTEGER NOT NULL DEFAULT 0
+        kind TEXT NOT NULL DEFAULT 'text',
+        file_id TEXT,
+        file_name TEXT,
+        created_at INTEGER NOT NULL
       )
     `);
 
-    /*
-      =========================
-      تنظيف الحسابات القديمة
-      =========================
-
-      يتم التنفيذ مرة واحدة فقط.
-
-      بعد وضع reset_done = 1
-      لن يتم حذف الحسابات الجديدة
-      في التشغيلات التالية.
-    */
-
-    this.ctx.storage.sql.exec(`
-      CREATE TABLE IF NOT EXISTS app_meta (
+    this.sql.exec(`
+      CREATE TABLE IF NOT EXISTS app_meta(
         key TEXT PRIMARY KEY,
         value TEXT
       )
     `);
 
-    try{
+    this.migrateAccounts();
+    this.migrateSessions();
+    this.migrateMessages();
 
-      const reset =
-        this.ctx.storage.sql
-          .exec(
-            "SELECT value FROM app_meta WHERE key = ?",
-            "old_users_reset_done"
-          )
-          .toArray();
-
-      if(!reset.length){
-
-        this.ctx.storage.sql.exec(
-          "DELETE FROM messages"
-        );
-
-        this.ctx.storage.sql.exec(
-          "DELETE FROM sessions"
-        );
-
-        this.ctx.storage.sql.exec(
-          "DELETE FROM accounts"
-        );
-
-        this.ctx.storage.sql.exec(
-          `
-          INSERT INTO app_meta
-          (key,value)
-          VALUES(?,?)
-          `,
-          "old_users_reset_done",
-          "1"
-        );
-      }
-
-    }catch(error){
-
-      console.error(
-        "old users reset",
-        error
-      );
-    }
-
-    /* ACCOUNTS MIGRATION */
-
-    try{
-
-      const columns =
-        this.ctx.storage.sql
-          .exec(
-            "PRAGMA table_info(accounts)"
-          )
-          .toArray();
-
-      const names =
-        columns.map(
-          function(row){
-            return row.name;
-          }
-        );
-
-      if(!names.includes("salt")){
-
-        this.ctx.storage.sql.exec(`
-          ALTER TABLE accounts
-          ADD COLUMN salt TEXT NOT NULL DEFAULT ''
-        `);
-      }
-
-      if(!names.includes("created_at")){
-
-        this.ctx.storage.sql.exec(`
-          ALTER TABLE accounts
-          ADD COLUMN created_at INTEGER NOT NULL DEFAULT 0
-        `);
-      }
-
-    }catch(error){
-
-      console.error(
-        "accounts migration",
-        error
-      );
-    }
-
-    /* SESSIONS MIGRATION */
-
-    try{
-
-      const columns =
-        this.ctx.storage.sql
-          .exec(
-            "PRAGMA table_info(sessions)"
-          )
-          .toArray();
-
-      const names =
-        columns.map(
-          function(row){
-            return row.name;
-          }
-        );
-
-      if(!names.includes("created_at")){
-
-        this.ctx.storage.sql.exec(`
-          ALTER TABLE sessions
-          ADD COLUMN created_at INTEGER NOT NULL DEFAULT 0
-        `);
-      }
-
-      if(!names.includes("expires_at")){
-
-        this.ctx.storage.sql.exec(`
-          ALTER TABLE sessions
-          ADD COLUMN expires_at INTEGER NOT NULL DEFAULT 0
-        `);
-      }
-
-    }catch(error){
-
-      console.error(
-        "sessions migration",
-        error
-      );
-    }
-
-    /* MESSAGES MIGRATION */
-
-    try{
-
-      const columns =
-        this.ctx.storage.sql
-          .exec(
-            "PRAGMA table_info(messages)"
-          )
-          .toArray();
-
-      const names =
-        columns.map(
-          function(row){
-            return row.name;
-          }
-        );
-
-      if(!names.includes("message_type")){
-
-        this.ctx.storage.sql.exec(`
-          ALTER TABLE messages
-          ADD COLUMN message_type TEXT NOT NULL DEFAULT 'text'
-        `);
-      }
-
-      if(!names.includes("audio_data")){
-
-        this.ctx.storage.sql.exec(`
-          ALTER TABLE messages
-          ADD COLUMN audio_data TEXT
-        `);
-      }
-
-      if(!names.includes("created_at")){
-
-        this.ctx.storage.sql.exec(`
-          ALTER TABLE messages
-          ADD COLUMN created_at INTEGER NOT NULL DEFAULT 0
-        `);
-      }
-
-    }catch(error){
-
-      console.error(
-        "messages migration",
-        error
-      );
-    }
   }
 
-  /* =========================
-     FETCH
-  ========================= */
+  migrateAccounts(){
+
+    const cols =
+      this.sql.exec(
+        "PRAGMA table_info(accounts)"
+      ).toArray();
+
+    const names =
+      cols.map(x=>x.name);
+
+    if(!names.includes("salt")){
+
+      this.sql.exec(
+        "ALTER TABLE accounts ADD COLUMN salt TEXT NOT NULL DEFAULT ''"
+      );
+
+    }
+
+  }
+
+  migrateSessions(){
+
+    const cols =
+      this.sql.exec(
+        "PRAGMA table_info(sessions)"
+      ).toArray();
+
+    const names =
+      cols.map(x=>x.name);
+
+    if(!names.includes("created_at")){
+
+      this.sql.exec(
+        "ALTER TABLE sessions ADD COLUMN created_at INTEGER NOT NULL DEFAULT 0"
+      );
+
+    }
+
+    if(!names.includes("expires_at")){
+
+      this.sql.exec(
+        "ALTER TABLE sessions ADD COLUMN expires_at INTEGER NOT NULL DEFAULT 9999999999999"
+      );
+
+    }
+
+  }
+
+  migrateMessages(){
+
+    const cols =
+      this.sql.exec(
+        "PRAGMA table_info(messages)"
+      ).toArray();
+
+    const names =
+      cols.map(x=>x.name);
+
+    if(!names.includes("kind")){
+
+      this.sql.exec(
+        "ALTER TABLE messages ADD COLUMN kind TEXT NOT NULL DEFAULT 'text'"
+      );
+
+    }
+
+    if(!names.includes("file_id")){
+
+      this.sql.exec(
+        "ALTER TABLE messages ADD COLUMN file_id TEXT"
+      );
+
+    }
+
+    if(!names.includes("file_name")){
+
+      this.sql.exec(
+        "ALTER TABLE messages ADD COLUMN file_name TEXT"
+      );
+
+    }
+
+  }
 
   async fetch(request){
 
-    const url =
-      new URL(request.url);
+    const url = new URL(request.url);
 
-    if(url.pathname === "/register"){
+    const action =
+      request.headers.get("X-Chat-Action");
 
+    if(
+      request.headers.get("Upgrade") === "websocket"
+    ){
+
+      return this.websocket(request);
+
+    }
+
+    if(action === "register"){
       return this.register(request);
     }
 
-    if(url.pathname === "/login"){
-
+    if(action === "login"){
       return this.login(request);
     }
 
-    if(url.pathname === "/logout"){
-
+    if(action === "logout"){
       return this.logout(request);
     }
 
-    if(url.pathname === "/delete-account"){
-
-      return this.deleteAccount(request);
-    }
-
-    if(url.pathname === "/me"){
-
+    if(action === "me"){
       return this.me(request);
     }
 
-    if(url.pathname === "/users"){
-
+    if(action === "users"){
       return this.users(request);
     }
 
-    if(url.pathname === "/websocket"){
-
-      return this.websocket(request);
+    if(action === "upload"){
+      return this.upload(request);
     }
 
-    return new Response(
-      "Not Found",
-      {
-        status:404
-      }
-    );
+    if(action === "file"){
+      return this.getFile(request);
+    }
+
+    if(action === "delete-account"){
+      return this.deleteAccount(request);
+    }
+
+    return json({
+      ok:false,
+      error:"Not found"
+    },404);
+
   }
 
-  /* =========================
+  /* =======================================================
      REGISTER
-  ========================= */
+  ======================================================= */
 
   async register(request){
 
-    const body =
-      await request.json();
-
-    const username =
-      String(
-        body.username || ""
-      ).trim();
-
-    const password =
-      String(
-        body.password || ""
-      );
-
     try{
 
+      const body =
+        await request.json();
+
+      const username =
+        String(body.username || "").trim();
+
+      const password =
+        String(body.password || "");
+
+      if(username.length < 2){
+
+        return json({
+          ok:false,
+          error:"اسم المستخدم قصير جدًا"
+        },400);
+
+      }
+
+      if(password.length < 4){
+
+        return json({
+          ok:false,
+          error:"كلمة المرور قصيرة جدًا"
+        },400);
+
+      }
+
       const existing =
-        this.ctx.storage.sql
-          .exec(
-            "SELECT username FROM accounts WHERE username = ?",
-            username
-          )
-          .toArray();
+        this.sql.exec(
+          "SELECT username FROM accounts WHERE username=?",
+          username
+        ).toArray();
 
       if(existing.length){
 
         return json({
-          error:
-            "اسم المستخدم موجود بالفعل"
+          ok:false,
+          error:"اسم المستخدم موجود بالفعل"
         },409);
+
       }
 
       const salt =
-        bytesToHex(
-          randomBytes(16)
-        );
+        randomHex(16);
 
-      const passwordHash =
+      const hash =
         await hashPassword(
           password,
           salt
         );
 
-      const now =
-        Date.now();
-
-      this.ctx.storage.sql.exec(
+      this.sql.exec(
         `
         INSERT INTO accounts
-        (
-          username,
-          password_hash,
-          salt,
-          created_at
-        )
-        VALUES(?,?,?,?)
+        (username,password_hash,salt)
+        VALUES(?,?,?)
         `,
         username,
-        passwordHash,
-        salt,
-        now
+        hash,
+        salt
       );
 
       const token =
         randomToken();
 
-      const expiresAt =
-        9999999999999;
+      const now =
+        Date.now();
 
-      this.ctx.storage.sql.exec(
+      this.sql.exec(
         `
         INSERT INTO sessions
-        (
-          token,
-          username,
-          created_at,
-          expires_at
-        )
+        (token,username,created_at,expires_at)
         VALUES(?,?,?,?)
         `,
         token,
         username,
         now,
-        expiresAt
+        SESSION_FOREVER
       );
-
-      this.broadcastUsersChanged();
 
       return json({
         ok:true,
-        token,
-        username
+        username,
+        token
       });
 
-    }catch(error){
-
-      console.error(error);
+    }catch(e){
 
       return json({
-        error:
-          "حدث خطأ أثناء إنشاء الحساب: " +
-          error.message
+        ok:false,
+        error:"حدث خطأ أثناء إنشاء الحساب: " + e.message
       },500);
+
     }
+
   }
 
-  /* =========================
+  /* =======================================================
      LOGIN
-  ========================= */
+  ======================================================= */
 
   async login(request){
 
-    const body =
-      await request.json();
-
-    const username =
-      String(
-        body.username || ""
-      ).trim();
-
-    const password =
-      String(
-        body.password || ""
-      );
-
     try{
 
+      const body =
+        await request.json();
+
+      const username =
+        String(body.username || "").trim();
+
+      const password =
+        String(body.password || "");
+
       const rows =
-        this.ctx.storage.sql
-          .exec(
-            `
-            SELECT
-              username,
-              password_hash,
-              salt
-            FROM accounts
-            WHERE username = ?
-            `,
-            username
-          )
-          .toArray();
+        this.sql.exec(
+          `
+          SELECT username,password_hash,salt
+          FROM accounts
+          WHERE username=?
+          `,
+          username
+        ).toArray();
 
       if(!rows.length){
 
         return json({
-          error:
-            "اسم المستخدم أو كلمة المرور غير صحيحة"
+          ok:false,
+          error:"اسم المستخدم أو كلمة المرور غير صحيحة"
         },401);
+
       }
 
-      const account =
-        rows[0];
+      const account = rows[0];
 
       const hash =
         await hashPassword(
@@ -3969,15 +2525,13 @@ export class ChatRoom
           account.salt
         );
 
-      if(
-        hash !==
-        account.password_hash
-      ){
+      if(hash !== account.password_hash){
 
         return json({
-          error:
-            "اسم المستخدم أو كلمة المرور غير صحيحة"
+          ok:false,
+          error:"اسم المستخدم أو كلمة المرور غير صحيحة"
         },401);
+
       }
 
       const token =
@@ -3986,47 +2540,68 @@ export class ChatRoom
       const now =
         Date.now();
 
-      const expiresAt =
-        9999999999999;
-
-      this.ctx.storage.sql.exec(
+      this.sql.exec(
         `
         INSERT INTO sessions
-        (
-          token,
-          username,
-          created_at,
-          expires_at
-        )
+        (token,username,created_at,expires_at)
         VALUES(?,?,?,?)
         `,
         token,
         username,
         now,
-        expiresAt
+        SESSION_FOREVER
       );
 
       return json({
         ok:true,
-        token,
-        username
+        username,
+        token
       });
 
-    }catch(error){
-
-      console.error(error);
+    }catch(e){
 
       return json({
-        error:
-          "حدث خطأ أثناء تسجيل الدخول: " +
-          error.message
+        ok:false,
+        error:"حدث خطأ أثناء تسجيل الدخول: " + e.message
       },500);
+
     }
+
   }
 
-  /* =========================
+  /* =======================================================
+     ME
+  ======================================================= */
+
+  async me(request){
+
+    const url =
+      new URL(request.url);
+
+    const token =
+      url.searchParams.get("token");
+
+    const username =
+      this.getUserFromToken(token);
+
+    if(!username){
+
+      return json({
+        ok:false
+      },401);
+
+    }
+
+    return json({
+      ok:true,
+      username
+    });
+
+  }
+
+  /* =======================================================
      LOGOUT
-  ========================= */
+  ======================================================= */
 
   async logout(request){
 
@@ -4036,33 +2611,416 @@ export class ChatRoom
         await request.json();
 
       const token =
-        String(
-          body.token || ""
-        );
+        String(body.token || "");
 
       if(token){
 
-        this.ctx.storage.sql.exec(
-          "DELETE FROM sessions WHERE token = ?",
+        this.sql.exec(
+          "DELETE FROM sessions WHERE token=?",
           token
         );
+
       }
 
       return json({
         ok:true
       });
 
-    }catch(error){
+    }catch(e){
 
       return json({
         ok:true
       });
+
     }
+
   }
 
-  /* =========================
+  /* =======================================================
+     USERS
+  ======================================================= */
+
+  async users(request){
+
+    const url =
+      new URL(request.url);
+
+    const token =
+      url.searchParams.get("token");
+
+    const current =
+      this.getUserFromToken(token);
+
+    if(!current){
+
+      return json({
+        ok:false,
+        error:"جلسة غير صالحة"
+      },401);
+
+    }
+
+    const accounts =
+      this.sql.exec(
+        "SELECT username FROM accounts ORDER BY username"
+      ).toArray();
+
+    const online =
+      this.getOnlineUsernames();
+
+    const result =
+      accounts.map(row=>({
+        username:row.username,
+        online:online.has(row.username)
+      }));
+
+    return json({
+      ok:true,
+      users:result
+    });
+
+  }
+
+  getOnlineUsernames(){
+
+    const set =
+      new Set();
+
+    for(
+      const username of this.connections.keys()
+    ){
+
+      set.add(username);
+
+    }
+
+    try{
+
+      for(
+        const socket of this.ctx.getWebSockets()
+      ){
+
+        const data =
+          socket.deserializeAttachment();
+
+        if(data && data.username){
+
+          set.add(data.username);
+
+        }
+
+      }
+
+    }catch(e){}
+
+    return set;
+
+  }
+
+  /* =======================================================
+     UPLOAD
+  ======================================================= */
+
+  async upload(request){
+
+    const url =
+      new URL(request.url);
+
+    const token =
+      url.searchParams.get("token");
+
+    const username =
+      this.getUserFromToken(token);
+
+    if(!username){
+
+      return json({
+        ok:false,
+        error:"جلسة غير صالحة"
+      },401);
+
+    }
+
+    if(!this.env.FILES){
+
+      return json({
+        ok:false,
+        error:"لم يتم إعداد R2 Bucket باسم FILES"
+      },500);
+
+    }
+
+    const contentLength =
+      Number(
+        request.headers.get("content-length") || 0
+      );
+
+    if(contentLength > MAX_FILE_SIZE + 1024 * 1024){
+
+      return json({
+        ok:false,
+        error:"الملف أكبر من 20 ميجابايت"
+      },413);
+
+    }
+
+    try{
+
+      const form =
+        await request.formData();
+
+      const file =
+        form.get("file");
+
+      const to =
+        String(form.get("to") || "").trim();
+
+      const kind =
+        String(form.get("kind") || "file");
+
+      if(
+        !file ||
+        typeof file.arrayBuffer !== "function"
+      ){
+
+        return json({
+          ok:false,
+          error:"لم يتم اختيار ملف"
+        },400);
+
+      }
+
+      if(!to){
+
+        return json({
+          ok:false,
+          error:"المستخدم غير محدد"
+        },400);
+
+      }
+
+      const target =
+        this.sql.exec(
+          "SELECT username FROM accounts WHERE username=?",
+          to
+        ).toArray();
+
+      if(!target.length){
+
+        return json({
+          ok:false,
+          error:"المستخدم غير موجود"
+        },404);
+
+      }
+
+      if(file.size > MAX_FILE_SIZE){
+
+        return json({
+          ok:false,
+          error:"الحد الأقصى للملف هو 20 ميجابايت"
+        },413);
+
+      }
+
+      const fileId =
+        randomToken();
+
+      const key =
+        "chat/" +
+        fileId;
+
+      await this.env.FILES.put(
+        key,
+        file.stream(),
+        {
+          httpMetadata:{
+            contentType:
+              file.type ||
+              "application/octet-stream",
+
+            contentDisposition:
+              'inline; filename="' +
+              encodeURIComponent(
+                file.name || "file"
+              ) +
+              '"'
+          }
+        }
+      );
+
+      const now =
+        Date.now();
+
+      this.sql.exec(
+        `
+        INSERT INTO messages
+        (
+          sender,
+          receiver,
+          text,
+          kind,
+          file_id,
+          file_name,
+          created_at
+        )
+        VALUES(?,?,?,?,?,?,?)
+        `,
+        username,
+        to,
+        "",
+        kind,
+        key,
+        file.name || "file",
+        now
+      );
+
+      this.sendToUser(
+        to,
+        {
+          type:"message",
+          from:username,
+          sender:username,
+          to:to,
+          kind:kind,
+          fileId:key,
+          fileName:file.name || "file",
+          createdAt:now
+        }
+      );
+
+      return json({
+        ok:true,
+        fileId:key
+      });
+
+    }catch(e){
+
+      return json({
+        ok:false,
+        error:"فشل رفع الملف: " + e.message
+      },500);
+
+    }
+
+  }
+
+  /* =======================================================
+     GET FILE
+  ======================================================= */
+
+  async getFile(request){
+
+    const url =
+      new URL(request.url);
+
+    const token =
+      url.searchParams.get("token");
+
+    const username =
+      this.getUserFromToken(token);
+
+    if(!username){
+
+      return new Response(
+        "Unauthorized",
+        {status:401}
+      );
+
+    }
+
+    if(!this.env.FILES){
+
+      return new Response(
+        "R2 not configured",
+        {status:500}
+      );
+
+    }
+
+    const parts =
+      url.pathname.split("/");
+
+    const fileId =
+      decodeURIComponent(
+        parts.slice(3).join("/")
+      );
+
+    if(!fileId){
+
+      return new Response(
+        "Not found",
+        {status:404}
+      );
+
+    }
+
+    const message =
+      this.sql.exec(
+        `
+        SELECT sender,receiver
+        FROM messages
+        WHERE file_id=?
+        `,
+        fileId
+      ).toArray();
+
+    if(!message.length){
+
+      return new Response(
+        "Not found",
+        {status:404}
+      );
+
+    }
+
+    const row =
+      message[0];
+
+    if(
+      row.sender !== username &&
+      row.receiver !== username
+    ){
+
+      return new Response(
+        "Forbidden",
+        {status:403}
+      );
+
+    }
+
+    const object =
+      await this.env.FILES.get(fileId);
+
+    if(!object){
+
+      return new Response(
+        "File not found",
+        {status:404}
+      );
+
+    }
+
+    const headers =
+      new Headers();
+
+    object.writeHttpMetadata(headers);
+
+    headers.set(
+      "Cache-Control",
+      "private, max-age=3600"
+    );
+
+    return new Response(
+      object.body,
+      {headers}
+    );
+
+  }
+
+  /* =======================================================
      DELETE ACCOUNT
-  ========================= */
+  ======================================================= */
 
   async deleteAccount(request){
 
@@ -4072,100 +3030,88 @@ export class ChatRoom
         await request.json();
 
       const token =
-        String(
-          body.token || ""
-        );
-
-      if(!token){
-
-        return json({
-          error:
-            "الجلسة غير صالحة"
-        },401);
-      }
-
-      const rows =
-        this.ctx.storage.sql
-          .exec(
-            `
-            SELECT username
-            FROM sessions
-            WHERE token = ?
-            `,
-            token
-          )
-          .toArray();
-
-      if(!rows.length){
-
-        return json({
-          error:
-            "الجلسة غير صالحة"
-        },401);
-      }
+        String(body.token || "");
 
       const username =
-        rows[0].username;
+        this.getUserFromToken(token);
 
-      /* حذف الرسائل */
+      if(!username){
 
-      this.ctx.storage.sql.exec(
+        return json({
+          ok:false,
+          error:"جلسة غير صالحة"
+        },401);
+
+      }
+
+      const files =
+        this.sql.exec(
+          `
+          SELECT file_id
+          FROM messages
+          WHERE sender=? OR receiver=?
+          `,
+          username,
+          username
+        ).toArray();
+
+      if(this.env.FILES){
+
+        for(const row of files){
+
+          if(row.file_id){
+
+            try{
+              await this.env.FILES.delete(
+                row.file_id
+              );
+            }catch(e){}
+
+          }
+
+        }
+
+      }
+
+      this.sql.exec(
         `
         DELETE FROM messages
-        WHERE sender = ?
-           OR receiver = ?
+        WHERE sender=? OR receiver=?
         `,
         username,
         username
       );
 
-      /* حذف كل جلسات الحساب */
-
-      this.ctx.storage.sql.exec(
-        `
-        DELETE FROM sessions
-        WHERE username = ?
-        `,
+      this.sql.exec(
+        "DELETE FROM sessions WHERE username=?",
         username
       );
 
-      /* حذف الحساب */
-
-      this.ctx.storage.sql.exec(
-        `
-        DELETE FROM accounts
-        WHERE username = ?
-        `,
+      this.sql.exec(
+        "DELETE FROM accounts WHERE username=?",
         username
       );
 
-      /* إغلاق اتصالات الحساب */
+      const sockets =
+        this.getSocketsForUser(username);
 
-      const set =
-        this.connections.get(
-          username
-        );
+      for(const socket of sockets){
 
-      if(set){
+        try{
 
-        for(
-          const socket of set
-        ){
+          socket.send(
+            JSON.stringify({
+              type:"account_deleted"
+            })
+          );
 
-          try{
+          socket.close();
 
-            socket.close(
-              1000,
-              "account deleted"
-            );
+        }catch(e){}
 
-          }catch(e){}
-        }
-
-        this.connections.delete(
-          username
-        );
       }
+
+      this.connections.delete(username);
 
       this.broadcastUsersChanged();
 
@@ -4173,215 +3119,20 @@ export class ChatRoom
         ok:true
       });
 
-    }catch(error){
-
-      console.error(
-        "delete account",
-        error
-      );
+    }catch(e){
 
       return json({
-        error:
-          "تعذر حذف الحساب: " +
-          error.message
+        ok:false,
+        error:"تعذر حذف الحساب: " + e.message
       },500);
+
     }
+
   }
 
-  /* =========================
-     ME
-  ========================= */
-
-  async me(request){
-
-    const url =
-      new URL(request.url);
-
-    const token =
-      url.searchParams.get(
-        "token"
-      ) || "";
-
-    const username =
-      this.getUserFromToken(
-        token
-      );
-
-    if(!username){
-
-      return json({
-        error:
-          "الجلسة غير صالحة"
-      },401);
-    }
-
-    return json({
-      ok:true,
-      username
-    });
-  }
-
-  /* =========================
-     USERS
-  ========================= */
-
-  async users(request){
-
-    const url =
-      new URL(request.url);
-
-    const token =
-      url.searchParams.get(
-        "token"
-      ) || "";
-
-    const current =
-      this.getUserFromToken(
-        token
-      );
-
-    if(!current){
-
-      return json({
-        error:
-          "الجلسة غير صالحة"
-      },401);
-    }
-
-    const rows =
-      this.ctx.storage.sql
-        .exec(
-          `
-          SELECT username
-          FROM accounts
-          ORDER BY username
-          `
-        )
-        .toArray();
-
-    const onlineNames =
-      this.getOnlineUsernames();
-
-    const users =
-      rows.map(
-        function(row){
-
-          return {
-            username:
-              row.username,
-
-            online:
-              row.username === current ||
-              onlineNames.has(
-                row.username
-              )
-          };
-        }
-      );
-
-    return json({
-      users
-    });
-  }
-
-  /* =========================
-     TOKEN
-  ========================= */
-
-  getUserFromToken(token){
-
-    if(!token){
-      return null;
-    }
-
-    try{
-
-      const rows =
-        this.ctx.storage.sql
-          .exec(
-            `
-            SELECT username
-            FROM sessions
-            WHERE token = ?
-            `,
-            token
-          )
-          .toArray();
-
-      if(!rows.length){
-
-        return null;
-      }
-
-      return rows[0].username;
-
-    }catch(error){
-
-      console.error(error);
-
-      return null;
-    }
-  }
-
-  /* =========================
-     ONLINE
-  ========================= */
-
-  getOnlineUsernames(){
-
-    const result =
-      new Set();
-
-    try{
-
-      const sockets =
-        this.ctx.getWebSockets();
-
-      for(
-        let i = 0;
-        i < sockets.length;
-        i++
-      ){
-
-        const socket =
-          sockets[i];
-
-        try{
-
-          const attachment =
-            socket.deserializeAttachment();
-
-          if(
-            attachment &&
-            attachment.username
-          ){
-
-            result.add(
-              attachment.username
-            );
-          }
-
-        }catch(error){}
-      }
-
-    }catch(error){}
-
-    for(
-      const username of
-      this.connections.keys()
-    ){
-
-      result.add(
-        username
-      );
-    }
-
-    return result;
-  }
-
-  /* =========================
+  /* =======================================================
      WEBSOCKET
-  ========================= */
+  ======================================================= */
 
   async websocket(request){
 
@@ -4389,23 +3140,18 @@ export class ChatRoom
       new URL(request.url);
 
     const token =
-      url.searchParams.get(
-        "token"
-      ) || "";
+      url.searchParams.get("token");
 
     const username =
-      this.getUserFromToken(
-        token
-      );
+      this.getUserFromToken(token);
 
     if(!username){
 
       return new Response(
         "Unauthorized",
-        {
-          status:401
-        }
+        {status:401}
       );
+
     }
 
     const pair =
@@ -4417,26 +3163,19 @@ export class ChatRoom
     const server =
       pair[1];
 
-    server.accept();
+    this.ctx.acceptWebSocket(server);
 
-    try{
+    server.serializeAttachment({
+      username
+    });
 
-      server.serializeAttachment({
-        username
-      });
-
-    }catch(error){}
-
-    if(
-      !this.connections.has(
-        username
-      )
-    ){
+    if(!this.connections.has(username)){
 
       this.connections.set(
         username,
         new Set()
       );
+
     }
 
     this.connections
@@ -4447,11 +3186,11 @@ export class ChatRoom
       "message",
       event => {
 
-        this.webSocketMessage(
+        this.onSocketMessage(
           server,
-          username,
-          event
+          event.data
         );
+
       }
     );
 
@@ -4463,6 +3202,9 @@ export class ChatRoom
           username,
           server
         );
+
+        this.broadcastUsersChanged();
+
       }
     );
 
@@ -4474,6 +3216,9 @@ export class ChatRoom
           username,
           server
         );
+
+        this.broadcastUsersChanged();
+
       }
     );
 
@@ -4486,626 +3231,486 @@ export class ChatRoom
         webSocket:client
       }
     );
+
   }
 
-  /* =========================
-     REMOVE CONNECTION
-  ========================= */
-
-  removeConnection(
-    username,
-    socket
-  ){
+  removeConnection(username,socket){
 
     const set =
-      this.connections.get(
-        username
-      );
+      this.connections.get(username);
+
+    if(!set) return;
+
+    set.delete(socket);
+
+    if(!set.size){
+
+      this.connections.delete(username);
+
+    }
+
+  }
+
+  getSocketsForUser(username){
+
+    const result =
+      new Set();
+
+    const set =
+      this.connections.get(username);
 
     if(set){
 
-      set.delete(socket);
+      for(const socket of set){
 
-      if(set.size === 0){
+        result.add(socket);
 
-        this.connections.delete(
-          username
-        );
       }
+
     }
-
-    this.broadcastUsersChanged();
-  }
-
-  /* =========================
-     SOCKET MESSAGE
-  ========================= */
-
-  async webSocketMessage(
-    socket,
-    username,
-    event
-  ){
-
-    let data;
 
     try{
 
-      data =
-        JSON.parse(
-          event.data
-        );
-
-    }catch(error){
-
-      return;
-    }
-
-    /* TEXT */
-
-    if(data.type === "message"){
-
-      const to =
-        String(
-          data.to || ""
-        ).trim();
-
-      const text =
-        String(
-          data.text || ""
-        );
-
-      if(!to || !text){
-        return;
-      }
-
-      if(text.length > 5000){
-        return;
-      }
-
-      if(!this.accountExists(to)){
-        return;
-      }
-
-      const createdAt =
-        Date.now();
-
-      this.ctx.storage.sql.exec(
-        `
-        INSERT INTO messages
-        (
-          sender,
-          receiver,
-          text,
-          message_type,
-          created_at
-        )
-        VALUES(?,?,?,?,?)
-        `,
-        username,
-        to,
-        text,
-        "text",
-        createdAt
-      );
-
-      const message = {
-        type:"message",
-        sender:username,
-        receiver:to,
-        text:text,
-        created_at:createdAt
-      };
-
-      this.sendToUser(
-        username,
-        JSON.stringify(message)
-      );
-
-      if(to !== username){
-
-        this.sendToUser(
-          to,
-          JSON.stringify(message)
-        );
-      }
-
-      return;
-    }
-
-    /* VOICE */
-
-    if(data.type === "voice"){
-
-      const to =
-        String(
-          data.to || ""
-        ).trim();
-
-      const audioData =
-        String(
-          data.audio_data || ""
-        );
-
-      if(!to || !audioData){
-        return;
-      }
-
-      if(
-        audioData.length >
-        3000000
+      for(
+        const socket of this.ctx.getWebSockets()
       ){
 
-        this.sendSocket(
-          socket,
-          JSON.stringify({
-            type:"call_error",
-            error:
-              "الرسالة الصوتية كبيرة جدًا"
-          })
-        );
+        const data =
+          socket.deserializeAttachment();
 
-        return;
+        if(
+          data &&
+          data.username === username
+        ){
+
+          result.add(socket);
+
+        }
+
       }
 
-      if(!this.accountExists(to)){
-        return;
-      }
+    }catch(e){}
 
-      const createdAt =
-        Date.now();
+    return result;
 
-      this.ctx.storage.sql.exec(
-        `
-        INSERT INTO messages
-        (
-          sender,
-          receiver,
-          text,
-          message_type,
-          audio_data,
-          created_at
-        )
-        VALUES(?,?,?,?,?,?)
-        `,
-        username,
-        to,
-        "",
-        "voice",
-        audioData,
-        createdAt
-      );
-
-      const message = {
-        type:"voice",
-        sender:username,
-        receiver:to,
-        audio_data:audioData,
-        created_at:createdAt
-      };
-
-      this.sendToUser(
-        username,
-        JSON.stringify(message)
-      );
-
-      if(to !== username){
-
-        this.sendToUser(
-          to,
-          JSON.stringify(message)
-        );
-      }
-
-      return;
-    }
-
-    /* HISTORY */
-
-    if(data.type === "history"){
-
-      const withUser =
-        String(
-          data.with || ""
-        ).trim();
-
-      if(!withUser){
-        return;
-      }
-
-      const rows =
-        this.ctx.storage.sql
-          .exec(
-            `
-            SELECT
-              sender,
-              receiver,
-              text,
-              message_type,
-              audio_data,
-              created_at
-            FROM messages
-            WHERE
-              (
-                sender = ?
-                AND receiver = ?
-              )
-              OR
-              (
-                sender = ?
-                AND receiver = ?
-              )
-            ORDER BY created_at ASC
-            LIMIT 500
-            `,
-            username,
-            withUser,
-            withUser,
-            username
-          )
-          .toArray();
-
-      this.sendSocket(
-        socket,
-        JSON.stringify({
-          type:"history",
-          with:withUser,
-          messages:rows
-        })
-      );
-
-      return;
-    }
-
-    /* TYPING */
-
-    if(data.type === "typing"){
-
-      const to =
-        String(
-          data.to || ""
-        ).trim();
-
-      if(!to){
-        return;
-      }
-
-      this.sendToUser(
-        to,
-        JSON.stringify({
-          type:"typing",
-          from:username,
-          typing:Boolean(
-            data.typing
-          )
-        })
-      );
-
-      return;
-    }
-
-    /* CALL SIGNAL */
-
-    if(data.type === "call_signal"){
-
-      const to =
-        String(
-          data.to || ""
-        ).trim();
-
-      const signalType =
-        String(
-          data.signalType || ""
-        );
-
-      const allowed = [
-        "offer",
-        "answer",
-        "candidate",
-        "reject",
-        "end"
-      ];
-
-      if(
-        !to ||
-        !allowed.includes(
-          signalType
-        )
-      ){
-
-        return;
-      }
-
-      if(
-        !this.accountExists(to)
-      ){
-
-        this.sendSocket(
-          socket,
-          JSON.stringify({
-            type:"call_error",
-            error:
-              "المستخدم غير موجود",
-            callId:
-              data.callId || ""
-          })
-        );
-
-        return;
-      }
-
-      const payload = {
-
-        type:"call_signal",
-
-        from:username,
-
-        to:to,
-
-        signalType:
-          signalType,
-
-        callId:
-          String(
-            data.callId || ""
-          ),
-
-        callType:
-          data.callType === "video"
-            ? "video"
-            : "audio"
-      };
-
-      if(
-        signalType === "offer" ||
-        signalType === "answer"
-      ){
-
-        payload.sdp =
-          data.sdp || null;
-      }
-
-      if(
-        signalType === "candidate"
-      ){
-
-        payload.candidate =
-          data.candidate || null;
-      }
-
-      if(
-        signalType === "reject"
-      ){
-
-        payload.reason =
-          String(
-            data.reason ||
-            "تم رفض المكالمة"
-          );
-      }
-
-      const sent =
-        this.sendToUser(
-          to,
-          JSON.stringify(payload)
-        );
-
-      if(!sent){
-
-        this.sendSocket(
-          socket,
-          JSON.stringify({
-            type:"call_error",
-            error:
-              "المستخدم غير متصل حاليًا",
-            callId:
-              data.callId || ""
-          })
-        );
-      }
-
-      return;
-    }
   }
 
-  /* =========================
-     ACCOUNT EXISTS
-  ========================= */
+  sendToUser(username,data){
 
-  accountExists(username){
+    const sockets =
+      this.getSocketsForUser(username);
 
-    const rows =
-      this.ctx.storage.sql
-        .exec(
-          `
-          SELECT username
-          FROM accounts
-          WHERE username = ?
-          `,
-          username
-        )
-        .toArray();
-
-    return rows.length > 0;
-  }
-
-  /* =========================
-     SEND SOCKET
-  ========================= */
-
-  sendSocket(
-    socket,
-    message
-  ){
-
-    try{
-
-      if(socket.readyState === 1){
-
-        socket.send(message);
-
-        return true;
-      }
-
-    }catch(error){}
-
-    return false;
-  }
-
-  /* =========================
-     SEND TO USER
-  ========================= */
-
-  sendToUser(
-    username,
-    message
-  ){
+    const payload =
+      JSON.stringify(data);
 
     let sent = false;
 
-    const set =
-      this.connections.get(
-        username
-      );
+    for(const socket of sockets){
 
-    if(set){
-
-      for(
-        const socket of set
-      ){
+      try{
 
         if(
-          this.sendSocket(
-            socket,
-            message
-          )
+          socket.readyState ===
+          WebSocket.OPEN
         ){
 
+          socket.send(payload);
           sent = true;
+
         }
-      }
+
+      }catch(e){}
+
     }
 
-    try{
-
-      const sockets =
-        this.ctx.getWebSockets();
-
-      for(
-        let i = 0;
-        i < sockets.length;
-        i++
-      ){
-
-        const socket =
-          sockets[i];
-
-        try{
-
-          const attachment =
-            socket.deserializeAttachment();
-
-          if(
-            attachment &&
-            attachment.username ===
-              username
-          ){
-
-            if(
-              this.sendSocket(
-                socket,
-                message
-              )
-            ){
-
-              sent = true;
-            }
-          }
-
-        }catch(error){}
-      }
-
-    }catch(error){}
-
     return sent;
-  }
 
-  /* =========================
-     USERS CHANGED
-  ========================= */
+  }
 
   broadcastUsersChanged(){
 
-    const message =
+    const payload =
       JSON.stringify({
         type:"users_changed"
       });
 
     try{
 
-      const sockets =
-        this.ctx.getWebSockets();
-
       for(
-        let i = 0;
-        i < sockets.length;
-        i++
+        const socket of this.ctx.getWebSockets()
       ){
 
-        this.sendSocket(
-          sockets[i],
-          message
-        );
+        try{
+
+          if(
+            socket.readyState ===
+            WebSocket.OPEN
+          ){
+
+            socket.send(payload);
+
+          }
+
+        }catch(e){}
+
       }
 
-    }catch(error){}
+    }catch(e){}
 
-    for(
-      const set of
-      this.connections.values()
+  }
+
+  /* =======================================================
+     SOCKET HANDLER
+  ======================================================= */
+
+  onSocketMessage(socket,raw){
+
+    try{
+
+      const data =
+        JSON.parse(raw);
+
+      const attachment =
+        socket.deserializeAttachment();
+
+      const username =
+        attachment &&
+        attachment.username;
+
+      if(!username) return;
+
+      if(data.type === "message"){
+
+        this.handleMessage(
+          username,
+          data
+        );
+
+      }
+
+      else if(data.type === "history"){
+
+        this.handleHistory(
+          username,
+          data
+        );
+
+      }
+
+      else if(data.type === "typing"){
+
+        this.sendToUser(
+          data.to,
+          {
+            type:"typing",
+            from:username,
+            value:!!data.value
+          }
+        );
+
+      }
+
+      else if(
+        data.type === "call_offer" ||
+        data.type === "call_answer" ||
+        data.type === "call_candidate" ||
+        data.type === "call_reject" ||
+        data.type === "call_end"
+      ){
+
+        this.handleCallSignal(
+          username,
+          data
+        );
+
+      }
+
+    }catch(e){}
+
+  }
+
+  /* =======================================================
+     MESSAGE
+  ======================================================= */
+
+  handleMessage(sender,data){
+
+    const receiver =
+      String(data.to || "").trim();
+
+    const text =
+      String(data.text || "");
+
+    if(!receiver || !text){
+      return;
+    }
+
+    const exists =
+      this.sql.exec(
+        "SELECT username FROM accounts WHERE username=?",
+        receiver
+      ).toArray();
+
+    if(!exists.length){
+
+      return;
+
+    }
+
+    const now =
+      Date.now();
+
+    this.sql.exec(
+      `
+      INSERT INTO messages
+      (sender,receiver,text,kind,created_at)
+      VALUES(?,?,?,?,?)
+      `,
+      sender,
+      receiver,
+      text,
+      "text",
+      now
+    );
+
+    const packet = {
+      type:"message",
+      from:sender,
+      sender:sender,
+      to:receiver,
+      text:text,
+      kind:"text",
+      createdAt:now
+    };
+
+    this.sendToUser(
+      receiver,
+      packet
+    );
+
+    this.sendToUser(
+      sender,
+      packet
+    );
+
+  }
+
+  /* =======================================================
+     HISTORY
+  ======================================================= */
+
+  handleHistory(username,data){
+
+    const other =
+      String(data.with || "").trim();
+
+    if(!other) return;
+
+    const rows =
+      this.sql.exec(
+        `
+        SELECT
+          id,
+          sender,
+          receiver,
+          text,
+          kind,
+          file_id,
+          file_name,
+          created_at
+        FROM messages
+        WHERE
+          (sender=? AND receiver=?)
+          OR
+          (sender=? AND receiver=?)
+        ORDER BY created_at ASC
+        LIMIT 500
+        `,
+        username,
+        other,
+        other,
+        username
+      ).toArray();
+
+    const list =
+      rows.map(row=>({
+        id:row.id,
+        sender:row.sender,
+        receiver:row.receiver,
+        text:row.text || "",
+        kind:row.kind || "text",
+        fileId:row.file_id || "",
+        fileName:row.file_name || "",
+        createdAt:row.created_at
+      }));
+
+    this.sendToUser(
+      username,
+      {
+        type:"history",
+        with:other,
+        messages:list
+      }
+    );
+
+  }
+
+  /* =======================================================
+     CALL SIGNAL
+  ======================================================= */
+
+  handleCallSignal(sender,data){
+
+    const target =
+      String(data.to || "").trim();
+
+    if(!target) return;
+
+    const exists =
+      this.sql.exec(
+        "SELECT username FROM accounts WHERE username=?",
+        target
+      ).toArray();
+
+    if(!exists.length){
+
+      this.sendToUser(
+        sender,
+        {
+          type:"call_error",
+          error:"المستخدم غير موجود",
+          callId:data.callId || ""
+        }
+      );
+
+      return;
+
+    }
+
+    const sent =
+      this.sendToUser(
+        target,
+        Object.assign(
+          {},
+          data,
+          {
+            from:sender,
+            type:data.type
+          }
+        )
+      );
+
+    if(!sent &&
+       (
+         data.type === "call_offer"
+       )
     ){
 
-      for(
-        const socket of set
-      ){
+      this.sendToUser(
+        sender,
+        {
+          type:"call_error",
+          error:"المستخدم غير متصل حاليًا",
+          callId:data.callId || ""
+        }
+      );
 
-        this.sendSocket(
-          socket,
-          message
-        );
-      }
     }
+
   }
+
+  /* =======================================================
+     TOKEN
+  ======================================================= */
+
+  getUserFromToken(token){
+
+    if(!token) return null;
+
+    const rows =
+      this.sql.exec(
+        `
+        SELECT username
+        FROM sessions
+        WHERE token=?
+        `,
+        token
+      ).toArray();
+
+    if(!rows.length){
+      return null;
+    }
+
+    return rows[0].username;
+
+  }
+
 }
 
 /* =========================================================
-   PASSWORD HASHING
+   HELPERS
 ========================================================= */
+
+function json(data,status){
+
+  return new Response(
+    JSON.stringify(data),
+    {
+      status:status || 200,
+      headers:{
+        "Content-Type":
+          "application/json;charset=UTF-8"
+      }
+    }
+  );
+
+}
+
+function randomToken(){
+
+  const bytes =
+    new Uint8Array(32);
+
+  crypto.getRandomValues(bytes);
+
+  return Array.from(bytes)
+    .map(
+      b => b.toString(16).padStart(2,"0")
+    )
+    .join("");
+
+}
+
+function randomHex(length){
+
+  const bytes =
+    new Uint8Array(length);
+
+  crypto.getRandomValues(bytes);
+
+  return Array.from(bytes)
+    .map(
+      b => b.toString(16).padStart(2,"0")
+    )
+    .join("");
+
+}
 
 async function hashPassword(
   password,
   saltHex
 ){
 
-  const encoder =
-    new TextEncoder();
+  const salt =
+    hexToBytes(saltHex);
 
-  const keyMaterial =
+  const key =
     await crypto.subtle.importKey(
       "raw",
-      encoder.encode(password),
-      {
-        name:"PBKDF2"
-      },
+      new TextEncoder().encode(password),
+      "PBKDF2",
       false,
-      [
-        "deriveBits"
-      ]
-    );
-
-  const salt =
-    hexToBytes(
-      saltHex
+      ["deriveBits"]
     );
 
   const bits =
@@ -5116,55 +3721,14 @@ async function hashPassword(
         iterations:100000,
         hash:"SHA-256"
       },
-      keyMaterial,
+      key,
       256
     );
 
   return bytesToHex(
     new Uint8Array(bits)
   );
-}
 
-/* =========================================================
-   RANDOM
-========================================================= */
-
-function randomBytes(length){
-
-  const bytes =
-    new Uint8Array(length);
-
-  crypto.getRandomValues(
-    bytes
-  );
-
-  return bytes;
-}
-
-function randomToken(){
-
-  return bytesToHex(
-    randomBytes(32)
-  );
-}
-
-function bytesToHex(bytes){
-
-  let result = "";
-
-  for(
-    let i = 0;
-    i < bytes.length;
-    i++
-  ){
-
-    result +=
-      bytes[i]
-        .toString(16)
-        .padStart(2,"0");
-  }
-
-  return result;
 }
 
 function hexToBytes(hex){
@@ -5175,20 +3739,29 @@ function hexToBytes(hex){
     );
 
   for(
-    let i = 0;
-    i < bytes.length;
+    let i=0;
+    i<bytes.length;
     i++
   ){
 
     bytes[i] =
       parseInt(
-        hex.substr(
-          i * 2,
-          2
-        ),
+        hex.substr(i * 2,2),
         16
       );
+
   }
 
   return bytes;
+
 }
+
+function bytesToHex(bytes){
+
+  return Array.from(bytes)
+    .map(
+      b => b.toString(16).padStart(2,"0")
+    )
+    .join("");
+
+   }
