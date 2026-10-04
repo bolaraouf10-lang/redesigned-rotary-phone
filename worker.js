@@ -112,20 +112,32 @@ button,input{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:0 14px;
+  padding:0 10px;
 }
 
 .sidebar-header strong{
   font-size:19px;
 }
 
-.logout{
+.header-buttons{
+  display:flex;
+  gap:5px;
+}
+
+.header-btn{
   border:0;
-  background:#d9534f;
   color:white;
-  padding:8px 11px;
+  padding:8px 10px;
   border-radius:8px;
   cursor:pointer;
+}
+
+.settings-btn{
+  background:#128c7e;
+}
+
+.logout{
+  background:#d9534f;
 }
 
 #users{
@@ -351,7 +363,64 @@ button,input{
   color:white;
 }
 
-/* Call screen */
+/* =========================
+   SETTINGS
+========================= */
+
+.settings-overlay{
+  position:fixed;
+  inset:0;
+  z-index:3000;
+  background:rgba(0,0,0,.65);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.settings-box{
+  width:100%;
+  max-width:400px;
+  background:white;
+  border-radius:18px;
+  padding:22px;
+}
+
+.settings-box h2{
+  margin-top:0;
+}
+
+.settings-user{
+  background:#f1f1f1;
+  padding:13px;
+  border-radius:10px;
+  margin:12px 0 18px;
+}
+
+.close-settings{
+  width:100%;
+  padding:12px;
+  border:0;
+  border-radius:10px;
+  background:#ddd;
+  cursor:pointer;
+  margin-top:8px;
+}
+
+.delete-account{
+  width:100%;
+  padding:13px;
+  border:0;
+  border-radius:10px;
+  background:#d32f2f;
+  color:white;
+  cursor:pointer;
+  font-size:15px;
+}
+
+/* =========================
+   CALL
+========================= */
 
 .call-screen{
   position:fixed;
@@ -438,10 +507,6 @@ button,input{
   background:#e53935;
 }
 
-.call-control.off{
-  background:#555;
-}
-
 .incoming{
   position:fixed;
   inset:0;
@@ -515,6 +580,15 @@ button,input{
   .msg{
     max-width:85%;
   }
+
+  .header-buttons{
+    gap:2px;
+  }
+
+  .header-btn{
+    padding:7px 6px;
+    font-size:11px;
+  }
 }
 
 @media(max-width:430px){
@@ -541,93 +615,228 @@ button,input{
 
 <body>
 
+<!-- AUTH -->
+
 <div id="auth" class="auth">
   <div class="auth-box">
+
     <h2 id="authTitle">إنشاء حساب</h2>
 
-    <input id="username" autocomplete="username" placeholder="اسم المستخدم">
-    <input id="password" type="password" autocomplete="current-password" placeholder="كلمة المرور">
+    <input
+      id="username"
+      autocomplete="username"
+      placeholder="اسم المستخدم"
+    >
 
-    <button id="authButton">إنشاء الحساب</button>
+    <input
+      id="password"
+      type="password"
+      autocomplete="current-password"
+      placeholder="كلمة المرور"
+    >
+
+    <button id="authButton">
+      إنشاء الحساب
+    </button>
 
     <div id="switchAuth" class="switch">
       عندك حساب؟ تسجيل الدخول
     </div>
 
     <div id="error"></div>
+
   </div>
 </div>
 
+<!-- APP -->
+
 <div id="app">
+
   <div class="layout">
 
     <aside class="sidebar">
+
       <div class="sidebar-header">
+
         <strong>المستخدمون</strong>
-        <button id="logoutBtn" class="logout">خروج</button>
+
+        <div class="header-buttons">
+
+          <button
+            id="settingsBtn"
+            class="header-btn settings-btn"
+            title="الإعدادات"
+          >
+            ⚙️
+          </button>
+
+          <button
+            id="logoutBtn"
+            class="header-btn logout"
+          >
+            خروج
+          </button>
+
+        </div>
+
       </div>
 
       <div id="users"></div>
+
     </aside>
 
     <main class="chat">
 
       <div class="chat-header">
 
-        <div id="chatAvatar" class="avatar">?</div>
+        <div id="chatAvatar" class="avatar">
+          ?
+        </div>
 
         <div class="chat-head-info">
-          <div id="chatTitle" class="chat-title">اختر مستخدمًا</div>
+
+          <div id="chatTitle" class="chat-title">
+            اختر مستخدمًا
+          </div>
+
           <div id="chatStatus" class="chat-status"></div>
+
         </div>
 
         <div class="call-buttons">
-          <button id="voiceCallBtn" class="call-btn" title="مكالمة صوتية">📞</button>
-          <button id="videoCallBtn" class="call-btn" title="مكالمة فيديو">📹</button>
+
+          <button
+            id="voiceCallBtn"
+            class="call-btn"
+            title="مكالمة صوتية"
+          >
+            📞
+          </button>
+
+          <button
+            id="videoCallBtn"
+            class="call-btn"
+            title="مكالمة فيديو"
+          >
+            📹
+          </button>
+
         </div>
 
       </div>
 
       <div id="messages" class="messages">
-        <div class="empty">اختر مستخدمًا لبدء المحادثة</div>
+        <div class="empty">
+          اختر مستخدمًا لبدء المحادثة
+        </div>
       </div>
 
       <div id="typing" class="typing"></div>
 
       <div class="composer">
-        <button id="recordBtn" class="action-btn record" title="تسجيل صوتي">🎙️</button>
 
-        <input id="messageInput" placeholder="اكتب رسالة..." autocomplete="off">
+        <button
+          id="recordBtn"
+          class="action-btn record"
+          title="تسجيل صوتي"
+        >
+          🎙️
+        </button>
 
-        <button id="sendBtn" class="action-btn send">➤</button>
+        <input
+          id="messageInput"
+          placeholder="اكتب رسالة..."
+          autocomplete="off"
+        >
+
+        <button
+          id="sendBtn"
+          class="action-btn send"
+        >
+          ➤
+        </button>
+
       </div>
 
     </main>
 
   </div>
+
 </div>
 
-<!-- Incoming call -->
+<!-- SETTINGS -->
+
+<div id="settingsOverlay" class="settings-overlay">
+
+  <div class="settings-box">
+
+    <h2>⚙️ الإعدادات</h2>
+
+    <div id="settingsUser" class="settings-user"></div>
+
+    <button
+      id="deleteAccountBtn"
+      class="delete-account"
+    >
+      🗑️ إغلاق الحساب نهائيًا
+    </button>
+
+    <button
+      id="closeSettingsBtn"
+      class="close-settings"
+    >
+      إغلاق
+    </button>
+
+  </div>
+
+</div>
+
+<!-- INCOMING CALL -->
+
 <div id="incomingCall" class="incoming">
 
   <div class="incoming-box">
 
-    <div id="incomingAvatar" class="incoming-avatar">?</div>
+    <div
+      id="incomingAvatar"
+      class="incoming-avatar"
+    >
+      ?
+    </div>
 
-    <h3 id="incomingName">مكالمة واردة</h3>
+    <h3 id="incomingName">
+      مكالمة واردة
+    </h3>
 
-    <p id="incomingType">مكالمة صوتية واردة</p>
+    <p id="incomingType">
+      مكالمة صوتية واردة
+    </p>
 
     <div class="incoming-buttons">
-      <button id="acceptCallBtn" class="accept">قبول</button>
-      <button id="rejectCallBtn" class="reject">رفض</button>
+
+      <button
+        id="acceptCallBtn"
+        class="accept"
+      >
+        قبول
+      </button>
+
+      <button
+        id="rejectCallBtn"
+        class="reject"
+      >
+        رفض
+      </button>
+
     </div>
 
   </div>
 
 </div>
 
-<!-- Active call -->
+<!-- ACTIVE CALL -->
+
 <div id="callScreen" class="call-screen">
 
   <div id="callTop" class="call-top">
@@ -636,25 +845,51 @@ button,input{
 
   <div class="video-area">
 
-    <div id="callAvatar" class="call-avatar">?</div>
+    <div
+      id="callAvatar"
+      class="call-avatar"
+    >
+      ?
+    </div>
 
-    <video id="remoteVideo" autoplay playsinline></video>
+    <video
+      id="remoteVideo"
+      autoplay
+      playsinline
+    ></video>
 
-    <video id="localVideo" autoplay muted playsinline></video>
+    <video
+      id="localVideo"
+      autoplay
+      muted
+      playsinline
+    ></video>
 
   </div>
 
   <div class="call-controls">
 
-    <button id="muteBtn" class="call-control" title="كتم الميكروفون">
+    <button
+      id="muteBtn"
+      class="call-control"
+      title="كتم الميكروفون"
+    >
       🎙️
     </button>
 
-    <button id="cameraBtn" class="call-control" title="الكاميرا">
+    <button
+      id="cameraBtn"
+      class="call-control"
+      title="الكاميرا"
+    >
       📹
     </button>
 
-    <button id="endCallBtn" class="call-control end" title="إنهاء المكالمة">
+    <button
+      id="endCallBtn"
+      class="call-control end"
+      title="إنهاء المكالمة"
+    >
       ☎
     </button>
 
@@ -662,7 +897,11 @@ button,input{
 
 </div>
 
-<audio id="remoteAudio" autoplay playsinline></audio>
+<audio
+  id="remoteAudio"
+  autoplay
+  playsinline
+></audio>
 
 <script>
 let token = localStorage.getItem("chat_token") || "";
@@ -679,9 +918,7 @@ let mediaRecorder = null;
 let audioChunks = [];
 let isRecording = false;
 
-/* =========================
-   CALL VARIABLES
-========================= */
+/* CALL */
 
 let peerConnection = null;
 let localStream = null;
@@ -700,6 +937,8 @@ let pendingCandidates = [];
 
 let microphoneEnabled = true;
 let cameraEnabled = true;
+
+/* DOM */
 
 const auth = document.getElementById("auth");
 const app = document.getElementById("app");
@@ -726,6 +965,12 @@ const recordBtn = document.getElementById("recordBtn");
 
 const voiceCallBtn = document.getElementById("voiceCallBtn");
 const videoCallBtn = document.getElementById("videoCallBtn");
+
+const settingsBtn = document.getElementById("settingsBtn");
+const settingsOverlay = document.getElementById("settingsOverlay");
+const settingsUser = document.getElementById("settingsUser");
+const closeSettingsBtn = document.getElementById("closeSettingsBtn");
+const deleteAccountBtn = document.getElementById("deleteAccountBtn");
 
 const incomingCall = document.getElementById("incomingCall");
 const incomingAvatar = document.getElementById("incomingAvatar");
@@ -755,37 +1000,82 @@ function showError(text){
   errorBox.textContent = text || "";
 }
 
-function escapeHtml(value){
-  return String(value)
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-}
-
 function firstLetter(name){
   return String(name || "?").charAt(0).toUpperCase();
 }
 
 function sendWS(data){
+
   if(!ws || ws.readyState !== WebSocket.OPEN){
     return false;
   }
 
-  ws.send(JSON.stringify(data));
-  return true;
+  try{
+    ws.send(JSON.stringify(data));
+    return true;
+  }catch(e){
+    return false;
+  }
 }
 
 function formatTime(timestamp){
+
   try{
-    return new Date(timestamp).toLocaleTimeString("ar-EG",{
-      hour:"2-digit",
-      minute:"2-digit"
-    });
+
+    return new Date(timestamp).toLocaleTimeString(
+      "ar-EG",
+      {
+        hour:"2-digit",
+        minute:"2-digit"
+      }
+    );
+
   }catch(e){
+
     return "";
   }
+}
+
+/* =========================
+   WAIT FOR WEBSOCKET
+========================= */
+
+function waitForWebSocket(timeout){
+
+  return new Promise(function(resolve){
+
+    const start = Date.now();
+
+    function check(){
+
+      if(
+        ws &&
+        ws.readyState === WebSocket.OPEN
+      ){
+
+        resolve(true);
+        return;
+      }
+
+      if(Date.now() - start >= timeout){
+
+        resolve(false);
+        return;
+      }
+
+      if(
+        !ws ||
+        ws.readyState === WebSocket.CLOSED
+      ){
+
+        connectWS();
+      }
+
+      setTimeout(check,100);
+    }
+
+    check();
+  });
 }
 
 /* =========================
@@ -793,16 +1083,22 @@ function formatTime(timestamp){
 ========================= */
 
 switchAuth.onclick = function(){
+
   registerMode = !registerMode;
 
   if(registerMode){
+
     authTitle.textContent = "إنشاء حساب";
     authButton.textContent = "إنشاء الحساب";
-    switchAuth.textContent = "عندك حساب؟ تسجيل الدخول";
+    switchAuth.textContent =
+      "عندك حساب؟ تسجيل الدخول";
+
   }else{
+
     authTitle.textContent = "تسجيل الدخول";
     authButton.textContent = "تسجيل الدخول";
-    switchAuth.textContent = "مفيش حساب؟ إنشاء حساب";
+    switchAuth.textContent =
+      "مفيش حساب؟ إنشاء حساب";
   }
 
   showError("");
@@ -810,11 +1106,18 @@ switchAuth.onclick = function(){
 
 authButton.onclick = async function(){
 
-  const username = usernameInput.value.trim();
-  const password = passwordInput.value;
+  const username =
+    usernameInput.value.trim();
+
+  const password =
+    passwordInput.value;
 
   if(!username || !password){
-    showError("اكتب اسم المستخدم وكلمة المرور");
+
+    showError(
+      "اكتب اسم المستخدم وكلمة المرور"
+    );
+
     return;
   }
 
@@ -822,44 +1125,64 @@ authButton.onclick = async function(){
 
   try{
 
-    const endpoint = registerMode
-      ? "/api/register"
-      : "/api/login";
+    const endpoint =
+      registerMode
+        ? "/api/register"
+        : "/api/login";
 
-    const response = await fetch(endpoint,{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify({
-        username,
-        password
-      })
-    });
+    const response =
+      await fetch(
+        endpoint,
+        {
+          method:"POST",
+          headers:{
+            "Content-Type":"application/json"
+          },
+          body:JSON.stringify({
+            username,
+            password
+          })
+        }
+      );
 
-    const data = await response.json();
+    const data =
+      await response.json();
 
     if(!response.ok){
-      throw new Error(data.error || "حدث خطأ");
+
+      throw new Error(
+        data.error || "حدث خطأ"
+      );
     }
 
     token = data.token;
-    currentUser = data.username || username;
+    currentUser =
+      data.username || username;
 
-    localStorage.setItem("chat_token",token);
+    localStorage.setItem(
+      "chat_token",
+      token
+    );
 
     usernameInput.value = "";
     passwordInput.value = "";
+
     showError("");
 
     auth.style.display = "none";
     app.style.display = "block";
 
+    updateSettings();
+
     await loadUsers();
+
     connectWS();
 
   }catch(error){
-    showError(error.message || "حدث خطأ");
+
+    showError(
+      error.message || "حدث خطأ"
+    );
   }
 };
 
@@ -870,32 +1193,42 @@ authButton.onclick = async function(){
 async function showApp(){
 
   if(!token){
+
     auth.style.display = "flex";
     app.style.display = "none";
+
     return;
   }
 
   try{
 
-    const response = await fetch(
-      "/api/me?token=" + encodeURIComponent(token),
-      {
-        cache:"no-store"
-      }
-    );
+    const response =
+      await fetch(
+        "/api/me?token=" +
+        encodeURIComponent(token),
+        {
+          cache:"no-store"
+        }
+      );
 
     if(!response.ok){
+
       throw new Error("invalid");
     }
 
-    const data = await response.json();
+    const data =
+      await response.json();
 
-    currentUser = data.username;
+    currentUser =
+      data.username;
 
     auth.style.display = "none";
     app.style.display = "block";
 
+    updateSettings();
+
     await loadUsers();
+
     connectWS();
 
   }catch(error){
@@ -903,7 +1236,9 @@ async function showApp(){
     token = "";
     currentUser = "";
 
-    localStorage.removeItem("chat_token");
+    localStorage.removeItem(
+      "chat_token"
+    );
 
     auth.style.display = "flex";
     app.style.display = "none";
@@ -911,25 +1246,170 @@ async function showApp(){
 }
 
 /* =========================
+   SETTINGS
+========================= */
+
+function updateSettings(){
+
+  settingsUser.textContent =
+    "الحساب الحالي: " +
+    (currentUser || "");
+}
+
+settingsBtn.onclick = function(){
+
+  updateSettings();
+
+  settingsOverlay.style.display =
+    "flex";
+};
+
+closeSettingsBtn.onclick = function(){
+
+  settingsOverlay.style.display =
+    "none";
+};
+
+settingsOverlay.addEventListener(
+  "click",
+  function(event){
+
+    if(event.target === settingsOverlay){
+
+      settingsOverlay.style.display =
+        "none";
+    }
+  }
+);
+
+/* =========================
+   DELETE ACCOUNT
+========================= */
+
+deleteAccountBtn.onclick = async function(){
+
+  if(!token){
+    return;
+  }
+
+  const answer =
+    confirm(
+      "هل أنت متأكد؟ سيتم حذف حسابك ورسائلك وجلساتك نهائيًا ولا يمكن التراجع."
+    );
+
+  if(!answer){
+    return;
+  }
+
+  deleteAccountBtn.disabled = true;
+  deleteAccountBtn.textContent =
+    "جاري حذف الحساب...";
+
+  try{
+
+    const response =
+      await fetch(
+        "/api/delete-account",
+        {
+          method:"POST",
+          headers:{
+            "Content-Type":"application/json"
+          },
+          body:JSON.stringify({
+            token
+          })
+        }
+      );
+
+    const data =
+      await response.json();
+
+    if(!response.ok){
+
+      throw new Error(
+        data.error ||
+        "تعذر حذف الحساب"
+      );
+    }
+
+    endCall(false);
+
+    if(ws){
+
+      try{
+        ws.close();
+      }catch(e){}
+
+    }
+
+    ws = null;
+
+    token = "";
+    currentUser = "";
+    selectedUser = "";
+
+    localStorage.removeItem(
+      "chat_token"
+    );
+
+    settingsOverlay.style.display =
+      "none";
+
+    app.style.display = "none";
+    auth.style.display = "flex";
+
+    messagesBox.innerHTML =
+      '<div class="empty">اختر مستخدمًا لبدء المحادثة</div>';
+
+    chatTitle.textContent =
+      "اختر مستخدمًا";
+
+    chatStatus.textContent = "";
+
+    chatAvatar.textContent = "?";
+
+    alert("تم إغلاق الحساب نهائيًا.");
+
+  }catch(error){
+
+    alert(
+      error.message ||
+      "تعذر حذف الحساب"
+    );
+
+  }finally{
+
+    deleteAccountBtn.disabled = false;
+
+    deleteAccountBtn.textContent =
+      "🗑️ إغلاق الحساب نهائيًا";
+  }
+};
+
+/* =========================
    LOGOUT
 ========================= */
 
-document.getElementById("logoutBtn").onclick = async function(){
+document.getElementById(
+  "logoutBtn"
+).onclick = async function(){
 
   try{
 
     if(token){
 
-      await fetch("/api/logout",{
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify({
-          token
-        })
-      });
-
+      await fetch(
+        "/api/logout",
+        {
+          method:"POST",
+          headers:{
+            "Content-Type":"application/json"
+          },
+          body:JSON.stringify({
+            token
+          })
+        }
+      );
     }
 
   }catch(e){}
@@ -937,9 +1417,11 @@ document.getElementById("logoutBtn").onclick = async function(){
   endCall(false);
 
   if(ws){
+
     try{
       ws.close();
     }catch(e){}
+
   }
 
   ws = null;
@@ -948,7 +1430,9 @@ document.getElementById("logoutBtn").onclick = async function(){
   currentUser = "";
   selectedUser = "";
 
-  localStorage.removeItem("chat_token");
+  localStorage.removeItem(
+    "chat_token"
+  );
 
   app.style.display = "none";
   auth.style.display = "flex";
@@ -956,8 +1440,11 @@ document.getElementById("logoutBtn").onclick = async function(){
   messagesBox.innerHTML =
     '<div class="empty">اختر مستخدمًا لبدء المحادثة</div>';
 
-  chatTitle.textContent = "اختر مستخدمًا";
+  chatTitle.textContent =
+    "اختر مستخدمًا";
+
   chatStatus.textContent = "";
+
   chatAvatar.textContent = "?";
 };
 
@@ -967,24 +1454,34 @@ document.getElementById("logoutBtn").onclick = async function(){
 
 async function loadUsers(){
 
-  if(!token) return;
+  if(!token){
+    return;
+  }
 
   try{
 
-    const response = await fetch(
-      "/api/users?token=" + encodeURIComponent(token),
-      {
-        cache:"no-store"
-      }
-    );
+    const response =
+      await fetch(
+        "/api/users?token=" +
+        encodeURIComponent(token),
+        {
+          cache:"no-store"
+        }
+      );
 
     if(response.status === 401){
+
       return;
     }
 
-    const data = await response.json();
+    const data =
+      await response.json();
 
-    renderUsers(Array.isArray(data.users) ? data.users : []);
+    renderUsers(
+      Array.isArray(data.users)
+        ? data.users
+        : []
+    );
 
   }catch(error){
 
@@ -994,13 +1491,20 @@ async function loadUsers(){
 
 function renderUsers(list){
 
-  const users = Array.isArray(list) ? list.slice() : [];
+  const users =
+    Array.isArray(list)
+      ? list.slice()
+      : [];
 
-  const foundCurrent = users.some(function(user){
-    return user.username === currentUser;
-  });
+  const foundCurrent =
+    users.some(function(user){
+      return user.username === currentUser;
+    });
 
-  if(currentUser && !foundCurrent){
+  if(
+    currentUser &&
+    !foundCurrent
+  ){
 
     users.unshift({
       username:currentUser,
@@ -1010,8 +1514,13 @@ function renderUsers(list){
 
   users.sort(function(a,b){
 
-    if(a.username === currentUser) return -1;
-    if(b.username === currentUser) return 1;
+    if(a.username === currentUser){
+      return -1;
+    }
+
+    if(b.username === currentUser){
+      return 1;
+    }
 
     return String(a.username).localeCompare(
       String(b.username),
@@ -1031,46 +1540,62 @@ function renderUsers(list){
 
   users.forEach(function(user){
 
-    const row = document.createElement("div");
+    const row =
+      document.createElement("div");
+
     row.className = "user";
 
     if(user.username === currentUser){
+
       row.classList.add("self");
     }
 
-    const avatar = document.createElement("div");
-    avatar.className = "avatar";
-    avatar.textContent = firstLetter(user.username);
+    const avatar =
+      document.createElement("div");
 
-    const info = document.createElement("div");
+    avatar.className = "avatar";
+    avatar.textContent =
+      firstLetter(user.username);
+
+    const info =
+      document.createElement("div");
+
     info.className = "user-info";
 
-    const name = document.createElement("div");
+    const name =
+      document.createElement("div");
+
     name.className = "username";
 
+    name.textContent =
+      user.username === currentUser
+        ? user.username + " (أنت)"
+        : user.username;
+
+    const status =
+      document.createElement("div");
+
     if(user.username === currentUser){
-      name.textContent = user.username + " (أنت)";
-    }else{
-      name.textContent = user.username;
-    }
 
-    const status = document.createElement("div");
+      status.className =
+        "status online";
 
-    if(user.username === currentUser){
-
-      status.className = "status online";
       status.innerHTML =
         '<span class="dot online-dot"></span>أنت متصل الآن';
 
     }else if(user.online){
 
-      status.className = "status online";
+      status.className =
+        "status online";
+
       status.innerHTML =
         '<span class="dot online-dot"></span>متصل الآن';
 
     }else{
 
-      status.className = "status";
+      status.className =
+        "status";
+
       status.innerHTML =
         '<span class="dot offline-dot"></span>غير متصل';
     }
@@ -1084,9 +1609,12 @@ function renderUsers(list){
     if(user.username !== currentUser){
 
       row.onclick = function(){
-        selectUser(user.username,user.online);
-      };
 
+        selectUser(
+          user.username,
+          user.online
+        );
+      };
     }
 
     usersBox.appendChild(row);
@@ -1101,11 +1629,16 @@ function selectUser(username,online){
 
   selectedUser = username;
 
-  chatAvatar.textContent = firstLetter(username);
-  chatTitle.textContent = username;
+  chatAvatar.textContent =
+    firstLetter(username);
+
+  chatTitle.textContent =
+    username;
 
   chatStatus.textContent =
-    online ? "متصل الآن" : "غير متصل";
+    online
+      ? "متصل الآن"
+      : "غير متصل";
 
   messagesBox.innerHTML =
     '<div class="empty">جاري تحميل الرسائل...</div>';
@@ -1124,12 +1657,18 @@ function selectUser(username,online){
 
 function connectWS(){
 
-  if(!token) return;
+  if(!token){
+    return;
+  }
 
-  if(ws && (
-    ws.readyState === WebSocket.OPEN ||
-    ws.readyState === WebSocket.CONNECTING
-  )){
+  if(
+    ws &&
+    (
+      ws.readyState === WebSocket.OPEN ||
+      ws.readyState === WebSocket.CONNECTING
+    )
+  ){
+
     return;
   }
 
@@ -1138,13 +1677,14 @@ function connectWS(){
       ? "wss:"
       : "ws:";
 
-  ws = new WebSocket(
-    protocol +
-    "//" +
-    location.host +
-    "/ws?token=" +
-    encodeURIComponent(token)
-  );
+  ws =
+    new WebSocket(
+      protocol +
+      "//" +
+      location.host +
+      "/ws?token=" +
+      encodeURIComponent(token)
+    );
 
   ws.onopen = function(){
 
@@ -1165,7 +1705,8 @@ function connectWS(){
 
     try{
 
-      const data = JSON.parse(event.data);
+      const data =
+        JSON.parse(event.data);
 
       handleWSMessage(data);
 
@@ -1181,11 +1722,17 @@ function connectWS(){
 
     if(token){
 
-      clearTimeout(reconnectTimer);
+      clearTimeout(
+        reconnectTimer
+      );
 
-      reconnectTimer = setTimeout(function(){
-        connectWS();
-      },1500);
+      reconnectTimer =
+        setTimeout(
+          function(){
+            connectWS();
+          },
+          1000
+        );
     }
   };
 
@@ -1193,7 +1740,7 @@ function connectWS(){
 }
 
 /* =========================
-   WEBSOCKET MESSAGES
+   WS MESSAGES
 ========================= */
 
 function handleWSMessage(data){
@@ -1226,7 +1773,10 @@ function handleWSMessage(data){
 
   if(data.type === "history"){
 
-    renderHistory(data.messages || []);
+    renderHistory(
+      data.messages || []
+    );
+
     return;
   }
 
@@ -1234,15 +1784,10 @@ function handleWSMessage(data){
 
     if(data.from === selectedUser){
 
-      if(data.typing){
-
-        typingBox.textContent =
-          data.from + " يكتب...";
-
-      }else{
-
-        typingBox.textContent = "";
-      }
+      typingBox.textContent =
+        data.typing
+          ? data.from + " يكتب..."
+          : "";
     }
 
     return;
@@ -1251,22 +1796,23 @@ function handleWSMessage(data){
   if(data.type === "users_changed"){
 
     loadUsers();
+
     return;
   }
-
-  /* =========================
-     CALL SIGNAL
-  ========================= */
 
   if(data.type === "call_signal"){
 
     handleCallSignal(data);
+
     return;
   }
 
   if(data.type === "call_error"){
 
-    alert(data.error || "تعذر تنفيذ المكالمة");
+    alert(
+      data.error ||
+      "تعذر تنفيذ المكالمة"
+    );
 
     if(
       data.callId &&
@@ -1281,67 +1827,104 @@ function handleWSMessage(data){
 }
 
 /* =========================
-   TEXT MESSAGE
+   TEXT
 ========================= */
 
 function addTextMessage(data){
 
-  if(messagesBox.querySelector(".empty")){
+  if(
+    messagesBox.querySelector(".empty")
+  ){
+
     messagesBox.innerHTML = "";
   }
 
-  const div = document.createElement("div");
+  const div =
+    document.createElement("div");
 
   div.className =
     "msg " +
-    (data.sender === currentUser ? "mine" : "theirs");
+    (
+      data.sender === currentUser
+        ? "mine"
+        : "theirs"
+    );
 
-  const text = document.createElement("div");
-  text.textContent = data.text || "";
+  const text =
+    document.createElement("div");
 
-  const time = document.createElement("span");
-  time.className = "msg-time";
-  time.textContent = formatTime(data.created_at);
+  text.textContent =
+    data.text || "";
+
+  const time =
+    document.createElement("span");
+
+  time.className =
+    "msg-time";
+
+  time.textContent =
+    formatTime(
+      data.created_at
+    );
 
   div.appendChild(text);
   div.appendChild(time);
 
   messagesBox.appendChild(div);
 
-  messagesBox.scrollTop = messagesBox.scrollHeight;
+  messagesBox.scrollTop =
+    messagesBox.scrollHeight;
 }
 
 /* =========================
-   VOICE MESSAGE
+   VOICE
 ========================= */
 
 function addVoiceMessage(data){
 
-  if(messagesBox.querySelector(".empty")){
+  if(
+    messagesBox.querySelector(".empty")
+  ){
+
     messagesBox.innerHTML = "";
   }
 
-  const div = document.createElement("div");
+  const div =
+    document.createElement("div");
 
   div.className =
     "msg " +
-    (data.sender === currentUser ? "mine" : "theirs");
+    (
+      data.sender === currentUser
+        ? "mine"
+        : "theirs"
+    );
 
-  const audio = document.createElement("audio");
+  const audio =
+    document.createElement("audio");
 
   audio.controls = true;
-  audio.src = data.audio_data || "";
+  audio.src =
+    data.audio_data || "";
 
-  const time = document.createElement("span");
-  time.className = "msg-time";
-  time.textContent = formatTime(data.created_at);
+  const time =
+    document.createElement("span");
+
+  time.className =
+    "msg-time";
+
+  time.textContent =
+    formatTime(
+      data.created_at
+    );
 
   div.appendChild(audio);
   div.appendChild(time);
 
   messagesBox.appendChild(div);
 
-  messagesBox.scrollTop = messagesBox.scrollHeight;
+  messagesBox.scrollTop =
+    messagesBox.scrollHeight;
 }
 
 /* =========================
@@ -1362,7 +1945,9 @@ function renderHistory(messages){
 
   messages.forEach(function(message){
 
-    if(message.message_type === "voice"){
+    if(
+      message.message_type === "voice"
+    ){
 
       addVoiceMessage(message);
 
@@ -1372,7 +1957,8 @@ function renderHistory(messages){
     }
   });
 
-  messagesBox.scrollTop = messagesBox.scrollHeight;
+  messagesBox.scrollTop =
+    messagesBox.scrollHeight;
 }
 
 /* =========================
@@ -1381,7 +1967,8 @@ function renderHistory(messages){
 
 function sendMessage(){
 
-  const text = messageInput.value.trim();
+  const text =
+    messageInput.value.trim();
 
   if(!text || !selectedUser){
     return;
@@ -1392,7 +1979,9 @@ function sendMessage(){
     to:selectedUser,
     text:text
   })){
+
     alert("الاتصال غير جاهز");
+
     return;
   }
 
@@ -1405,236 +1994,331 @@ function sendMessage(){
   });
 }
 
-sendBtn.onclick = sendMessage;
+sendBtn.onclick =
+  sendMessage;
 
-messageInput.addEventListener("keydown",function(event){
+messageInput.addEventListener(
+  "keydown",
+  function(event){
 
-  if(event.key === "Enter"){
+    if(event.key === "Enter"){
 
-    event.preventDefault();
-    sendMessage();
+      event.preventDefault();
 
-    return;
-  }
+      sendMessage();
 
-  if(selectedUser){
+      return;
+    }
 
-    sendWS({
-      type:"typing",
-      to:selectedUser,
-      typing:true
-    });
-
-    clearTimeout(typingTimer);
-
-    typingTimer = setTimeout(function(){
+    if(selectedUser){
 
       sendWS({
         type:"typing",
         to:selectedUser,
-        typing:false
+        typing:true
       });
 
-    },900);
+      clearTimeout(
+        typingTimer
+      );
+
+      typingTimer =
+        setTimeout(
+          function(){
+
+            sendWS({
+              type:"typing",
+              to:selectedUser,
+              typing:false
+            });
+
+          },
+          900
+        );
+    }
   }
-});
+);
 
 /* =========================
-   VOICE RECORDING
+   VOICE RECORD
 ========================= */
 
-recordBtn.onclick = async function(){
+recordBtn.onclick =
+  async function(){
 
-  if(!selectedUser){
-    alert("اختر مستخدمًا أولًا");
-    return;
-  }
+    if(!selectedUser){
 
-  if(isRecording){
+      alert(
+        "اختر مستخدمًا أولًا"
+      );
+
+      return;
+    }
+
+    if(isRecording){
+
+      try{
+        mediaRecorder.stop();
+      }catch(e){}
+
+      return;
+    }
 
     try{
-      mediaRecorder.stop();
-    }catch(e){}
 
-    return;
-  }
+      const stream =
+        await navigator.mediaDevices
+          .getUserMedia({
+            audio:true
+          });
 
-  try{
+      audioChunks = [];
 
-    const stream =
-      await navigator.mediaDevices.getUserMedia({
-        audio:true
-      });
+      mediaRecorder =
+        new MediaRecorder(stream);
 
-    audioChunks = [];
+      mediaRecorder.ondataavailable =
+        function(event){
 
-    mediaRecorder =
-      new MediaRecorder(stream);
+          if(
+            event.data &&
+            event.data.size > 0
+          ){
 
-    mediaRecorder.ondataavailable = function(event){
+            audioChunks.push(
+              event.data
+            );
+          }
+        };
 
-      if(event.data && event.data.size > 0){
-        audioChunks.push(event.data);
-      }
-    };
+      mediaRecorder.onstop =
+        async function(){
 
-    mediaRecorder.onstop = async function(){
+          isRecording = false;
 
-      isRecording = false;
+          recordBtn.classList.remove(
+            "recording"
+          );
 
-      recordBtn.classList.remove("recording");
-      recordBtn.textContent = "🎙️";
+          recordBtn.textContent =
+            "🎙️";
 
-      stream.getTracks().forEach(function(track){
-        track.stop();
-      });
+          stream.getTracks()
+            .forEach(function(track){
+              track.stop();
+            });
 
-      const blob =
-        new Blob(audioChunks,{
-          type:mediaRecorder.mimeType || "audio/webm"
-        });
+          const blob =
+            new Blob(
+              audioChunks,
+              {
+                type:
+                  mediaRecorder.mimeType ||
+                  "audio/webm"
+              }
+            );
 
-      if(blob.size > 2 * 1024 * 1024){
+          if(
+            blob.size >
+            2 * 1024 * 1024
+          ){
 
-        alert("الرسالة الصوتية كبيرة جدًا");
-        return;
-      }
+            alert(
+              "الرسالة الصوتية كبيرة جدًا"
+            );
 
-      const reader = new FileReader();
+            return;
+          }
 
-      reader.onload = function(){
+          const reader =
+            new FileReader();
 
-        sendWS({
-          type:"voice",
-          to:selectedUser,
-          audio_data:reader.result
-        });
-      };
+          reader.onload =
+            function(){
 
-      reader.readAsDataURL(blob);
-    };
+              sendWS({
+                type:"voice",
+                to:selectedUser,
+                audio_data:
+                  reader.result
+              });
+            };
 
-    mediaRecorder.start();
+          reader.readAsDataURL(blob);
+        };
 
-    isRecording = true;
+      mediaRecorder.start();
 
-    recordBtn.classList.add("recording");
-    recordBtn.textContent = "⏹️";
+      isRecording = true;
 
-  }catch(error){
+      recordBtn.classList.add(
+        "recording"
+      );
 
-    alert("اسمح للمتصفح باستخدام الميكروفون");
-  }
-};
+      recordBtn.textContent =
+        "⏹️";
+
+    }catch(error){
+
+      alert(
+        "اسمح للمتصفح باستخدام الميكروفون"
+      );
+    }
+  };
 
 /* =========================================================
-   WEBRTC CALLS
+   WEBRTC
 ========================================================= */
 
 function makeCallId(){
 
   return (
     Date.now().toString(36) +
-    Math.random().toString(36).slice(2)
+    Math.random()
+      .toString(36)
+      .slice(2)
   );
 }
 
 function createPeerConnection(){
 
-  const pc = new RTCPeerConnection({
-    iceServers:[
-      {
-        urls:"stun:stun.l.google.com:19302"
-      },
-      {
-        urls:"stun:stun1.l.google.com:19302"
-      }
-    ]
-  });
-
-  pc.onicecandidate = function(event){
-
-    if(event.candidate && callPartner){
-
-      sendWS({
-        type:"call_signal",
-        signalType:"candidate",
-        to:callPartner,
-        callId:callId,
-        candidate:event.candidate
-      });
-    }
-  };
-
-  pc.ontrack = function(event){
-
-    if(!remoteStream){
-      remoteStream = new MediaStream();
-    }
-
-    event.streams[0].getTracks().forEach(function(track){
-
-      const already =
-        remoteStream.getTracks().some(function(t){
-          return t.id === track.id;
-        });
-
-      if(!already){
-        remoteStream.addTrack(track);
-      }
+  const pc =
+    new RTCPeerConnection({
+      iceServers:[
+        {
+          urls:
+            "stun:stun.l.google.com:19302"
+        },
+        {
+          urls:
+            "stun:stun1.l.google.com:19302"
+        }
+      ]
     });
 
-    if(callType === "video"){
+  pc.onicecandidate =
+    function(event){
 
-      remoteVideo.srcObject = remoteStream;
-      remoteVideo.style.display = "block";
-      callAvatar.style.display = "none";
+      if(
+        event.candidate &&
+        callPartner
+      ){
 
-    }else{
+        sendWS({
+          type:"call_signal",
+          signalType:"candidate",
+          to:callPartner,
+          callId:callId,
+          callType:callType,
+          candidate:event.candidate
+        });
+      }
+    };
 
-      remoteAudio.srcObject = remoteStream;
+  pc.ontrack =
+    function(event){
 
-      remoteVideo.style.display = "none";
-      callAvatar.style.display = "flex";
+      if(!remoteStream){
 
-      remoteAudio.play().catch(function(){});
-    }
-  };
+        remoteStream =
+          new MediaStream();
+      }
 
-  pc.onconnectionstatechange = function(){
+      const tracks =
+        event.streams &&
+        event.streams[0]
+          ? event.streams[0].getTracks()
+          : [event.track];
 
-    const state = pc.connectionState;
+      tracks.forEach(
+        function(track){
 
-    if(state === "connected"){
+          const exists =
+            remoteStream
+              .getTracks()
+              .some(function(t){
+                return t.id === track.id;
+              });
 
-      callTop.textContent =
-        "متصل مع " + callPartner;
+          if(!exists){
 
-    }
-
-    if(
-      state === "failed" ||
-      state === "closed"
-    ){
-
-      endCall(false);
-    }
-
-    if(state === "disconnected"){
-
-      setTimeout(function(){
-
-        if(
-          peerConnection === pc &&
-          pc.connectionState === "disconnected"
-        ){
-
-          endCall(false);
+            remoteStream.addTrack(
+              track
+            );
+          }
         }
+      );
 
-      },5000);
-    }
-  };
+      if(callType === "video"){
+
+        remoteVideo.srcObject =
+          remoteStream;
+
+        remoteVideo.style.display =
+          "block";
+
+        callAvatar.style.display =
+          "none";
+
+        remoteVideo.play()
+          .catch(function(){});
+
+      }else{
+
+        remoteAudio.srcObject =
+          remoteStream;
+
+        remoteVideo.style.display =
+          "none";
+
+        callAvatar.style.display =
+          "flex";
+
+        remoteAudio.play()
+          .catch(function(){});
+      }
+    };
+
+  pc.onconnectionstatechange =
+    function(){
+
+      const state =
+        pc.connectionState;
+
+      if(state === "connected"){
+
+        callTop.textContent =
+          "متصل مع " +
+          callPartner;
+      }
+
+      if(
+        state === "failed" ||
+        state === "closed"
+      ){
+
+        endCall(false);
+      }
+
+      if(state === "disconnected"){
+
+        setTimeout(
+          function(){
+
+            if(
+              peerConnection === pc &&
+              pc.connectionState ===
+                "disconnected"
+            ){
+
+              endCall(false);
+            }
+
+          },
+          5000
+        );
+      }
+    };
 
   return pc;
 }
@@ -1642,6 +2326,7 @@ function createPeerConnection(){
 async function getLocalMedia(type){
 
   if(localStream){
+
     return localStream;
   }
 
@@ -1659,26 +2344,35 @@ async function getLocalMedia(type){
         };
 
   localStream =
-    await navigator.mediaDevices.getUserMedia(
-      constraints
-    );
+    await navigator.mediaDevices
+      .getUserMedia(
+        constraints
+      );
 
-  localStream.getTracks().forEach(function(track){
+  localStream
+    .getTracks()
+    .forEach(
+      function(track){
 
-    peerConnection.addTrack(
-      track,
-      localStream
+        peerConnection.addTrack(
+          track,
+          localStream
+        );
+      }
     );
-  });
 
   if(type === "video"){
 
-    localVideo.srcObject = localStream;
-    localVideo.style.display = "block";
+    localVideo.srcObject =
+      localStream;
+
+    localVideo.style.display =
+      "block";
 
   }else{
 
-    localVideo.style.display = "none";
+    localVideo.style.display =
+      "none";
   }
 
   return localStream;
@@ -1686,37 +2380,52 @@ async function getLocalMedia(type){
 
 function showCallScreen(){
 
-  callScreen.style.display = "flex";
+  callScreen.style.display =
+    "flex";
 
   callTop.textContent =
-    "جاري الاتصال بـ " + callPartner;
+    "جاري الاتصال بـ " +
+    callPartner;
 
   callAvatar.textContent =
     firstLetter(callPartner);
 
   if(callType === "video"){
 
-    remoteVideo.style.display = "block";
+    remoteVideo.style.display =
+      "block";
 
-    localVideo.style.display = "block";
+    localVideo.style.display =
+      "block";
 
-    callAvatar.style.display = "none";
+    callAvatar.style.display =
+      "none";
 
   }else{
 
-    remoteVideo.style.display = "none";
+    remoteVideo.style.display =
+      "none";
 
-    localVideo.style.display = "none";
+    localVideo.style.display =
+      "none";
 
-    callAvatar.style.display = "flex";
+    callAvatar.style.display =
+      "flex";
   }
 }
+
+/* =========================
+   START CALL
+========================= */
 
 async function startCall(type){
 
   if(!selectedUser){
 
-    alert("اختر مستخدمًا أولًا");
+    alert(
+      "اختر مستخدمًا أولًا"
+    );
+
     return;
   }
 
@@ -1725,48 +2434,75 @@ async function startCall(type){
     callPartner
   ){
 
-    alert("هناك مكالمة بالفعل");
+    alert(
+      "هناك مكالمة بالفعل"
+    );
+
     return;
   }
 
-  if(!ws || ws.readyState !== WebSocket.OPEN){
+  const ready =
+    await waitForWebSocket(5000);
 
-    alert("الاتصال بالخادم غير جاهز");
+  if(!ready){
+
+    alert(
+      "تعذر الاتصال بخادم الشات. حاول مرة أخرى."
+    );
+
     return;
   }
 
-  callPartner = selectedUser;
-  callType = type;
-  callId = makeCallId();
+  callPartner =
+    selectedUser;
+
+  callType =
+    type === "video"
+      ? "video"
+      : "audio";
+
+  callId =
+    makeCallId();
 
   try{
 
-    peerConnection = createPeerConnection();
+    peerConnection =
+      createPeerConnection();
 
-    await getLocalMedia(type);
+    await getLocalMedia(
+      callType
+    );
 
     const offer =
-      await peerConnection.createOffer();
+      await peerConnection
+        .createOffer();
 
-    await peerConnection.setLocalDescription(
-      offer
-    );
+    await peerConnection
+      .setLocalDescription(
+        offer
+      );
 
     showCallScreen();
 
-    const sent = sendWS({
-      type:"call_signal",
-      signalType:"offer",
-      to:callPartner,
-      callId:callId,
-      callType:callType,
-      sdp:peerConnection.localDescription
-    });
+    const sent =
+      sendWS({
+        type:"call_signal",
+        signalType:"offer",
+        to:callPartner,
+        callId:callId,
+        callType:callType,
+        sdp:
+          peerConnection
+            .localDescription
+      });
 
     if(!sent){
 
       endCall(false);
-      alert("تعذر إرسال المكالمة");
+
+      alert(
+        "تعذر إرسال المكالمة"
+      );
     }
 
   }catch(error){
@@ -1781,45 +2517,62 @@ async function startCall(type){
   }
 }
 
-voiceCallBtn.onclick = function(){
+voiceCallBtn.onclick =
+  function(){
 
-  if(peerConnection || callPartner){
+    if(
+      peerConnection ||
+      callPartner
+    ){
 
-    endCall(true);
+      endCall(true);
 
-  }else{
+    }else{
 
-    startCall("audio");
-  }
-};
+      startCall("audio");
+    }
+  };
 
-videoCallBtn.onclick = function(){
+videoCallBtn.onclick =
+  function(){
 
-  if(peerConnection || callPartner){
+    if(
+      peerConnection ||
+      callPartner
+    ){
 
-    endCall(true);
+      endCall(true);
 
-  }else{
+    }else{
 
-    startCall("video");
-  }
-};
+      startCall("video");
+    }
+  };
 
 /* =========================
-   INCOMING CALL
+   INCOMING
 ========================= */
 
 function showIncomingCall(data){
 
-  pendingOffer = data.sdp;
-  pendingCaller = data.from;
-  pendingCallId = data.callId || "";
-  pendingCallType = data.callType === "video"
-    ? "video"
-    : "audio";
+  pendingOffer =
+    data.sdp;
+
+  pendingCaller =
+    data.from;
+
+  pendingCallId =
+    data.callId || "";
+
+  pendingCallType =
+    data.callType === "video"
+      ? "video"
+      : "audio";
 
   incomingAvatar.textContent =
-    firstLetter(pendingCaller);
+    firstLetter(
+      pendingCaller
+    );
 
   incomingName.textContent =
     pendingCaller;
@@ -1829,117 +2582,162 @@ function showIncomingCall(data){
       ? "مكالمة فيديو واردة"
       : "مكالمة صوتية واردة";
 
-  incomingCall.style.display = "flex";
+  incomingCall.style.display =
+    "flex";
 }
 
-acceptCallBtn.onclick = async function(){
+acceptCallBtn.onclick =
+  async function(){
 
-  if(!pendingOffer || !pendingCaller){
+    if(
+      !pendingOffer ||
+      !pendingCaller
+    ){
+
+      hideIncomingCall();
+
+      return;
+    }
+
+    const offer =
+      pendingOffer;
+
+    const caller =
+      pendingCaller;
+
+    const incomingId =
+      pendingCallId;
+
+    const type =
+      pendingCallType;
+
     hideIncomingCall();
-    return;
-  }
 
-  const offer = pendingOffer;
-  const caller = pendingCaller;
-  const incomingId = pendingCallId;
-  const type = pendingCallType;
+    callPartner =
+      caller;
 
-  hideIncomingCall();
+    callId =
+      incomingId;
 
-  callPartner = caller;
-  callId = incomingId;
-  callType = type;
+    callType =
+      type;
 
-  try{
+    try{
 
-    peerConnection =
-      createPeerConnection();
+      peerConnection =
+        createPeerConnection();
 
-    await getLocalMedia(type);
+      await getLocalMedia(
+        type
+      );
 
-    await peerConnection.setRemoteDescription(
-      new RTCSessionDescription(offer)
-    );
+      await peerConnection
+        .setRemoteDescription(
+          new RTCSessionDescription(
+            offer
+          )
+        );
 
-    await addPendingCandidates();
+      await addPendingCandidates();
 
-    const answer =
-      await peerConnection.createAnswer();
+      const answer =
+        await peerConnection
+          .createAnswer();
 
-    await peerConnection.setLocalDescription(
-      answer
-    );
+      await peerConnection
+        .setLocalDescription(
+          answer
+        );
 
-    showCallScreen();
+      showCallScreen();
 
-    sendWS({
-      type:"call_signal",
-      signalType:"answer",
-      to:callPartner,
-      callId:callId,
-      sdp:peerConnection.localDescription
-    });
+      const sent =
+        sendWS({
+          type:"call_signal",
+          signalType:"answer",
+          to:callPartner,
+          callId:callId,
+          callType:callType,
+          sdp:
+            peerConnection
+              .localDescription
+        });
 
-  }catch(error){
+      if(!sent){
 
-    console.error(error);
+        throw new Error(
+          "الاتصال بالخادم غير متاح"
+        );
+      }
 
-    sendWS({
-      type:"call_signal",
-      signalType:"reject",
-      to:caller,
-      callId:incomingId,
-      reason:"تعذر تشغيل المكالمة"
-    });
+    }catch(error){
 
-    endCall(false);
+      console.error(error);
 
-    alert(
-      "تعذر تشغيل المكالمة. اسمح بالميكروفون أو الكاميرا."
-    );
-  }
+      sendWS({
+        type:"call_signal",
+        signalType:"reject",
+        to:caller,
+        callId:incomingId,
+        reason:
+          "تعذر تشغيل المكالمة"
+      });
 
-  pendingOffer = null;
-  pendingCaller = "";
-  pendingCallId = "";
-  pendingCallType = "";
-};
+      endCall(false);
 
-rejectCallBtn.onclick = function(){
+      alert(
+        "تعذر تشغيل المكالمة. اسمح بالميكروفون أو الكاميرا."
+      );
+    }
 
-  if(pendingCaller){
+    pendingOffer = null;
+    pendingCaller = "";
+    pendingCallId = "";
+    pendingCallType = "";
+  };
 
-    sendWS({
-      type:"call_signal",
-      signalType:"reject",
-      to:pendingCaller,
-      callId:pendingCallId,
-      reason:"تم رفض المكالمة"
-    });
-  }
+rejectCallBtn.onclick =
+  function(){
 
-  hideIncomingCall();
+    if(pendingCaller){
 
-  pendingOffer = null;
-  pendingCaller = "";
-  pendingCallId = "";
-  pendingCallType = "";
-};
+      sendWS({
+        type:"call_signal",
+        signalType:"reject",
+        to:pendingCaller,
+        callId:pendingCallId,
+        reason:
+          "تم رفض المكالمة"
+      });
+    }
+
+    hideIncomingCall();
+
+    pendingOffer = null;
+    pendingCaller = "";
+    pendingCallId = "";
+    pendingCallType = "";
+  };
 
 function hideIncomingCall(){
 
-  incomingCall.style.display = "none";
+  incomingCall.style.display =
+    "none";
 }
 
 /* =========================
-   CALL SIGNAL HANDLER
+   SIGNAL HANDLER
 ========================= */
 
 async function handleCallSignal(data){
 
   if(data.signalType === "offer"){
 
-    if(peerConnection || callPartner){
+    if(
+      peerConnection ||
+      callPartner ||
+      pendingCaller
+    ){
 
       sendWS({
         type:"call_signal",
@@ -1963,20 +2761,25 @@ async function handleCallSignal(data){
       !peerConnection ||
       data.callId !== callId
     ){
+
       return;
     }
 
     try{
 
-      await peerConnection.setRemoteDescription(
-        new RTCSessionDescription(data.sdp)
-      );
+      await peerConnection
+        .setRemoteDescription(
+          new RTCSessionDescription(
+            data.sdp
+          )
+        );
 
       await addPendingCandidates();
 
     }catch(error){
 
       console.error(error);
+
       endCall(false);
     }
 
@@ -1989,6 +2792,7 @@ async function handleCallSignal(data){
       !peerConnection ||
       data.callId !== callId
     ){
+
       return;
     }
 
@@ -1999,18 +2803,26 @@ async function handleCallSignal(data){
         peerConnection.remoteDescription.type
       ){
 
-        await peerConnection.addIceCandidate(
-          new RTCIceCandidate(data.candidate)
-        );
+        await peerConnection
+          .addIceCandidate(
+            new RTCIceCandidate(
+              data.candidate
+            )
+          );
 
       }else{
 
-        pendingCandidates.push(data.candidate);
+        pendingCandidates.push(
+          data.candidate
+        );
       }
 
     }catch(error){
 
-      console.error("ICE error",error);
+      console.error(
+        "ICE error",
+        error
+      );
     }
 
     return;
@@ -2055,9 +2867,12 @@ async function addPendingCandidates(){
 
     try{
 
-      await peerConnection.addIceCandidate(
-        new RTCIceCandidate(list[i])
-      );
+      await peerConnection
+        .addIceCandidate(
+          new RTCIceCandidate(
+            list[i]
+          )
+        );
 
     }catch(error){
 
@@ -2070,83 +2885,109 @@ async function addPendingCandidates(){
    CALL CONTROLS
 ========================= */
 
-muteBtn.onclick = function(){
+muteBtn.onclick =
+  function(){
 
-  if(!localStream) return;
+    if(!localStream){
+      return;
+    }
 
-  const tracks =
-    localStream.getAudioTracks();
+    const tracks =
+      localStream.getAudioTracks();
 
-  if(!tracks.length) return;
+    if(!tracks.length){
+      return;
+    }
 
-  microphoneEnabled =
-    !microphoneEnabled;
+    microphoneEnabled =
+      !microphoneEnabled;
 
-  tracks.forEach(function(track){
-    track.enabled = microphoneEnabled;
-  });
+    tracks.forEach(
+      function(track){
+        track.enabled =
+          microphoneEnabled;
+      }
+    );
 
-  muteBtn.textContent =
-    microphoneEnabled
-      ? "🎙️"
-      : "🔇";
-};
+    muteBtn.textContent =
+      microphoneEnabled
+        ? "🎙️"
+        : "🔇";
+  };
 
-cameraBtn.onclick = function(){
+cameraBtn.onclick =
+  function(){
 
-  if(!localStream || callType !== "video"){
-    return;
-  }
+    if(
+      !localStream ||
+      callType !== "video"
+    ){
 
-  const tracks =
-    localStream.getVideoTracks();
+      return;
+    }
 
-  if(!tracks.length) return;
+    const tracks =
+      localStream.getVideoTracks();
 
-  cameraEnabled =
-    !cameraEnabled;
+    if(!tracks.length){
+      return;
+    }
 
-  tracks.forEach(function(track){
-    track.enabled = cameraEnabled;
-  });
+    cameraEnabled =
+      !cameraEnabled;
 
-  cameraBtn.textContent =
-    cameraEnabled
-      ? "📹"
-      : "🚫";
-};
+    tracks.forEach(
+      function(track){
+        track.enabled =
+          cameraEnabled;
+      }
+    );
 
-endCallBtn.onclick = function(){
+    cameraBtn.textContent =
+      cameraEnabled
+        ? "📹"
+        : "🚫";
+  };
 
-  endCall(true);
-};
+endCallBtn.onclick =
+  function(){
+
+    endCall(true);
+  };
 
 function endCall(notify){
 
-  const oldPartner = callPartner;
-  const oldCallId = callId;
+  const oldPartner =
+    callPartner;
+
+  const oldCallId =
+    callId;
 
   if(
     notify &&
     oldPartner &&
     ws &&
-    ws.readyState === WebSocket.OPEN
+    ws.readyState ===
+      WebSocket.OPEN
   ){
 
     sendWS({
       type:"call_signal",
       signalType:"end",
       to:oldPartner,
-      callId:oldCallId
+      callId:oldCallId,
+      callType:callType
     });
   }
 
   if(peerConnection){
 
     try{
+
       peerConnection.ontrack = null;
       peerConnection.onicecandidate = null;
       peerConnection.close();
+
     }catch(e){}
   }
 
@@ -2154,11 +2995,16 @@ function endCall(notify){
 
   if(localStream){
 
-    localStream.getTracks().forEach(function(track){
-      try{
-        track.stop();
-      }catch(e){}
-    });
+    localStream
+      .getTracks()
+      .forEach(
+        function(track){
+
+          try{
+            track.stop();
+          }catch(e){}
+        }
+      );
   }
 
   localStream = null;
@@ -2177,10 +3023,14 @@ function endCall(notify){
   microphoneEnabled = true;
   cameraEnabled = true;
 
-  muteBtn.textContent = "🎙️";
-  cameraBtn.textContent = "📹";
+  muteBtn.textContent =
+    "🎙️";
 
-  callScreen.style.display = "none";
+  cameraBtn.textContent =
+    "📹";
+
+  callScreen.style.display =
+    "none";
 
   hideIncomingCall();
 
@@ -2208,81 +3058,108 @@ export default {
 
   async fetch(request, env){
 
-    const url = new URL(request.url);
+    const url =
+      new URL(request.url);
 
-    /* الصفحة */
+    if(
+      request.method === "GET" &&
+      url.pathname === "/"
+    ){
 
-    if(request.method === "GET" && url.pathname === "/"){
-      return new Response(HTML,{
-        headers:{
-          "Content-Type":"text/html;charset=UTF-8"
+      return new Response(
+        HTML,
+        {
+          headers:{
+            "Content-Type":
+              "text/html;charset=UTF-8"
+          }
         }
-      });
+      );
     }
-
-    /* تسجيل */
 
     if(
       request.method === "POST" &&
       url.pathname === "/api/register"
     ){
 
-      return handleRegister(request,env);
+      return handleRegister(
+        request,
+        env
+      );
     }
-
-    /* تسجيل الدخول */
 
     if(
       request.method === "POST" &&
       url.pathname === "/api/login"
     ){
 
-      return handleLogin(request,env);
+      return handleLogin(
+        request,
+        env
+      );
     }
-
-    /* تسجيل الخروج */
 
     if(
       request.method === "POST" &&
       url.pathname === "/api/logout"
     ){
 
-      return handleLogout(request,env);
+      return handleLogout(
+        request,
+        env
+      );
     }
 
-    /* المستخدم الحالي */
+    if(
+      request.method === "POST" &&
+      url.pathname === "/api/delete-account"
+    ){
+
+      return handleDeleteAccount(
+        request,
+        env
+      );
+    }
 
     if(
       request.method === "GET" &&
       url.pathname === "/api/me"
     ){
 
-      return handleMe(request,env);
+      return handleMe(
+        request,
+        env
+      );
     }
-
-    /* المستخدمون */
 
     if(
       request.method === "GET" &&
       url.pathname === "/api/users"
     ){
 
-      return handleUsers(request,env);
+      return handleUsers(
+        request,
+        env
+      );
     }
-
-    /* WebSocket */
 
     if(
       request.method === "GET" &&
       url.pathname === "/ws"
     ){
 
-      return handleWebSocket(request,env);
+      return handleWebSocket(
+        request,
+        env
+      );
     }
 
-    return new Response("Not Found",{
-      status:404
-    });
+    return new Response(
+      "Not Found",
+      {
+        status:404
+      }
+    );
   }
 };
 
@@ -2297,7 +3174,8 @@ function json(data,status=200){
     {
       status,
       headers:{
-        "Content-Type":"application/json;charset=UTF-8"
+        "Content-Type":
+          "application/json;charset=UTF-8"
       }
     }
   );
@@ -2306,8 +3184,11 @@ function json(data,status=200){
 async function readJSON(request){
 
   try{
+
     return await request.json();
+
   }catch(e){
+
     return {};
   }
 }
@@ -2315,7 +3196,9 @@ async function readJSON(request){
 function getRoom(env){
 
   const id =
-    env.CHAT_ROOM.idFromName("main");
+    env.CHAT_ROOM.idFromName(
+      "main"
+    );
 
   return env.CHAT_ROOM.get(id);
 }
@@ -2324,121 +3207,147 @@ function getRoom(env){
    REGISTER
 ========================================================= */
 
-async function handleRegister(request,env){
+async function handleRegister(
+  request,
+  env
+){
 
-  const body = await readJSON(request);
+  const body =
+    await readJSON(request);
 
   const username =
-    String(body.username || "").trim();
+    String(
+      body.username || ""
+    ).trim();
 
   const password =
-    String(body.password || "");
+    String(
+      body.password || ""
+    );
 
   if(!username || !password){
 
     return json({
-      error:"اسم المستخدم وكلمة المرور مطلوبان"
+      error:
+        "اسم المستخدم وكلمة المرور مطلوبان"
     },400);
   }
 
   if(username.length < 3){
 
     return json({
-      error:"اسم المستخدم يجب أن يكون 3 أحرف على الأقل"
+      error:
+        "اسم المستخدم يجب أن يكون 3 أحرف على الأقل"
     },400);
   }
 
   if(username.length > 30){
 
     return json({
-      error:"اسم المستخدم طويل جدًا"
+      error:
+        "اسم المستخدم طويل جدًا"
     },400);
   }
 
   if(password.length < 4){
 
     return json({
-      error:"كلمة المرور قصيرة جدًا"
+      error:
+        "كلمة المرور قصيرة جدًا"
     },400);
   }
 
-  const room = getRoom(env);
+  const room =
+    getRoom(env);
 
-  const response =
-    await room.fetch(
-      new Request(
-        "https://internal/register",
-        {
-          method:"POST",
-          headers:{
-            "Content-Type":"application/json"
-          },
-          body:JSON.stringify({
-            username,
-            password
-          })
-        }
-      )
-    );
-
-  return response;
+  return room.fetch(
+    new Request(
+      "https://internal/register",
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":
+            "application/json"
+        },
+        body:JSON.stringify({
+          username,
+          password
+        })
+      }
+    )
+  );
 }
 
 /* =========================================================
    LOGIN
 ========================================================= */
 
-async function handleLogin(request,env){
+async function handleLogin(
+  request,
+  env
+){
 
-  const body = await readJSON(request);
+  const body =
+    await readJSON(request);
 
   const username =
-    String(body.username || "").trim();
+    String(
+      body.username || ""
+    ).trim();
 
   const password =
-    String(body.password || "");
+    String(
+      body.password || ""
+    );
 
   if(!username || !password){
 
     return json({
-      error:"اسم المستخدم وكلمة المرور مطلوبان"
+      error:
+        "اسم المستخدم وكلمة المرور مطلوبان"
     },400);
   }
 
-  const room = getRoom(env);
+  const room =
+    getRoom(env);
 
-  const response =
-    await room.fetch(
-      new Request(
-        "https://internal/login",
-        {
-          method:"POST",
-          headers:{
-            "Content-Type":"application/json"
-          },
-          body:JSON.stringify({
-            username,
-            password
-          })
-        }
-      )
-    );
-
-  return response;
+  return room.fetch(
+    new Request(
+      "https://internal/login",
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":
+            "application/json"
+        },
+        body:JSON.stringify({
+          username,
+          password
+        })
+      }
+    )
+  );
 }
 
 /* =========================================================
    LOGOUT
 ========================================================= */
 
-async function handleLogout(request,env){
+async function handleLogout(
+  request,
+  env
+){
 
-  const body = await readJSON(request);
+  const body =
+    await readJSON(request);
 
   const token =
-    String(body.token || "");
+    String(
+      body.token || ""
+    );
 
-  const room = getRoom(env);
+  const room =
+    getRoom(env);
 
   return room.fetch(
     new Request(
@@ -2446,7 +3355,52 @@ async function handleLogout(request,env){
       {
         method:"POST",
         headers:{
-          "Content-Type":"application/json"
+          "Content-Type":
+            "application/json"
+        },
+        body:JSON.stringify({
+          token
+        })
+      }
+    )
+  );
+}
+
+/* =========================================================
+   DELETE ACCOUNT
+========================================================= */
+
+async function handleDeleteAccount(
+  request,
+  env
+){
+
+  const body =
+    await readJSON(request);
+
+  const token =
+    String(
+      body.token || ""
+    );
+
+  if(!token){
+
+    return json({
+      error:"الجلسة غير صالحة"
+    },401);
+  }
+
+  const room =
+    getRoom(env);
+
+  return room.fetch(
+    new Request(
+      "https://internal/delete-account",
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":
+            "application/json"
         },
         body:JSON.stringify({
           token
@@ -2460,14 +3414,21 @@ async function handleLogout(request,env){
    ME
 ========================================================= */
 
-async function handleMe(request,env){
+async function handleMe(
+  request,
+  env
+){
 
-  const url = new URL(request.url);
+  const url =
+    new URL(request.url);
 
   const token =
-    url.searchParams.get("token") || "";
+    url.searchParams.get(
+      "token"
+    ) || "";
 
-  const room = getRoom(env);
+  const room =
+    getRoom(env);
 
   return room.fetch(
     new Request(
@@ -2481,14 +3442,21 @@ async function handleMe(request,env){
    USERS
 ========================================================= */
 
-async function handleUsers(request,env){
+async function handleUsers(
+  request,
+  env
+){
 
-  const url = new URL(request.url);
+  const url =
+    new URL(request.url);
 
   const token =
-    url.searchParams.get("token") || "";
+    url.searchParams.get(
+      "token"
+    ) || "";
 
-  const room = getRoom(env);
+  const room =
+    getRoom(env);
 
   return room.fetch(
     new Request(
@@ -2502,9 +3470,16 @@ async function handleUsers(request,env){
    WEBSOCKET
 ========================================================= */
 
-async function handleWebSocket(request,env){
+async function handleWebSocket(
+  request,
+  env
+){
 
-  if(request.headers.get("Upgrade") !== "websocket"){
+  if(
+    request.headers.get(
+      "Upgrade"
+    ) !== "websocket"
+  ){
 
     return new Response(
       "Expected WebSocket",
@@ -2514,7 +3489,8 @@ async function handleWebSocket(request,env){
     );
   }
 
-  const room = getRoom(env);
+  const room =
+    getRoom(env);
 
   return room.fetch(
     new Request(
@@ -2528,7 +3504,8 @@ async function handleWebSocket(request,env){
    DURABLE OBJECT
 ========================================================= */
 
-export class ChatRoom extends DurableObject{
+export class ChatRoom
+  extends DurableObject{
 
   constructor(ctx,env){
 
@@ -2537,7 +3514,8 @@ export class ChatRoom extends DurableObject{
     this.ctx = ctx;
     this.env = env;
 
-    this.connections = new Map();
+    this.connections =
+      new Map();
 
     this.initDatabase();
   }
@@ -2578,21 +3556,85 @@ export class ChatRoom extends DurableObject{
       )
     `);
 
-    /* =========================
-       ACCOUNTS MIGRATION
-    ========================= */
+    /*
+      =========================
+      تنظيف الحسابات القديمة
+      =========================
+
+      يتم التنفيذ مرة واحدة فقط.
+
+      بعد وضع reset_done = 1
+      لن يتم حذف الحسابات الجديدة
+      في التشغيلات التالية.
+    */
+
+    this.ctx.storage.sql.exec(`
+      CREATE TABLE IF NOT EXISTS app_meta (
+        key TEXT PRIMARY KEY,
+        value TEXT
+      )
+    `);
+
+    try{
+
+      const reset =
+        this.ctx.storage.sql
+          .exec(
+            "SELECT value FROM app_meta WHERE key = ?",
+            "old_users_reset_done"
+          )
+          .toArray();
+
+      if(!reset.length){
+
+        this.ctx.storage.sql.exec(
+          "DELETE FROM messages"
+        );
+
+        this.ctx.storage.sql.exec(
+          "DELETE FROM sessions"
+        );
+
+        this.ctx.storage.sql.exec(
+          "DELETE FROM accounts"
+        );
+
+        this.ctx.storage.sql.exec(
+          `
+          INSERT INTO app_meta
+          (key,value)
+          VALUES(?,?)
+          `,
+          "old_users_reset_done",
+          "1"
+        );
+      }
+
+    }catch(error){
+
+      console.error(
+        "old users reset",
+        error
+      );
+    }
+
+    /* ACCOUNTS MIGRATION */
 
     try{
 
       const columns =
         this.ctx.storage.sql
-          .exec("PRAGMA table_info(accounts)")
+          .exec(
+            "PRAGMA table_info(accounts)"
+          )
           .toArray();
 
       const names =
-        columns.map(function(row){
-          return row.name;
-        });
+        columns.map(
+          function(row){
+            return row.name;
+          }
+        );
 
       if(!names.includes("salt")){
 
@@ -2612,24 +3654,29 @@ export class ChatRoom extends DurableObject{
 
     }catch(error){
 
-      console.error("accounts migration",error);
+      console.error(
+        "accounts migration",
+        error
+      );
     }
 
-    /* =========================
-       SESSIONS MIGRATION
-    ========================= */
+    /* SESSIONS MIGRATION */
 
     try{
 
       const columns =
         this.ctx.storage.sql
-          .exec("PRAGMA table_info(sessions)")
+          .exec(
+            "PRAGMA table_info(sessions)"
+          )
           .toArray();
 
       const names =
-        columns.map(function(row){
-          return row.name;
-        });
+        columns.map(
+          function(row){
+            return row.name;
+          }
+        );
 
       if(!names.includes("created_at")){
 
@@ -2649,24 +3696,29 @@ export class ChatRoom extends DurableObject{
 
     }catch(error){
 
-      console.error("sessions migration",error);
+      console.error(
+        "sessions migration",
+        error
+      );
     }
 
-    /* =========================
-       MESSAGES MIGRATION
-    ========================= */
+    /* MESSAGES MIGRATION */
 
     try{
 
       const columns =
         this.ctx.storage.sql
-          .exec("PRAGMA table_info(messages)")
+          .exec(
+            "PRAGMA table_info(messages)"
+          )
           .toArray();
 
       const names =
-        columns.map(function(row){
-          return row.name;
-        });
+        columns.map(
+          function(row){
+            return row.name;
+          }
+        );
 
       if(!names.includes("message_type")){
 
@@ -2694,17 +3746,21 @@ export class ChatRoom extends DurableObject{
 
     }catch(error){
 
-      console.error("messages migration",error);
+      console.error(
+        "messages migration",
+        error
+      );
     }
   }
 
   /* =========================
-     FETCH INSIDE DO
+     FETCH
   ========================= */
 
   async fetch(request){
 
-    const url = new URL(request.url);
+    const url =
+      new URL(request.url);
 
     if(url.pathname === "/register"){
 
@@ -2719,6 +3775,11 @@ export class ChatRoom extends DurableObject{
     if(url.pathname === "/logout"){
 
       return this.logout(request);
+    }
+
+    if(url.pathname === "/delete-account"){
+
+      return this.deleteAccount(request);
     }
 
     if(url.pathname === "/me"){
@@ -2736,9 +3797,12 @@ export class ChatRoom extends DurableObject{
       return this.websocket(request);
     }
 
-    return new Response("Not Found",{
-      status:404
-    });
+    return new Response(
+      "Not Found",
+      {
+        status:404
+      }
+    );
   }
 
   /* =========================
@@ -2747,13 +3811,18 @@ export class ChatRoom extends DurableObject{
 
   async register(request){
 
-    const body = await request.json();
+    const body =
+      await request.json();
 
     const username =
-      String(body.username || "").trim();
+      String(
+        body.username || ""
+      ).trim();
 
     const password =
-      String(body.password || "");
+      String(
+        body.password || ""
+      );
 
     try{
 
@@ -2768,12 +3837,15 @@ export class ChatRoom extends DurableObject{
       if(existing.length){
 
         return json({
-          error:"اسم المستخدم موجود بالفعل"
+          error:
+            "اسم المستخدم موجود بالفعل"
         },409);
       }
 
       const salt =
-        bytesToHex(randomBytes(16));
+        bytesToHex(
+          randomBytes(16)
+        );
 
       const passwordHash =
         await hashPassword(
@@ -2781,7 +3853,8 @@ export class ChatRoom extends DurableObject{
           salt
         );
 
-      const now = Date.now();
+      const now =
+        Date.now();
 
       this.ctx.storage.sql.exec(
         `
@@ -2800,9 +3873,8 @@ export class ChatRoom extends DurableObject{
         now
       );
 
-      /* تسجيل الدخول تلقائي */
-
-      const token = randomToken();
+      const token =
+        randomToken();
 
       const expiresAt =
         9999999999999;
@@ -2850,13 +3922,18 @@ export class ChatRoom extends DurableObject{
 
   async login(request){
 
-    const body = await request.json();
+    const body =
+      await request.json();
 
     const username =
-      String(body.username || "").trim();
+      String(
+        body.username || ""
+      ).trim();
 
     const password =
-      String(body.password || "");
+      String(
+        body.password || ""
+      );
 
     try{
 
@@ -2878,11 +3955,13 @@ export class ChatRoom extends DurableObject{
       if(!rows.length){
 
         return json({
-          error:"اسم المستخدم أو كلمة المرور غير صحيحة"
+          error:
+            "اسم المستخدم أو كلمة المرور غير صحيحة"
         },401);
       }
 
-      const account = rows[0];
+      const account =
+        rows[0];
 
       const hash =
         await hashPassword(
@@ -2890,16 +3969,22 @@ export class ChatRoom extends DurableObject{
           account.salt
         );
 
-      if(hash !== account.password_hash){
+      if(
+        hash !==
+        account.password_hash
+      ){
 
         return json({
-          error:"اسم المستخدم أو كلمة المرور غير صحيحة"
+          error:
+            "اسم المستخدم أو كلمة المرور غير صحيحة"
         },401);
       }
 
-      const token = randomToken();
+      const token =
+        randomToken();
 
-      const now = Date.now();
+      const now =
+        Date.now();
 
       const expiresAt =
         9999999999999;
@@ -2947,10 +4032,13 @@ export class ChatRoom extends DurableObject{
 
     try{
 
-      const body = await request.json();
+      const body =
+        await request.json();
 
       const token =
-        String(body.token || "");
+        String(
+          body.token || ""
+        );
 
       if(token){
 
@@ -2973,23 +4061,157 @@ export class ChatRoom extends DurableObject{
   }
 
   /* =========================
+     DELETE ACCOUNT
+  ========================= */
+
+  async deleteAccount(request){
+
+    try{
+
+      const body =
+        await request.json();
+
+      const token =
+        String(
+          body.token || ""
+        );
+
+      if(!token){
+
+        return json({
+          error:
+            "الجلسة غير صالحة"
+        },401);
+      }
+
+      const rows =
+        this.ctx.storage.sql
+          .exec(
+            `
+            SELECT username
+            FROM sessions
+            WHERE token = ?
+            `,
+            token
+          )
+          .toArray();
+
+      if(!rows.length){
+
+        return json({
+          error:
+            "الجلسة غير صالحة"
+        },401);
+      }
+
+      const username =
+        rows[0].username;
+
+      /* حذف الرسائل */
+
+      this.ctx.storage.sql.exec(
+        `
+        DELETE FROM messages
+        WHERE sender = ?
+           OR receiver = ?
+        `,
+        username,
+        username
+      );
+
+      /* حذف كل جلسات الحساب */
+
+      this.ctx.storage.sql.exec(
+        `
+        DELETE FROM sessions
+        WHERE username = ?
+        `,
+        username
+      );
+
+      /* حذف الحساب */
+
+      this.ctx.storage.sql.exec(
+        `
+        DELETE FROM accounts
+        WHERE username = ?
+        `,
+        username
+      );
+
+      /* إغلاق اتصالات الحساب */
+
+      const set =
+        this.connections.get(
+          username
+        );
+
+      if(set){
+
+        for(
+          const socket of set
+        ){
+
+          try{
+
+            socket.close(
+              1000,
+              "account deleted"
+            );
+
+          }catch(e){}
+        }
+
+        this.connections.delete(
+          username
+        );
+      }
+
+      this.broadcastUsersChanged();
+
+      return json({
+        ok:true
+      });
+
+    }catch(error){
+
+      console.error(
+        "delete account",
+        error
+      );
+
+      return json({
+        error:
+          "تعذر حذف الحساب: " +
+          error.message
+      },500);
+    }
+  }
+
+  /* =========================
      ME
   ========================= */
 
   async me(request){
 
-    const url = new URL(request.url);
+    const url =
+      new URL(request.url);
 
     const token =
-      url.searchParams.get("token") || "";
+      url.searchParams.get(
+        "token"
+      ) || "";
 
     const username =
-      this.getUserFromToken(token);
+      this.getUserFromToken(
+        token
+      );
 
     if(!username){
 
       return json({
-        error:"الجلسة غير صالحة"
+        error:
+          "الجلسة غير صالحة"
       },401);
     }
 
@@ -3005,25 +4227,35 @@ export class ChatRoom extends DurableObject{
 
   async users(request){
 
-    const url = new URL(request.url);
+    const url =
+      new URL(request.url);
 
     const token =
-      url.searchParams.get("token") || "";
+      url.searchParams.get(
+        "token"
+      ) || "";
 
     const current =
-      this.getUserFromToken(token);
+      this.getUserFromToken(
+        token
+      );
 
     if(!current){
 
       return json({
-        error:"الجلسة غير صالحة"
+        error:
+          "الجلسة غير صالحة"
       },401);
     }
 
     const rows =
       this.ctx.storage.sql
         .exec(
-          "SELECT username FROM accounts ORDER BY username"
+          `
+          SELECT username
+          FROM accounts
+          ORDER BY username
+          `
         )
         .toArray();
 
@@ -3031,16 +4263,21 @@ export class ChatRoom extends DurableObject{
       this.getOnlineUsernames();
 
     const users =
-      rows.map(function(row){
+      rows.map(
+        function(row){
 
-        return {
-          username:row.username,
-          online:
-            row.username === current ||
-            onlineNames.has(row.username)
-        };
+          return {
+            username:
+              row.username,
 
-      });
+            online:
+              row.username === current ||
+              onlineNames.has(
+                row.username
+              )
+          };
+        }
+      );
 
     return json({
       users
@@ -3072,6 +4309,7 @@ export class ChatRoom extends DurableObject{
           .toArray();
 
       if(!rows.length){
+
         return null;
       }
 
@@ -3086,7 +4324,7 @@ export class ChatRoom extends DurableObject{
   }
 
   /* =========================
-     ONLINE USERS
+     ONLINE
   ========================= */
 
   getOnlineUsernames(){
@@ -3126,21 +4364,16 @@ export class ChatRoom extends DurableObject{
         }catch(error){}
       }
 
-    }catch(error){
-
-      for(
-        const username of this.connections.keys()
-      ){
-
-        result.add(username);
-      }
-    }
+    }catch(error){}
 
     for(
-      const username of this.connections.keys()
+      const username of
+      this.connections.keys()
     ){
 
-      result.add(username);
+      result.add(
+        username
+      );
     }
 
     return result;
@@ -3152,13 +4385,18 @@ export class ChatRoom extends DurableObject{
 
   async websocket(request){
 
-    const url = new URL(request.url);
+    const url =
+      new URL(request.url);
 
     const token =
-      url.searchParams.get("token") || "";
+      url.searchParams.get(
+        "token"
+      ) || "";
 
     const username =
-      this.getUserFromToken(token);
+      this.getUserFromToken(
+        token
+      );
 
     if(!username){
 
@@ -3189,7 +4427,11 @@ export class ChatRoom extends DurableObject{
 
     }catch(error){}
 
-    if(!this.connections.has(username)){
+    if(
+      !this.connections.has(
+        username
+      )
+    ){
 
       this.connections.set(
         username,
@@ -3210,7 +4452,6 @@ export class ChatRoom extends DurableObject{
           username,
           event
         );
-
       }
     );
 
@@ -3222,7 +4463,6 @@ export class ChatRoom extends DurableObject{
           username,
           server
         );
-
       }
     );
 
@@ -3234,16 +4474,18 @@ export class ChatRoom extends DurableObject{
           username,
           server
         );
-
       }
     );
 
     this.broadcastUsersChanged();
 
-    return new Response(null,{
-      status:101,
-      webSocket:client
-    });
+    return new Response(
+      null,
+      {
+        status:101,
+        webSocket:client
+      }
+    );
   }
 
   /* =========================
@@ -3256,7 +4498,9 @@ export class ChatRoom extends DurableObject{
   ){
 
     const set =
-      this.connections.get(username);
+      this.connections.get(
+        username
+      );
 
     if(set){
 
@@ -3264,7 +4508,9 @@ export class ChatRoom extends DurableObject{
 
       if(set.size === 0){
 
-        this.connections.delete(username);
+        this.connections.delete(
+          username
+        );
       }
     }
 
@@ -3286,24 +4532,28 @@ export class ChatRoom extends DurableObject{
     try{
 
       data =
-        JSON.parse(event.data);
+        JSON.parse(
+          event.data
+        );
 
     }catch(error){
 
       return;
     }
 
-    /* =========================
-       TEXT
-    ========================= */
+    /* TEXT */
 
     if(data.type === "message"){
 
       const to =
-        String(data.to || "").trim();
+        String(
+          data.to || ""
+        ).trim();
 
       const text =
-        String(data.text || "");
+        String(
+          data.text || ""
+        );
 
       if(!to || !text){
         return;
@@ -3313,10 +4563,7 @@ export class ChatRoom extends DurableObject{
         return;
       }
 
-      const target =
-        this.accountExists(to);
-
-      if(!target){
+      if(!this.accountExists(to)){
         return;
       }
 
@@ -3366,29 +4613,35 @@ export class ChatRoom extends DurableObject{
       return;
     }
 
-    /* =========================
-       VOICE
-    ========================= */
+    /* VOICE */
 
     if(data.type === "voice"){
 
       const to =
-        String(data.to || "").trim();
+        String(
+          data.to || ""
+        ).trim();
 
       const audioData =
-        String(data.audio_data || "");
+        String(
+          data.audio_data || ""
+        );
 
       if(!to || !audioData){
         return;
       }
 
-      if(audioData.length > 3000000){
+      if(
+        audioData.length >
+        3000000
+      ){
 
         this.sendSocket(
           socket,
           JSON.stringify({
             type:"call_error",
-            error:"الرسالة الصوتية كبيرة جدًا"
+            error:
+              "الرسالة الصوتية كبيرة جدًا"
           })
         );
 
@@ -3447,14 +4700,14 @@ export class ChatRoom extends DurableObject{
       return;
     }
 
-    /* =========================
-       HISTORY
-    ========================= */
+    /* HISTORY */
 
     if(data.type === "history"){
 
       const withUser =
-        String(data.with || "").trim();
+        String(
+          data.with || ""
+        ).trim();
 
       if(!withUser){
         return;
@@ -3504,14 +4757,14 @@ export class ChatRoom extends DurableObject{
       return;
     }
 
-    /* =========================
-       TYPING
-    ========================= */
+    /* TYPING */
 
     if(data.type === "typing"){
 
       const to =
-        String(data.to || "").trim();
+        String(
+          data.to || ""
+        ).trim();
 
       if(!to){
         return;
@@ -3522,24 +4775,28 @@ export class ChatRoom extends DurableObject{
         JSON.stringify({
           type:"typing",
           from:username,
-          typing:Boolean(data.typing)
+          typing:Boolean(
+            data.typing
+          )
         })
       );
 
       return;
     }
 
-    /* =====================================================
-       VOICE / VIDEO CALL SIGNALING
-    ===================================================== */
+    /* CALL SIGNAL */
 
     if(data.type === "call_signal"){
 
       const to =
-        String(data.to || "").trim();
+        String(
+          data.to || ""
+        ).trim();
 
       const signalType =
-        String(data.signalType || "");
+        String(
+          data.signalType || ""
+        );
 
       const allowed = [
         "offer",
@@ -3549,18 +4806,28 @@ export class ChatRoom extends DurableObject{
         "end"
       ];
 
-      if(!to || !allowed.includes(signalType)){
+      if(
+        !to ||
+        !allowed.includes(
+          signalType
+        )
+      ){
+
         return;
       }
 
-      if(!this.accountExists(to)){
+      if(
+        !this.accountExists(to)
+      ){
 
         this.sendSocket(
           socket,
           JSON.stringify({
             type:"call_error",
-            error:"المستخدم غير موجود",
-            callId:data.callId || ""
+            error:
+              "المستخدم غير موجود",
+            callId:
+              data.callId || ""
           })
         );
 
@@ -3568,39 +4835,53 @@ export class ChatRoom extends DurableObject{
       }
 
       const payload = {
+
         type:"call_signal",
+
         from:username,
+
         to:to,
-        signalType:signalType,
-        callId:String(data.callId || ""),
+
+        signalType:
+          signalType,
+
+        callId:
+          String(
+            data.callId || ""
+          ),
+
         callType:
           data.callType === "video"
             ? "video"
             : "audio"
       };
 
-      if(signalType === "offer"){
+      if(
+        signalType === "offer" ||
+        signalType === "answer"
+      ){
 
         payload.sdp =
           data.sdp || null;
       }
 
-      if(signalType === "answer"){
-
-        payload.sdp =
-          data.sdp || null;
-      }
-
-      if(signalType === "candidate"){
+      if(
+        signalType === "candidate"
+      ){
 
         payload.candidate =
           data.candidate || null;
       }
 
-      if(signalType === "reject"){
+      if(
+        signalType === "reject"
+      ){
 
         payload.reason =
-          String(data.reason || "تم رفض المكالمة");
+          String(
+            data.reason ||
+            "تم رفض المكالمة"
+          );
       }
 
       const sent =
@@ -3615,8 +4896,10 @@ export class ChatRoom extends DurableObject{
           socket,
           JSON.stringify({
             type:"call_error",
-            error:"المستخدم غير متصل حاليًا",
-            callId:data.callId || ""
+            error:
+              "المستخدم غير متصل حاليًا",
+            callId:
+              data.callId || ""
           })
         );
       }
@@ -3634,7 +4917,11 @@ export class ChatRoom extends DurableObject{
     const rows =
       this.ctx.storage.sql
         .exec(
-          "SELECT username FROM accounts WHERE username = ?",
+          `
+          SELECT username
+          FROM accounts
+          WHERE username = ?
+          `,
           username
         )
         .toArray();
@@ -3656,6 +4943,7 @@ export class ChatRoom extends DurableObject{
       if(socket.readyState === 1){
 
         socket.send(message);
+
         return true;
       }
 
@@ -3676,7 +4964,9 @@ export class ChatRoom extends DurableObject{
     let sent = false;
 
     const set =
-      this.connections.get(username);
+      this.connections.get(
+        username
+      );
 
     if(set){
 
@@ -3695,8 +4985,6 @@ export class ChatRoom extends DurableObject{
         }
       }
     }
-
-    /* Durable Object sockets */
 
     try{
 
@@ -3719,7 +5007,8 @@ export class ChatRoom extends DurableObject{
 
           if(
             attachment &&
-            attachment.username === username
+            attachment.username ===
+              username
           ){
 
             if(
@@ -3772,7 +5061,8 @@ export class ChatRoom extends DurableObject{
     }catch(error){}
 
     for(
-      const set of this.connections.values()
+      const set of
+      this.connections.values()
     ){
 
       for(
@@ -3814,7 +5104,9 @@ async function hashPassword(
     );
 
   const salt =
-    hexToBytes(saltHex);
+    hexToBytes(
+      saltHex
+    );
 
   const bits =
     await crypto.subtle.deriveBits(
@@ -3842,7 +5134,9 @@ function randomBytes(length){
   const bytes =
     new Uint8Array(length);
 
-  crypto.getRandomValues(bytes);
+  crypto.getRandomValues(
+    bytes
+  );
 
   return bytes;
 }
@@ -3888,7 +5182,10 @@ function hexToBytes(hex){
 
     bytes[i] =
       parseInt(
-        hex.substr(i * 2,2),
+        hex.substr(
+          i * 2,
+          2
+        ),
         16
       );
   }
