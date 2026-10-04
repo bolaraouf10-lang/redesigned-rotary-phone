@@ -4,7 +4,7 @@ import { DurableObject } from "cloudflare:workers";
    إعدادات
 ========================================================= */
 
-const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20 MB
+const MAX_FILE_SIZE = 20 * 1024 * 1024;
 const SESSION_FOREVER = 9999999999999;
 
 /* =========================================================
@@ -274,13 +274,18 @@ button{
 .file-message{
   display:flex;
   flex-direction:column;
-  gap:6px;
+  gap:7px;
 }
 
 .file-message a{
   color:#075e54;
   font-weight:bold;
   text-decoration:none;
+}
+
+.file-size{
+  font-size:11px;
+  color:#777;
 }
 
 .audio-message audio{
@@ -322,6 +327,18 @@ button{
 
 #fileInput{
   display:none;
+}
+
+#progressBox{
+  display:none;
+  background:#fff;
+  padding:7px 12px;
+  font-size:12px;
+}
+
+#progressBar{
+  width:100%;
+  height:6px;
 }
 
 .modal{
@@ -449,6 +466,7 @@ button{
 }
 
 @media(max-width:700px){
+
   .sidebar{
     width:180px;
   }
@@ -456,9 +474,11 @@ button{
   .message{
     max-width:85%;
   }
+
 }
 
 @media(max-width:430px){
+
   .sidebar{
     width:155px;
   }
@@ -470,6 +490,7 @@ button{
   .call-actions button{
     padding:7px;
   }
+
 }
 </style>
 </head>
@@ -477,17 +498,36 @@ button{
 <body>
 
 <div id="auth">
+
   <div class="auth-box">
+
     <h2 id="authTitle">إنشاء حساب</h2>
 
-    <input id="username" placeholder="اسم المستخدم" autocomplete="username">
-    <input id="password" type="password" placeholder="كلمة المرور" autocomplete="current-password">
+    <input
+      id="username"
+      placeholder="اسم المستخدم"
+      autocomplete="username"
+    >
 
-    <button id="authButton">إنشاء الحساب</button>
-    <button id="switchAuth">عندك حساب؟ تسجيل الدخول</button>
+    <input
+      id="password"
+      type="password"
+      placeholder="كلمة المرور"
+      autocomplete="current-password"
+    >
+
+    <button id="authButton">
+      إنشاء الحساب
+    </button>
+
+    <button id="switchAuth">
+      عندك حساب؟ تسجيل الدخول
+    </button>
 
     <div id="error"></div>
+
   </div>
+
 </div>
 
 <div id="app">
@@ -497,12 +537,23 @@ button{
     <aside class="sidebar">
 
       <div class="side-head">
-        <div class="side-head-title">المستخدمون</div>
+
+        <div class="side-head-title">
+          المستخدمون
+        </div>
 
         <div class="head-actions">
-          <button id="settingsBtn" title="الإعدادات">⚙️</button>
-          <button id="logoutBtn" title="خروج">خروج</button>
+
+          <button id="settingsBtn">
+            ⚙️
+          </button>
+
+          <button id="logoutBtn">
+            خروج
+          </button>
+
         </div>
+
       </div>
 
       <div id="users"></div>
@@ -513,16 +564,30 @@ button{
 
       <div class="chat-head">
 
-        <div class="avatar" id="chatAvatar">?</div>
+        <div class="avatar" id="chatAvatar">
+          ?
+        </div>
 
         <div class="chat-head-info">
-          <div id="chatTitle">اختر مستخدمًا</div>
+
+          <div id="chatTitle">
+            اختر مستخدمًا
+          </div>
+
           <div id="chatStatus"></div>
+
         </div>
 
         <div class="call-actions">
-          <button id="voiceCallBtn" title="مكالمة صوتية">📞</button>
-          <button id="videoCallBtn" title="مكالمة فيديو">📹</button>
+
+          <button id="voiceCallBtn">
+            📞
+          </button>
+
+          <button id="videoCallBtn">
+            📹
+          </button>
+
         </div>
 
       </div>
@@ -533,19 +598,43 @@ button{
 
       <div id="typing"></div>
 
+      <div id="progressBox">
+        <div id="progressText">
+          جاري الإرسال...
+        </div>
+        <progress id="progressBar" value="0" max="100"></progress>
+      </div>
+
       <div class="composer">
 
         <label for="fileInput">
-          <button id="fileBtn" type="button">📎</button>
+
+          <button
+            id="fileBtn"
+            type="button"
+          >
+            📎
+          </button>
+
         </label>
 
-        <input id="fileInput" type="file">
+        <input
+          id="fileInput"
+          type="file"
+        >
 
-        <button id="recordBtn" title="تسجيل صوتي">🎙️</button>
+        <button id="recordBtn">
+          🎙️
+        </button>
 
-        <input id="messageInput" placeholder="اكتب رسالة...">
+        <input
+          id="messageInput"
+          placeholder="اكتب رسالة..."
+        >
 
-        <button id="sendBtn">➤</button>
+        <button id="sendBtn">
+          ➤
+        </button>
 
       </div>
 
@@ -556,52 +645,122 @@ button{
 </div>
 
 <div class="modal" id="settingsModal">
+
   <div class="modal-box">
+
     <h3>الإعدادات</h3>
 
-    <p>الحساب: <b id="settingsUsername"></b></p>
+    <p>
+      الحساب:
+      <b id="settingsUsername"></b>
+    </p>
 
-    <button class="danger" id="deleteAccountBtn">
+    <button
+      class="danger"
+      id="deleteAccountBtn"
+    >
       إغلاق الحساب نهائيًا
     </button>
 
-    <button class="cancel" id="closeSettingsBtn">
+    <button
+      class="cancel"
+      id="closeSettingsBtn"
+    >
       إلغاء
     </button>
+
   </div>
+
 </div>
 
 <div id="incomingCall">
+
   <div class="call-box">
-    <div class="call-avatar">📞</div>
-    <h2 id="incomingCaller">مكالمة واردة</h2>
-    <div class="call-type" id="incomingType"></div>
+
+    <div class="call-avatar">
+      📞
+    </div>
+
+    <h2 id="incomingCaller">
+      مكالمة واردة
+    </h2>
+
+    <div
+      class="call-type"
+      id="incomingType"
+    ></div>
 
     <div class="call-buttons">
-      <button class="accept" id="acceptCallBtn">✓</button>
-      <button class="reject" id="rejectCallBtn">✕</button>
+
+      <button
+        class="accept"
+        id="acceptCallBtn"
+      >
+        ✓
+      </button>
+
+      <button
+        class="reject"
+        id="rejectCallBtn"
+      >
+        ✕
+      </button>
+
     </div>
+
   </div>
+
 </div>
 
 <div id="activeCall">
 
-  <video id="remoteVideo" autoplay playsinline></video>
-  <video id="localVideo" autoplay muted playsinline></video>
+  <video
+    id="remoteVideo"
+    autoplay
+    playsinline
+  ></video>
 
-  <div id="callInfo">المكالمة جارية</div>
+  <video
+    id="localVideo"
+    autoplay
+    muted
+    playsinline
+  ></video>
+
+  <div id="callInfo">
+    المكالمة جارية
+  </div>
 
   <div class="call-buttons">
-    <button id="muteBtn">🎤</button>
-    <button id="cameraBtn">📷</button>
-    <button class="end" id="endCallBtn">☎</button>
+
+    <button id="muteBtn">
+      🎤
+    </button>
+
+    <button id="cameraBtn">
+      📷
+    </button>
+
+    <button
+      class="end"
+      id="endCallBtn"
+    >
+      ☎
+    </button>
+
   </div>
 
 </div>
 
 <script>
 
-let token = localStorage.getItem("chat_token") || "";
+/* =========================================================
+   GLOBALS
+========================================================= */
+
+let token =
+  localStorage.getItem("chat_token") || "";
+
 let currentUser = "";
 let selectedUser = "";
 
@@ -614,6 +773,8 @@ let registerMode = true;
 let mediaRecorder = null;
 let audioChunks = [];
 let isRecording = false;
+
+/* CALL */
 
 let peerConnection = null;
 let localStream = null;
@@ -632,153 +793,333 @@ let pendingCandidates = [];
 let microphoneEnabled = true;
 let cameraEnabled = true;
 
-const MAX_FILE_SIZE = 20 * 1024 * 1024;
+/* FILE TRANSFER */
 
-const usernameInput = document.getElementById("username");
-const passwordInput = document.getElementById("password");
-const authButton = document.getElementById("authButton");
-const switchAuth = document.getElementById("switchAuth");
-const authTitle = document.getElementById("authTitle");
-const errorBox = document.getElementById("error");
+let filePeer = null;
+let filePartner = "";
+let fileTransferId = "";
+let fileSender = false;
 
-const auth = document.getElementById("auth");
-const app = document.getElementById("app");
+let incomingFileMeta = null;
+let incomingFileChunks = [];
+let incomingFileBytes = 0;
 
-const usersBox = document.getElementById("users");
+const MAX_FILE_SIZE =
+  20 * 1024 * 1024;
 
-const chatTitle = document.getElementById("chatTitle");
-const chatAvatar = document.getElementById("chatAvatar");
-const chatStatus = document.getElementById("chatStatus");
+const FILE_CHUNK_SIZE =
+  64 * 1024;
 
-const messages = document.getElementById("messages");
-const messageInput = document.getElementById("messageInput");
-const sendBtn = document.getElementById("sendBtn");
-const typingBox = document.getElementById("typing");
+/* =========================================================
+   ELEMENTS
+========================================================= */
 
-const fileInput = document.getElementById("fileInput");
-const fileBtn = document.getElementById("fileBtn");
+const usernameInput =
+  document.getElementById("username");
 
-const recordBtn = document.getElementById("recordBtn");
+const passwordInput =
+  document.getElementById("password");
 
-const settingsModal = document.getElementById("settingsModal");
-const settingsUsername = document.getElementById("settingsUsername");
+const authButton =
+  document.getElementById("authButton");
 
-const incomingCall = document.getElementById("incomingCall");
-const incomingCaller = document.getElementById("incomingCaller");
-const incomingType = document.getElementById("incomingType");
+const switchAuth =
+  document.getElementById("switchAuth");
 
-const activeCall = document.getElementById("activeCall");
-const remoteVideo = document.getElementById("remoteVideo");
-const localVideo = document.getElementById("localVideo");
+const authTitle =
+  document.getElementById("authTitle");
+
+const errorBox =
+  document.getElementById("error");
+
+const auth =
+  document.getElementById("auth");
+
+const app =
+  document.getElementById("app");
+
+const usersBox =
+  document.getElementById("users");
+
+const chatTitle =
+  document.getElementById("chatTitle");
+
+const chatAvatar =
+  document.getElementById("chatAvatar");
+
+const chatStatus =
+  document.getElementById("chatStatus");
+
+const messages =
+  document.getElementById("messages");
+
+const messageInput =
+  document.getElementById("messageInput");
+
+const sendBtn =
+  document.getElementById("sendBtn");
+
+const typingBox =
+  document.getElementById("typing");
+
+const fileInput =
+  document.getElementById("fileInput");
+
+const fileBtn =
+  document.getElementById("fileBtn");
+
+const recordBtn =
+  document.getElementById("recordBtn");
+
+const progressBox =
+  document.getElementById("progressBox");
+
+const progressText =
+  document.getElementById("progressText");
+
+const progressBar =
+  document.getElementById("progressBar");
+
+const settingsModal =
+  document.getElementById("settingsModal");
+
+const settingsUsername =
+  document.getElementById("settingsUsername");
+
+const incomingCall =
+  document.getElementById("incomingCall");
+
+const incomingCaller =
+  document.getElementById("incomingCaller");
+
+const incomingType =
+  document.getElementById("incomingType");
+
+const activeCall =
+  document.getElementById("activeCall");
+
+const remoteVideo =
+  document.getElementById("remoteVideo");
+
+const localVideo =
+  document.getElementById("localVideo");
+
+/* =========================================================
+   HELPERS
+========================================================= */
 
 function showError(text){
-  errorBox.textContent = text || "";
+
+  errorBox.textContent =
+    text || "";
+
 }
 
 function escapeHtml(value){
+
   return String(value)
     .replaceAll("&","&amp;")
     .replaceAll("<","&lt;")
     .replaceAll(">","&gt;")
     .replaceAll('"',"&quot;")
     .replaceAll("'","&#039;");
+
 }
 
-function api(path, options){
-  return fetch(path, Object.assign({
-    cache:"no-store"
-  }, options || {}));
+function api(path,options){
+
+  return fetch(
+    path,
+    Object.assign(
+      {
+        cache:"no-store"
+      },
+      options || {}
+    )
+  );
+
+}
+
+function formatFileSize(bytes){
+
+  if(bytes < 1024){
+    return bytes + " B";
+  }
+
+  if(bytes < 1024 * 1024){
+    return (
+      (bytes / 1024).toFixed(1) +
+      " KB"
+    );
+  }
+
+  return (
+    (bytes / 1024 / 1024).toFixed(2) +
+    " MB"
+  );
+
+}
+
+function randomId(){
+
+  return (
+    Date.now().toString(36) +
+    Math.random()
+      .toString(36)
+      .slice(2)
+  );
+
 }
 
 /* =========================================================
    AUTH
 ========================================================= */
 
-switchAuth.onclick = function(){
+switchAuth.onclick =
+  function(){
 
-  registerMode = !registerMode;
+    registerMode =
+      !registerMode;
 
-  if(registerMode){
-    authTitle.textContent = "إنشاء حساب";
-    authButton.textContent = "إنشاء الحساب";
-    switchAuth.textContent = "عندك حساب؟ تسجيل الدخول";
-  }else{
-    authTitle.textContent = "تسجيل الدخول";
-    authButton.textContent = "تسجيل الدخول";
-    switchAuth.textContent = "ليس لديك حساب؟ إنشاء حساب";
-  }
+    if(registerMode){
 
-  showError("");
-};
+      authTitle.textContent =
+        "إنشاء حساب";
 
-authButton.onclick = async function(){
+      authButton.textContent =
+        "إنشاء الحساب";
 
-  const username = usernameInput.value.trim();
-  const password = passwordInput.value;
+      switchAuth.textContent =
+        "عندك حساب؟ تسجيل الدخول";
 
-  if(username.length < 2){
-    showError("اسم المستخدم قصير جدًا");
-    return;
-  }
+    }else{
 
-  if(password.length < 4){
-    showError("كلمة المرور قصيرة جدًا");
-    return;
-  }
+      authTitle.textContent =
+        "تسجيل الدخول";
 
-  authButton.disabled = true;
-  showError("");
+      authButton.textContent =
+        "تسجيل الدخول";
 
-  try{
+      switchAuth.textContent =
+        "ليس لديك حساب؟ إنشاء حساب";
 
-    const endpoint = registerMode ? "/api/register" : "/api/login";
-
-    const res = await api(endpoint,{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify({
-        username,
-        password
-      })
-    });
-
-    const data = await res.json();
-
-    if(!res.ok || !data.ok){
-      showError(data.error || "حدث خطأ");
-      authButton.disabled = false;
-      return;
     }
 
-    token = data.token;
-    currentUser = data.username || username;
+    showError("");
 
-    localStorage.setItem("chat_token",token);
+  };
 
-    usernameInput.value = "";
-    passwordInput.value = "";
+authButton.onclick =
+  async function(){
 
-    auth.style.display = "none";
-    app.style.display = "block";
+    const username =
+      usernameInput.value.trim();
 
-    settingsUsername.textContent = currentUser;
+    const password =
+      passwordInput.value;
 
-    await loadUsers();
+    if(username.length < 2){
 
-    connectWS();
+      showError(
+        "اسم المستخدم قصير جدًا"
+      );
 
-  }catch(e){
+      return;
 
-    showError("تعذر الاتصال بالخادم");
+    }
 
-  }finally{
+    if(password.length < 4){
 
-    authButton.disabled = false;
+      showError(
+        "كلمة المرور قصيرة جدًا"
+      );
 
-  }
-};
+      return;
+
+    }
+
+    authButton.disabled = true;
+
+    showError("");
+
+    try{
+
+      const endpoint =
+        registerMode
+        ? "/api/register"
+        : "/api/login";
+
+      const res =
+        await api(
+          endpoint,
+          {
+            method:"POST",
+            headers:{
+              "Content-Type":
+                "application/json"
+            },
+            body:JSON.stringify({
+              username,
+              password
+            })
+          }
+        );
+
+      const data =
+        await res.json();
+
+      if(!res.ok || !data.ok){
+
+        showError(
+          data.error ||
+          "حدث خطأ"
+        );
+
+        return;
+
+      }
+
+      token =
+        data.token;
+
+      currentUser =
+        data.username ||
+        username;
+
+      localStorage.setItem(
+        "chat_token",
+        token
+      );
+
+      usernameInput.value = "";
+      passwordInput.value = "";
+
+      auth.style.display =
+        "none";
+
+      app.style.display =
+        "block";
+
+      settingsUsername.textContent =
+        currentUser;
+
+      await loadUsers();
+
+      connectWS();
+
+    }catch(e){
+
+      showError(
+        "تعذر الاتصال بالخادم"
+      );
+
+    }finally{
+
+      authButton.disabled = false;
+
+    }
+
+  };
 
 async function restoreSession(){
 
@@ -788,24 +1129,38 @@ async function restoreSession(){
 
   try{
 
-    const res = await api("/api/me?token=" + encodeURIComponent(token));
+    const res =
+      await api(
+        "/api/me?token=" +
+        encodeURIComponent(token)
+      );
 
     if(!res.ok){
-      throw new Error("invalid");
+      throw new Error(
+        "invalid"
+      );
     }
 
-    const data = await res.json();
+    const data =
+      await res.json();
 
     if(!data.ok){
-      throw new Error("invalid");
+      throw new Error(
+        "invalid"
+      );
     }
 
-    currentUser = data.username;
+    currentUser =
+      data.username;
 
-    auth.style.display = "none";
-    app.style.display = "block";
+    auth.style.display =
+      "none";
 
-    settingsUsername.textContent = currentUser;
+    app.style.display =
+      "block";
+
+    settingsUsername.textContent =
+      currentUser;
 
     await loadUsers();
 
@@ -814,12 +1169,19 @@ async function restoreSession(){
   }catch(e){
 
     token = "";
-    localStorage.removeItem("chat_token");
 
-    auth.style.display = "flex";
-    app.style.display = "none";
+    localStorage.removeItem(
+      "chat_token"
+    );
+
+    auth.style.display =
+      "flex";
+
+    app.style.display =
+      "none";
 
   }
+
 }
 
 restoreSession();
@@ -830,126 +1192,241 @@ restoreSession();
 
 async function loadUsers(){
 
-  if(!token) return;
+  if(!token){
+    return;
+  }
 
   try{
 
-    const res = await api("/api/users?token=" + encodeURIComponent(token));
+    const res =
+      await api(
+        "/api/users?token=" +
+        encodeURIComponent(token)
+      );
 
     if(res.status === 401){
+
       logoutLocal();
+
       return;
+
     }
 
-    const data = await res.json();
+    const data =
+      await res.json();
 
-    renderUsers(data.users || []);
+    renderUsers(
+      data.users || []
+    );
 
-  }catch(e){
+  }catch(e){}
 
-  }
 }
 
 function renderUsers(list){
 
   usersBox.innerHTML = "";
 
-  let foundCurrent = false;
+  let foundCurrent =
+    false;
 
-  list.forEach(user => {
+  list.forEach(
+    user => {
 
-    if(!user || !user.username) return;
-
-    if(user.username === currentUser){
-      foundCurrent = true;
-    }
-
-    const row = document.createElement("div");
-
-    row.className = "user";
-
-    if(user.username === selectedUser){
-      row.classList.add("active");
-    }
-
-    const avatar = document.createElement("div");
-    avatar.className = "avatar";
-    avatar.textContent = user.username.charAt(0).toUpperCase();
-
-    const info = document.createElement("div");
-    info.className = "user-info";
-
-    const name = document.createElement("div");
-    name.className = "user-name";
-
-    name.textContent =
-      user.username === currentUser
-      ? user.username + " (أنت)"
-      : user.username;
-
-    const status = document.createElement("div");
-    status.className = "status";
-    status.textContent =
-      user.online
-      ? "🟢 متصل الآن"
-      : "⚪ غير متصل";
-
-    const dot = document.createElement("div");
-    dot.className = user.online
-      ? "dot online-dot"
-      : "dot offline-dot";
-
-    info.appendChild(name);
-    info.appendChild(status);
-
-    row.appendChild(avatar);
-    row.appendChild(info);
-    row.appendChild(dot);
-
-    row.onclick = function(){
-
-      if(user.username === currentUser){
+      if(
+        !user ||
+        !user.username
+      ){
         return;
       }
 
-      selectedUser = user.username;
+      if(
+        user.username ===
+        currentUser
+      ){
 
-      document.querySelectorAll(".user").forEach(x=>{
-        x.classList.remove("active");
-      });
+        foundCurrent =
+          true;
 
-      row.classList.add("active");
+      }
 
-      chatTitle.textContent = selectedUser;
-      chatAvatar.textContent = selectedUser.charAt(0).toUpperCase();
+      const row =
+        document.createElement(
+          "div"
+        );
 
-      loadHistory(selectedUser);
+      row.className =
+        "user";
 
-    };
+      if(
+        user.username ===
+        selectedUser
+      ){
 
-    usersBox.appendChild(row);
+        row.classList.add(
+          "active"
+        );
 
-  });
+      }
 
-  if(!foundCurrent && currentUser){
+      const avatar =
+        document.createElement(
+          "div"
+        );
 
-    const row = document.createElement("div");
-    row.className = "user";
+      avatar.className =
+        "avatar";
+
+      avatar.textContent =
+        user.username
+          .charAt(0)
+          .toUpperCase();
+
+      const info =
+        document.createElement(
+          "div"
+        );
+
+      info.className =
+        "user-info";
+
+      const name =
+        document.createElement(
+          "div"
+        );
+
+      name.className =
+        "user-name";
+
+      name.textContent =
+        user.username ===
+        currentUser
+        ? user.username +
+          " (أنت)"
+        : user.username;
+
+      const status =
+        document.createElement(
+          "div"
+        );
+
+      status.className =
+        "status";
+
+      status.textContent =
+        user.online
+        ? "🟢 متصل الآن"
+        : "⚪ غير متصل";
+
+      const dot =
+        document.createElement(
+          "div"
+        );
+
+      dot.className =
+        user.online
+        ? "dot online-dot"
+        : "dot offline-dot";
+
+      info.appendChild(name);
+      info.appendChild(status);
+
+      row.appendChild(avatar);
+      row.appendChild(info);
+      row.appendChild(dot);
+
+      row.onclick =
+        function(){
+
+          if(
+            user.username ===
+            currentUser
+          ){
+
+            return;
+
+          }
+
+          selectedUser =
+            user.username;
+
+          document
+            .querySelectorAll(
+              ".user"
+            )
+            .forEach(
+              x =>
+                x.classList.remove(
+                  "active"
+                )
+            );
+
+          row.classList.add(
+            "active"
+          );
+
+          chatTitle.textContent =
+            selectedUser;
+
+          chatAvatar.textContent =
+            selectedUser
+              .charAt(0)
+              .toUpperCase();
+
+          chatStatus.textContent =
+            user.online
+            ? "متصل الآن"
+            : "غير متصل";
+
+          loadHistory(
+            selectedUser
+          );
+
+        };
+
+      usersBox.appendChild(row);
+
+    }
+  );
+
+  if(
+    !foundCurrent &&
+    currentUser
+  ){
+
+    const row =
+      document.createElement(
+        "div"
+      );
+
+    row.className =
+      "user";
 
     row.innerHTML =
       '<div class="avatar">' +
-      escapeHtml(currentUser.charAt(0).toUpperCase()) +
+      escapeHtml(
+        currentUser
+          .charAt(0)
+          .toUpperCase()
+      ) +
       '</div>' +
       '<div class="user-info">' +
       '<div class="user-name">' +
-      escapeHtml(currentUser) +
+      escapeHtml(
+        currentUser
+      ) +
       ' (أنت)</div>' +
-      '<div class="status">🟢 متصل الآن</div>' +
+      '<div class="status">' +
+      '🟢 متصل الآن' +
       '</div>' +
-      '<div class="dot online-dot"></div>';
+      '</div>' +
+      '<div class="dot online-dot">' +
+      '</div>';
 
     usersBox.prepend(row);
+
   }
+
 }
 
 /* =========================================================
@@ -958,120 +1435,187 @@ function renderUsers(list){
 
 function connectWS(){
 
-  if(!token) return;
-
-  if(ws &&
-    (ws.readyState === WebSocket.OPEN ||
-     ws.readyState === WebSocket.CONNECTING)){
+  if(!token){
     return;
   }
 
+  if(
+    ws &&
+    (
+      ws.readyState ===
+      WebSocket.OPEN ||
+      ws.readyState ===
+      WebSocket.CONNECTING
+    )
+  ){
+
+    return;
+
+  }
+
   const protocol =
-    location.protocol === "https:"
+    location.protocol ===
+    "https:"
     ? "wss:"
     : "ws:";
 
-  ws = new WebSocket(
-    protocol +
-    "//" +
-    location.host +
-    "/ws?token=" +
-    encodeURIComponent(token)
-  );
+  ws =
+    new WebSocket(
+      protocol +
+      "//" +
+      location.host +
+      "/ws?token=" +
+      encodeURIComponent(token)
+    );
 
-  ws.onopen = function(){
+  ws.onopen =
+    function(){
 
-    clearTimeout(reconnectTimer);
+      clearTimeout(
+        reconnectTimer
+      );
 
-    loadUsers();
+      loadUsers();
 
-  };
+    };
 
-  ws.onmessage = function(event){
+  ws.onmessage =
+    function(event){
 
-    try{
+      try{
 
-      const data = JSON.parse(event.data);
+        const data =
+          JSON.parse(
+            event.data
+          );
 
-      handleSocketMessage(data);
+        handleSocketMessage(
+          data
+        );
 
-    }catch(e){}
+      }catch(e){}
 
-  };
+    };
 
-  ws.onclose = function(){
+  ws.onclose =
+    function(){
 
-    if(token){
+      if(token){
 
-      clearTimeout(reconnectTimer);
+        clearTimeout(
+          reconnectTimer
+        );
 
-      reconnectTimer = setTimeout(function(){
-        connectWS();
-      },1500);
+        reconnectTimer =
+          setTimeout(
+            function(){
+              connectWS();
+            },
+            1500
+          );
 
-    }
+      }
 
-  };
+    };
 
-  ws.onerror = function(){
+  ws.onerror =
+    function(){
 
-    try{
-      ws.close();
-    }catch(e){}
+      try{
+        ws.close();
+      }catch(e){}
 
-  };
+    };
+
 }
 
-async function ensureWebSocket(timeout){
+async function ensureWebSocket(
+  timeout
+){
 
-  timeout = timeout || 7000;
+  timeout =
+    timeout || 7000;
 
-  if(ws && ws.readyState === WebSocket.OPEN){
+  if(
+    ws &&
+    ws.readyState ===
+    WebSocket.OPEN
+  ){
+
     return true;
+
   }
 
   connectWS();
 
-  const start = Date.now();
+  const start =
+    Date.now();
 
-  while(Date.now() - start < timeout){
+  while(
+    Date.now() -
+    start <
+    timeout
+  ){
 
-    if(ws && ws.readyState === WebSocket.OPEN){
+    if(
+      ws &&
+      ws.readyState ===
+      WebSocket.OPEN
+    ){
+
       return true;
+
     }
 
-    await new Promise(function(resolve){
-      setTimeout(resolve,150);
-    });
+    await new Promise(
+      resolve =>
+        setTimeout(
+          resolve,
+          150
+        )
+    );
 
   }
 
   return false;
+
 }
 
 function sendWS(data){
 
-  if(ws && ws.readyState === WebSocket.OPEN){
+  if(
+    ws &&
+    ws.readyState ===
+    WebSocket.OPEN
+  ){
 
-    ws.send(JSON.stringify(data));
+    ws.send(
+      JSON.stringify(data)
+    );
 
     return true;
+
   }
 
   return false;
+
 }
 
 /* =========================================================
-   SOCKET MESSAGES
+   SOCKET
 ========================================================= */
 
-function handleSocketMessage(data){
+function handleSocketMessage(
+  data
+){
 
   if(data.type === "message"){
 
     if(
-      data.from === selectedUser ||
-      data.to === selectedUser
+      data.from ===
+      selectedUser ||
+      data.to ===
+      selectedUser
     ){
 
       addMessage(data);
@@ -1082,15 +1626,24 @@ function handleSocketMessage(data){
 
   }
 
-  else if(data.type === "history"){
+  else if(
+    data.type === "history"
+  ){
 
-    renderHistory(data.messages || []);
+    renderHistory(
+      data.messages || []
+    );
 
   }
 
-  else if(data.type === "typing"){
+  else if(
+    data.type === "typing"
+  ){
 
-    if(data.from === selectedUser){
+    if(
+      data.from ===
+      selectedUser
+    ){
 
       typingBox.textContent =
         data.value
@@ -1101,49 +1654,132 @@ function handleSocketMessage(data){
 
   }
 
-  else if(data.type === "users_changed"){
+  else if(
+    data.type ===
+    "users_changed"
+  ){
 
     loadUsers();
 
   }
 
-  else if(data.type === "call_offer"){
+  /* CALL */
 
-    handleIncomingOffer(data);
+  else if(
+    data.type ===
+    "call_offer"
+  ){
 
-  }
-
-  else if(data.type === "call_answer"){
-
-    handleCallAnswer(data);
-
-  }
-
-  else if(data.type === "call_candidate"){
-
-    handleCandidate(data);
+    handleIncomingOffer(
+      data
+    );
 
   }
 
-  else if(data.type === "call_reject"){
+  else if(
+    data.type ===
+    "call_answer"
+  ){
 
-    alert("تم رفض المكالمة");
+    handleCallAnswer(
+      data
+    );
+
+  }
+
+  else if(
+    data.type ===
+    "call_candidate"
+  ){
+
+    handleCandidate(
+      data
+    );
+
+  }
+
+  else if(
+    data.type ===
+    "call_reject"
+  ){
+
+    alert(
+      "تم رفض المكالمة"
+    );
 
     endCall(false);
 
   }
 
-  else if(data.type === "call_end"){
+  else if(
+    data.type ===
+    "call_end"
+  ){
 
     endCall(false);
 
   }
 
-  else if(data.type === "call_error"){
+  else if(
+    data.type ===
+    "call_error"
+  ){
 
-    alert(data.error || "تعذر بدء المكالمة");
+    alert(
+      data.error ||
+      "تعذر بدء المكالمة"
+    );
 
     endCall(false);
+
+  }
+
+  /* FILE */
+
+  else if(
+    data.type ===
+    "file_offer"
+  ){
+
+    handleIncomingFileOffer(
+      data
+    );
+
+  }
+
+  else if(
+    data.type ===
+    "file_answer"
+  ){
+
+    handleFileAnswer(
+      data
+    );
+
+  }
+
+  else if(
+    data.type ===
+    "file_candidate"
+  ){
+
+    handleFileCandidate(
+      data
+    );
+
+  }
+
+  else if(
+    data.type ===
+    "file_error"
+  ){
+
+    finishProgress();
+
+    alert(
+      data.error ||
+      "تعذر إرسال الملف"
+    );
 
   }
 
@@ -1153,72 +1789,112 @@ function handleSocketMessage(data){
    TEXT CHAT
 ========================================================= */
 
-sendBtn.onclick = sendMessage;
+sendBtn.onclick =
+  sendMessage;
 
-messageInput.addEventListener("keydown",function(e){
+messageInput.addEventListener(
+  "keydown",
+  function(e){
 
-  if(e.key === "Enter"){
-    e.preventDefault();
-    sendMessage();
+    if(e.key === "Enter"){
+
+      e.preventDefault();
+
+      sendMessage();
+
+    }
+
   }
+);
 
-});
+messageInput.addEventListener(
+  "input",
+  function(){
 
-messageInput.addEventListener("input",function(){
-
-  if(!selectedUser) return;
-
-  sendWS({
-    type:"typing",
-    to:selectedUser,
-    value:true
-  });
-
-  clearTimeout(typingTimer);
-
-  typingTimer = setTimeout(function(){
+    if(!selectedUser){
+      return;
+    }
 
     sendWS({
       type:"typing",
       to:selectedUser,
-      value:false
+      value:true
     });
 
-  },700);
+    clearTimeout(
+      typingTimer
+    );
 
-});
+    typingTimer =
+      setTimeout(
+        function(){
+
+          sendWS({
+            type:"typing",
+            to:selectedUser,
+            value:false
+          });
+
+        },
+        700
+      );
+
+  }
+);
 
 function sendMessage(){
 
-  const text = messageInput.value.trim();
+  const text =
+    messageInput.value.trim();
 
-  if(!text || !selectedUser){
+  if(
+    !text ||
+    !selectedUser
+  ){
+
     return;
+
   }
 
-  if(!sendWS({
-    type:"message",
-    to:selectedUser,
-    text:text
-  })){
-    alert("الاتصال بالخادم غير جاهز");
+  if(
+    !sendWS({
+      type:"message",
+      to:selectedUser,
+      text:text
+    })
+  ){
+
+    alert(
+      "الاتصال بالخادم غير جاهز"
+    );
+
     connectWS();
+
     return;
+
   }
 
   messageInput.value = "";
 
 }
 
-async function loadHistory(username){
+async function loadHistory(
+  username
+){
 
-  messages.innerHTML = "جاري تحميل الرسائل...";
+  messages.innerHTML =
+    "جاري تحميل الرسائل...";
 
-  const ready = await ensureWebSocket();
+  const ready =
+    await ensureWebSocket();
 
   if(!ready){
-    messages.innerHTML = "تعذر الاتصال بالخادم";
+
+    messages.innerHTML =
+      "تعذر الاتصال بالخادم";
+
     return;
+
   }
 
   sendWS({
@@ -1234,250 +1910,1326 @@ function renderHistory(list){
 
   if(!list.length){
 
-    messages.textContent = "لا توجد رسائل بعد";
+    messages.textContent =
+      "لا توجد رسائل بعد";
 
     return;
+
   }
 
-  list.forEach(addMessage);
+  list.forEach(
+    addMessage
+  );
 
-  messages.scrollTop = messages.scrollHeight;
+  messages.scrollTop =
+    messages.scrollHeight;
 
 }
 
 function addMessage(msg){
 
-  const box = document.createElement("div");
+  const box =
+    document.createElement(
+      "div"
+    );
 
   box.className =
     "message " +
-    (msg.sender === currentUser ? "me" : "other");
+    (
+      msg.sender ===
+      currentUser
+      ? "me"
+      : "other"
+    );
 
-  if(msg.kind === "file"){
+  if(
+    msg.kind ===
+    "file"
+  ){
 
-    const fileBox = document.createElement("div");
-    fileBox.className = "file-message";
+    const fileBox =
+      document.createElement(
+        "div"
+      );
 
-    const name = document.createElement("div");
-    name.textContent = msg.fileName || "ملف";
+    fileBox.className =
+      "file-message";
 
-    const link = document.createElement("a");
+    const name =
+      document.createElement(
+        "div"
+      );
 
-    link.href =
-      "/api/file/" +
-      encodeURIComponent(msg.fileId) +
-      "?token=" +
-      encodeURIComponent(token);
+    name.textContent =
+      "📎 " +
+      (
+        msg.fileName ||
+        "ملف"
+      );
 
-    link.target = "_blank";
-    link.textContent = "⬇️ فتح الملف";
+    const note =
+      document.createElement(
+        "div"
+      );
+
+    note.className =
+      "file-size";
+
+    note.textContent =
+      "الملف تم إرساله مباشرة";
 
     fileBox.appendChild(name);
-    fileBox.appendChild(link);
+    fileBox.appendChild(note);
 
-    box.appendChild(fileBox);
+    box.appendChild(
+      fileBox
+    );
 
   }
 
-  else if(msg.kind === "audio"){
+  else if(
+    msg.kind ===
+    "audio"
+  ){
 
-    const audioBox = document.createElement("div");
-    audioBox.className = "audio-message";
+    const audioBox =
+      document.createElement(
+        "div"
+      );
 
-    const audio = document.createElement("audio");
+    audioBox.className =
+      "audio-message";
 
-    audio.controls = true;
+    const note =
+      document.createElement(
+        "div"
+      );
 
-    audio.src =
-      "/api/file/" +
-      encodeURIComponent(msg.fileId) +
-      "?token=" +
-      encodeURIComponent(token);
+    note.textContent =
+      "🎙️ رسالة صوتية";
 
-    audioBox.appendChild(audio);
+    audioBox.appendChild(
+      note
+    );
 
-    box.appendChild(audioBox);
+    box.appendChild(
+      audioBox
+    );
 
   }
 
   else{
 
-    const text = document.createElement("div");
-    text.textContent = msg.text || "";
+    const text =
+      document.createElement(
+        "div"
+      );
 
-    box.appendChild(text);
+    text.textContent =
+      msg.text || "";
+
+    box.appendChild(
+      text
+    );
 
   }
 
-  const time = document.createElement("div");
+  const time =
+    document.createElement(
+      "div"
+    );
 
-  time.className = "message-time";
+  time.className =
+    "message-time";
 
   time.textContent =
     msg.createdAt
-    ? new Date(msg.createdAt).toLocaleTimeString("ar-EG",{
-        hour:"2-digit",
-        minute:"2-digit"
-      })
+    ? new Date(
+        msg.createdAt
+      ).toLocaleTimeString(
+        "ar-EG",
+        {
+          hour:"2-digit",
+          minute:"2-digit"
+        }
+      )
     : "";
 
-  box.appendChild(time);
+  box.appendChild(
+    time
+  );
 
-  messages.appendChild(box);
+  messages.appendChild(
+    box
+  );
 
-  messages.scrollTop = messages.scrollHeight;
+  messages.scrollTop =
+    messages.scrollHeight;
 
 }
 
 /* =========================================================
-   FILE UPLOAD
+   FILE TRANSFER UI
 ========================================================= */
 
-fileBtn.onclick = function(){
-  fileInput.click();
-};
+function showProgress(text){
 
-fileInput.onchange = async function(){
+  progressBox.style.display =
+    "block";
 
-  const file = fileInput.files[0];
+  progressText.textContent =
+    text;
 
-  if(!file) return;
+  progressBar.value =
+    0;
 
-  if(!selectedUser){
+}
 
-    alert("اختر مستخدمًا أولًا");
-    fileInput.value = "";
-    return;
+function updateProgress(
+  sent,
+  total
+){
 
-  }
+  const percent =
+    Math.floor(
+      (
+        sent /
+        total
+      ) * 100
+    );
 
-  if(file.size > MAX_FILE_SIZE){
+  progressBar.value =
+    percent;
 
-    alert("الحد الأقصى للملف هو 20 ميجابايت");
-    fileInput.value = "";
-    return;
+  progressText.textContent =
+    "جاري الإرسال: " +
+    percent +
+    "%";
 
-  }
+}
 
-  const ready = await ensureWebSocket();
+function finishProgress(){
 
-  if(!ready){
+  progressBar.value =
+    100;
 
-    alert("الاتصال بالخادم غير متاح");
-    fileInput.value = "";
-    return;
+  progressBox.style.display =
+    "none";
 
-  }
+}
 
-  const form = new FormData();
+/* =========================================================
+   FILE SEND
+========================================================= */
 
-  form.append("file",file);
-  form.append("to",selectedUser);
+fileBtn.onclick =
+  function(){
 
-  try{
+    fileInput.click();
 
-    fileBtn.disabled = true;
+  };
 
-    const res = await api("/api/upload?token=" + encodeURIComponent(token),{
-      method:"POST",
-      body:form
-    });
+fileInput.onchange =
+  async function(){
 
-    const data = await res.json();
+    const file =
+      fileInput.files[0];
 
-    if(!res.ok || !data.ok){
+    if(!file){
+      return;
+    }
 
-      alert(data.error || "فشل رفع الملف");
+    if(!selectedUser){
+
+      alert(
+        "اختر مستخدمًا أولًا"
+      );
+
+      fileInput.value =
+        "";
+
       return;
 
     }
 
-    loadHistory(selectedUser);
+    if(
+      file.size >
+      MAX_FILE_SIZE
+    ){
 
-  }catch(e){
+      alert(
+        "الحد الأقصى للملف هو 20 ميجابايت"
+      );
 
-    alert("تعذر رفع الملف");
+      fileInput.value =
+        "";
 
-  }finally{
+      return;
 
-    fileBtn.disabled = false;
-    fileInput.value = "";
+    }
+
+    const ready =
+      await ensureWebSocket(
+        8000
+      );
+
+    if(!ready){
+
+      alert(
+        "الاتصال بالخادم غير متاح"
+      );
+
+      fileInput.value =
+        "";
+
+      return;
+
+    }
+
+    await sendFileDirect(
+      file,
+      selectedUser,
+      "file"
+    );
+
+    fileInput.value =
+      "";
+
+  };
+
+/* =========================================================
+   SEND FILE USING WEBRTC
+========================================================= */
+
+async function sendFileDirect(
+  file,
+  target,
+  kind
+){
+
+  if(
+    file.size >
+    MAX_FILE_SIZE
+  ){
+
+    alert(
+      "الحد الأقصى للملف هو 20 ميجابايت"
+    );
+
+    return;
 
   }
 
-};
+  if(
+    !target ||
+    target === currentUser
+  ){
+
+    alert(
+      "المستخدم غير صحيح"
+    );
+
+    return;
+
+  }
+
+  closeFilePeer();
+
+  fileSender =
+    true;
+
+  filePartner =
+    target;
+
+  fileTransferId =
+    randomId();
+
+  showProgress(
+    "جاري تجهيز الملف..."
+  );
+
+  try{
+
+    filePeer =
+      createFilePeer(
+        true
+      );
+
+    filePeer.onicecandidate =
+      function(event){
+
+        if(
+          event.candidate
+        ){
+
+          sendWS({
+            type:
+              "file_candidate",
+            to:
+              target,
+            transferId:
+              fileTransferId,
+            candidate:
+              event.candidate
+          });
+
+        }
+
+      };
+
+    const channel =
+      filePeer.createDataChannel(
+        "file",
+        {
+          ordered:true
+        }
+      );
+
+    channel.binaryType =
+      "arraybuffer";
+
+    channel.onopen =
+      async function(){
+
+        try{
+
+          await sendFileOverChannel(
+            channel,
+            file,
+            kind
+          );
+
+        }catch(e){
+
+          alert(
+            "تعذر إرسال الملف"
+          );
+
+        }
+
+      };
+
+    channel.onerror =
+      function(){
+
+        finishProgress();
+
+        alert(
+          "انقطع اتصال نقل الملف"
+        );
+
+        closeFilePeer();
+
+      };
+
+    const offer =
+      await filePeer.createOffer();
+
+    await filePeer.setLocalDescription(
+      offer
+    );
+
+    sendWS({
+      type:"file_offer",
+      to:target,
+      transferId:
+        fileTransferId,
+      fileName:
+        file.name ||
+        "file",
+      fileSize:
+        file.size,
+      fileType:
+        file.type ||
+        "application/octet-stream",
+      kind:
+        kind ||
+        "file",
+      offer:offer
+    });
+
+    progressText.textContent =
+      "في انتظار اتصال المستخدم...";
+
+  }catch(e){
+
+    finishProgress();
+
+    closeFilePeer();
+
+    alert(
+      "تعذر تجهيز إرسال الملف: " +
+      e.message
+    );
+
+  }
+
+}
+
+async function sendFileOverChannel(
+  channel,
+  file,
+  kind
+){
+
+  const meta = {
+    type:"file_meta",
+    name:
+      file.name ||
+      "file",
+    size:
+      file.size,
+    mime:
+      file.type ||
+      "application/octet-stream",
+    kind:
+      kind ||
+      "file"
+  };
+
+  channel.send(
+    JSON.stringify(meta)
+  );
+
+  let offset = 0;
+
+  while(
+    offset <
+    file.size
+  ){
+
+    while(
+      channel.bufferedAmount >
+      1024 * 1024
+    ){
+
+      await new Promise(
+        resolve =>
+          setTimeout(
+            resolve,
+            20
+          )
+      );
+
+    }
+
+    const end =
+      Math.min(
+        offset +
+        FILE_CHUNK_SIZE,
+        file.size
+      );
+
+    const chunk =
+      await file.slice(
+        offset,
+        end
+      ).arrayBuffer();
+
+    channel.send(
+      chunk
+    );
+
+    offset =
+      end;
+
+    updateProgress(
+      offset,
+      file.size
+    );
+
+  }
+
+  channel.send(
+    JSON.stringify({
+      type:"file_end"
+    })
+  );
+
+  addLocalFileMessage(
+    file,
+    kind
+  );
+
+  setTimeout(
+    function(){
+
+      finishProgress();
+
+      closeFilePeer();
+
+    },
+    700
+  );
+
+}
+
+/* =========================================================
+   RECEIVE FILE OFFER
+========================================================= */
+
+async function handleIncomingFileOffer(
+  data
+){
+
+  if(
+    !data ||
+    !data.from ||
+    !data.offer
+  ){
+
+    return;
+
+  }
+
+  if(
+    Number(data.fileSize || 0) >
+    MAX_FILE_SIZE
+  ){
+
+    sendWS({
+      type:"file_error",
+      to:data.from,
+      transferId:
+        data.transferId,
+      error:
+        "الملف أكبر من 20 ميجابايت"
+    });
+
+    return;
+
+  }
+
+  const accept =
+    confirm(
+      "هل تريد استقبال الملف؟\\n\\n" +
+      (
+        data.fileName ||
+        "ملف"
+      ) +
+      "\\nالحجم: " +
+      formatFileSize(
+        Number(
+          data.fileSize || 0
+        )
+      )
+    );
+
+  if(!accept){
+
+    sendWS({
+      type:"file_error",
+      to:data.from,
+      transferId:
+        data.transferId,
+      error:
+        "تم رفض استقبال الملف"
+    });
+
+    return;
+
+  }
+
+  closeFilePeer();
+
+  fileSender =
+    false;
+
+  filePartner =
+    data.from;
+
+  fileTransferId =
+    data.transferId;
+
+  incomingFileMeta = {
+    name:
+      data.fileName ||
+      "file",
+    size:
+      Number(
+        data.fileSize || 0
+      ),
+    mime:
+      data.fileType ||
+      "application/octet-stream",
+    kind:
+      data.kind ||
+      "file"
+  };
+
+  incomingFileChunks =
+    [];
+
+  incomingFileBytes =
+    0;
+
+  showProgress(
+    "جاري استقبال الملف..."
+  );
+
+  try{
+
+    filePeer =
+      createFilePeer(
+        false
+      );
+
+    filePeer.onicecandidate =
+      function(event){
+
+        if(
+          event.candidate
+        ){
+
+          sendWS({
+            type:
+              "file_candidate",
+            to:
+              data.from,
+            transferId:
+              data.transferId,
+            candidate:
+              event.candidate
+          });
+
+        }
+
+      };
+
+    filePeer.ondatachannel =
+      function(event){
+
+        const channel =
+          event.channel;
+
+        channel.binaryType =
+          "arraybuffer";
+
+        channel.onmessage =
+          function(ev){
+
+            receiveFileData(
+              ev.data
+            );
+
+          };
+
+        channel.onclose =
+          function(){
+
+            if(
+              incomingFileMeta &&
+              incomingFileBytes >=
+              incomingFileMeta.size
+            ){
+
+              finishIncomingFile();
+
+            }
+
+          };
+
+      };
+
+    await filePeer.setRemoteDescription(
+      new RTCSessionDescription(
+        data.offer
+      )
+    );
+
+    const answer =
+      await filePeer.createAnswer();
+
+    await filePeer.setLocalDescription(
+      answer
+    );
+
+    sendWS({
+      type:"file_answer",
+      to:data.from,
+      transferId:
+        data.transferId,
+      answer:answer
+    });
+
+  }catch(e){
+
+    finishProgress();
+
+    closeFilePeer();
+
+    alert(
+      "تعذر استقبال الملف"
+    );
+
+  }
+
+}
+
+/* =========================================================
+   FILE ANSWER
+========================================================= */
+
+async function handleFileAnswer(
+  data
+){
+
+  if(
+    !filePeer ||
+    data.transferId !==
+    fileTransferId
+  ){
+
+    return;
+
+  }
+
+  try{
+
+    await filePeer.setRemoteDescription(
+      new RTCSessionDescription(
+        data.answer
+      )
+    );
+
+  }catch(e){}
+
+}
+
+/* =========================================================
+   FILE ICE
+========================================================= */
+
+async function handleFileCandidate(
+  data
+){
+
+  if(
+    data.transferId !==
+    fileTransferId
+  ){
+
+    return;
+
+  }
+
+  if(
+    !filePeer ||
+    !data.candidate
+  ){
+
+    return;
+
+  }
+
+  try{
+
+    await filePeer.addIceCandidate(
+      new RTCIceCandidate(
+        data.candidate
+      )
+    );
+
+  }catch(e){}
+
+}
+
+/* =========================================================
+   RECEIVE DATA
+========================================================= */
+
+function receiveFileData(
+  data
+){
+
+  if(
+    typeof data ===
+    "string"
+  ){
+
+    try{
+
+      const msg =
+        JSON.parse(data);
+
+      if(
+        msg.type ===
+        "file_meta"
+      ){
+
+        incomingFileMeta = {
+          name:
+            msg.name ||
+            "file",
+          size:
+            Number(
+              msg.size || 0
+            ),
+          mime:
+            msg.mime ||
+            "application/octet-stream",
+          kind:
+            msg.kind ||
+            "file"
+        };
+
+        incomingFileChunks =
+          [];
+
+        incomingFileBytes =
+          0;
+
+        showProgress(
+          "جاري استقبال الملف..."
+        );
+
+      }
+
+      else if(
+        msg.type ===
+        "file_end"
+      ){
+
+        finishIncomingFile();
+
+      }
+
+    }catch(e){}
+
+    return;
+
+  }
+
+  let buffer = null;
+
+  if(
+    data instanceof ArrayBuffer
+  ){
+
+    buffer =
+      data;
+
+  }else if(
+    data instanceof Blob
+  ){
+
+    data.arrayBuffer()
+      .then(
+        receiveFileData
+      );
+
+    return;
+
+  }
+
+  if(!buffer){
+    return;
+  }
+
+  incomingFileChunks.push(
+    buffer
+  );
+
+  incomingFileBytes +=
+    buffer.byteLength;
+
+  if(
+    incomingFileMeta &&
+    incomingFileMeta.size
+  ){
+
+    updateProgress(
+      incomingFileBytes,
+      incomingFileMeta.size
+    );
+
+  }
+
+}
+
+function finishIncomingFile(){
+
+  if(
+    !incomingFileMeta ||
+    !incomingFileChunks.length
+  ){
+
+    finishProgress();
+
+    return;
+
+  }
+
+  const blob =
+    new Blob(
+      incomingFileChunks,
+      {
+        type:
+          incomingFileMeta.mime
+      }
+    );
+
+  if(
+    blob.size >
+    MAX_FILE_SIZE
+  ){
+
+    finishProgress();
+
+    alert(
+      "الملف المستلم أكبر من 20 ميجابايت"
+    );
+
+    closeFilePeer();
+
+    return;
+
+  }
+
+  const url =
+    URL.createObjectURL(
+      blob
+    );
+
+  addReceivedFileMessage(
+    incomingFileMeta,
+    url
+  );
+
+  finishProgress();
+
+  incomingFileMeta =
+    null;
+
+  incomingFileChunks =
+    [];
+
+  incomingFileBytes =
+    0;
+
+  setTimeout(
+    function(){
+      closeFilePeer();
+    },
+    1000
+  );
+
+}
+
+function addLocalFileMessage(
+  file,
+  kind
+){
+
+  const msg = {
+    sender:
+      currentUser,
+    receiver:
+      filePartner,
+    kind:
+      kind ||
+      "file",
+    fileName:
+      file.name,
+    fileSize:
+      file.size,
+    createdAt:
+      Date.now()
+  };
+
+  addMessage(
+    msg
+  );
+
+}
+
+function addReceivedFileMessage(
+  meta,
+  url
+){
+
+  const box =
+    document.createElement(
+      "div"
+    );
+
+  box.className =
+    "message other";
+
+  const fileBox =
+    document.createElement(
+      "div"
+    );
+
+  fileBox.className =
+    "file-message";
+
+  if(
+    meta.kind ===
+    "audio"
+  ){
+
+    const audio =
+      document.createElement(
+        "audio"
+      );
+
+    audio.controls =
+      true;
+
+    audio.src =
+      url;
+
+    fileBox.appendChild(
+      audio
+    );
+
+  }else{
+
+    const name =
+      document.createElement(
+        "div"
+      );
+
+    name.textContent =
+      "📎 " +
+      meta.name;
+
+    const size =
+      document.createElement(
+        "div"
+      );
+
+    size.className =
+      "file-size";
+
+    size.textContent =
+      formatFileSize(
+        meta.size
+      );
+
+    const link =
+      document.createElement(
+        "a"
+      );
+
+    link.href =
+      url;
+
+    link.download =
+      meta.name ||
+      "file";
+
+    link.textContent =
+      "⬇️ فتح / تحميل الملف";
+
+    fileBox.appendChild(
+      name
+    );
+
+    fileBox.appendChild(
+      size
+    );
+
+    fileBox.appendChild(
+      link
+    );
+
+  }
+
+  box.appendChild(
+    fileBox
+  );
+
+  const time =
+    document.createElement(
+      "div"
+    );
+
+  time.className =
+    "message-time";
+
+  time.textContent =
+    new Date()
+      .toLocaleTimeString(
+        "ar-EG",
+        {
+          hour:"2-digit",
+          minute:"2-digit"
+        }
+      );
+
+  box.appendChild(
+    time
+  );
+
+  messages.appendChild(
+    box
+  );
+
+  messages.scrollTop =
+    messages.scrollHeight;
+
+}
+
+/* =========================================================
+   FILE PEER
+========================================================= */
+
+function createFilePeer(
+  sender
+){
+
+  const pc =
+    new RTCPeerConnection({
+      iceServers:[
+        {
+          urls:
+            "stun:stun.l.google.com:19302"
+        },
+        {
+          urls:
+            "stun:stun1.l.google.com:19302"
+        }
+      ]
+    });
+
+  if(!sender){
+
+    pc.ondatachannel =
+      function(){
+
+      };
+
+  }
+
+  return pc;
+
+}
+
+function closeFilePeer(){
+
+  if(filePeer){
+
+    try{
+      filePeer.close();
+    }catch(e){}
+
+  }
+
+  filePeer =
+    null;
+
+  filePartner =
+    "";
+
+  fileTransferId =
+    "";
+
+  fileSender =
+    false;
+
+}
 
 /* =========================================================
    VOICE MESSAGE
 ========================================================= */
 
-recordBtn.onclick = async function(){
+recordBtn.onclick =
+  async function(){
 
-  if(isRecording){
+    if(isRecording){
 
-    stopRecording();
-    return;
+      stopRecording();
 
-  }
+      return;
 
-  if(!selectedUser){
+    }
 
-    alert("اختر مستخدمًا أولًا");
-    return;
+    if(!selectedUser){
 
-  }
+      alert(
+        "اختر مستخدمًا أولًا"
+      );
 
-  try{
+      return;
 
-    const stream =
-      await navigator.mediaDevices.getUserMedia({
-        audio:true
-      });
+    }
 
-    audioChunks = [];
+    try{
 
-    mediaRecorder =
-      new MediaRecorder(stream);
+      const stream =
+        await navigator
+          .mediaDevices
+          .getUserMedia({
+            audio:true
+          });
 
-    mediaRecorder.ondataavailable =
-      function(e){
+      audioChunks =
+        [];
 
-        if(e.data.size > 0){
-          audioChunks.push(e.data);
-        }
-
-      };
-
-    mediaRecorder.onstop =
-      async function(){
-
-        const blob =
-          new Blob(
-            audioChunks,
-            {type:"audio/webm"}
-          );
-
-        stream.getTracks().forEach(
-          track => track.stop()
+      mediaRecorder =
+        new MediaRecorder(
+          stream
         );
 
-        await uploadAudio(blob);
+      mediaRecorder.ondataavailable =
+        function(e){
 
-      };
+          if(
+            e.data.size > 0
+          ){
 
-    mediaRecorder.start();
+            audioChunks.push(
+              e.data
+            );
 
-    isRecording = true;
+          }
 
-    recordBtn.textContent = "⏹️";
+        };
 
-  }catch(e){
+      mediaRecorder.onstop =
+        async function(){
 
-    alert("تعذر استخدام الميكروفون");
+          const blob =
+            new Blob(
+              audioChunks,
+              {
+                type:
+                  "audio/webm"
+              }
+            );
 
-  }
+          stream
+            .getTracks()
+            .forEach(
+              track =>
+                track.stop()
+            );
 
-};
+          await sendAudioDirect(
+            blob
+          );
+
+        };
+
+      mediaRecorder.start();
+
+      isRecording =
+        true;
+
+      recordBtn.textContent =
+        "⏹️";
+
+    }catch(e){
+
+      alert(
+        "تعذر استخدام الميكروفون"
+      );
+
+    }
+
+  };
 
 function stopRecording(){
 
@@ -1487,59 +3239,46 @@ function stopRecording(){
 
   }
 
-  isRecording = false;
+  isRecording =
+    false;
 
-  recordBtn.textContent = "🎙️";
+  recordBtn.textContent =
+    "🎙️";
 
 }
 
-async function uploadAudio(blob){
+async function sendAudioDirect(
+  blob
+){
 
-  if(blob.size > MAX_FILE_SIZE){
+  if(
+    blob.size >
+    MAX_FILE_SIZE
+  ){
 
-    alert("الرسالة الصوتية أكبر من 20 ميجابايت");
+    alert(
+      "الرسالة الصوتية أكبر من 20 ميجابايت"
+    );
+
     return;
 
   }
 
-  const form = new FormData();
-
-  form.append(
-    "file",
-    blob,
-    "voice.webm"
-  );
-
-  form.append("to",selectedUser);
-  form.append("kind","audio");
-
-  try{
-
-    const res = await api(
-      "/api/upload?token=" +
-      encodeURIComponent(token),
+  const file =
+    new File(
+      [blob],
+      "voice.webm",
       {
-        method:"POST",
-        body:form
+        type:
+          "audio/webm"
       }
     );
 
-    const data = await res.json();
-
-    if(!res.ok || !data.ok){
-
-      alert(data.error || "فشل إرسال الرسالة الصوتية");
-      return;
-
-    }
-
-    loadHistory(selectedUser);
-
-  }catch(e){
-
-    alert("تعذر إرسال الرسالة الصوتية");
-
-  }
+  await sendFileDirect(
+    file,
+    selectedUser,
+    "audio"
+  );
 
 }
 
@@ -1547,48 +3286,80 @@ async function uploadAudio(blob){
    CALLS
 ========================================================= */
 
-document.getElementById("voiceCallBtn").onclick =
+document.getElementById(
+  "voiceCallBtn"
+).onclick =
   function(){
-    startCall("audio");
+
+    startCall(
+      "audio"
+    );
+
   };
 
-document.getElementById("videoCallBtn").onclick =
+document.getElementById(
+  "videoCallBtn"
+).onclick =
   function(){
-    startCall("video");
+
+    startCall(
+      "video"
+    );
+
   };
 
-async function startCall(type){
+async function startCall(
+  type
+){
 
   if(!selectedUser){
 
-    alert("اختر مستخدمًا أولًا");
+    alert(
+      "اختر مستخدمًا أولًا"
+    );
+
     return;
 
   }
 
-  const ready = await ensureWebSocket(8000);
+  const ready =
+    await ensureWebSocket(
+      8000
+    );
 
   if(!ready){
 
-    alert("الاتصال بالخادم غير متاح، حاول مرة أخرى");
+    alert(
+      "الاتصال بالخادم غير متاح"
+    );
+
     return;
 
   }
 
-  callPartner = selectedUser;
-  callType = type;
+  callPartner =
+    selectedUser;
+
+  callType =
+    type;
+
   callId =
-    Date.now().toString(36) +
-    Math.random().toString(36).slice(2);
+    randomId();
 
   try{
 
-    await preparePeer(type);
+    await preparePeer(
+      type
+    );
 
     const offer =
-      await peerConnection.createOffer();
+      await peerConnection
+        .createOffer();
 
-    await peerConnection.setLocalDescription(offer);
+    await peerConnection
+      .setLocalDescription(
+        offer
+      );
 
     sendWS({
       type:"call_offer",
@@ -1602,7 +3373,10 @@ async function startCall(type){
 
   }catch(e){
 
-    alert("تعذر تشغيل المكالمة: " + e.message);
+    alert(
+      "تعذر تشغيل المكالمة: " +
+      e.message
+    );
 
     endCall(false);
 
@@ -1610,13 +3384,21 @@ async function startCall(type){
 
 }
 
-async function preparePeer(type){
+async function preparePeer(
+  type
+){
 
   peerConnection =
     new RTCPeerConnection({
       iceServers:[
-        {urls:"stun:stun.l.google.com:19302"},
-        {urls:"stun:stun1.l.google.com:19302"}
+        {
+          urls:
+            "stun:stun.l.google.com:19302"
+        },
+        {
+          urls:
+            "stun:stun1.l.google.com:19302"
+        }
       ]
     });
 
@@ -1631,24 +3413,35 @@ async function preparePeer(type){
 
       event.streams[0]
         .getTracks()
-        .forEach(function(track){
+        .forEach(
+          function(track){
 
-          remoteStream.addTrack(track);
+            remoteStream.addTrack(
+              track
+            );
 
-        });
+          }
+        );
 
     };
 
   peerConnection.onicecandidate =
     function(event){
 
-      if(event.candidate && callPartner){
+      if(
+        event.candidate &&
+        callPartner
+      ){
 
         sendWS({
-          type:"call_candidate",
-          to:callPartner,
-          callId:callId,
-          candidate:event.candidate
+          type:
+            "call_candidate",
+          to:
+            callPartner,
+          callId:
+            callId,
+          candidate:
+            event.candidate
         });
 
       }
@@ -1656,47 +3449,71 @@ async function preparePeer(type){
     };
 
   localStream =
-    await navigator.mediaDevices.getUserMedia({
-      audio:true,
-      video:type === "video"
-    });
+    await navigator
+      .mediaDevices
+      .getUserMedia({
+        audio:true,
+        video:
+          type === "video"
+      });
 
-  localStream.getTracks().forEach(function(track){
+  localStream
+    .getTracks()
+    .forEach(
+      function(track){
 
-    peerConnection.addTrack(
-      track,
-      localStream
+        peerConnection.addTrack(
+          track,
+          localStream
+        );
+
+      }
     );
-
-  });
 
   localVideo.srcObject =
     type === "video"
     ? localStream
     : null;
 
-  microphoneEnabled = true;
-  cameraEnabled = true;
+  microphoneEnabled =
+    true;
+
+  cameraEnabled =
+    true;
 
 }
 
 function showActiveCall(){
 
-  activeCall.style.display = "flex";
+  activeCall.style.display =
+    "flex";
 
-  document.getElementById("callInfo").textContent =
+  document.getElementById(
+    "callInfo"
+  ).textContent =
     callType === "video"
-    ? "مكالمة فيديو مع " + callPartner
-    : "مكالمة صوتية مع " + callPartner;
+    ? "مكالمة فيديو مع " +
+      callPartner
+    : "مكالمة صوتية مع " +
+      callPartner;
 
 }
 
-async function handleIncomingOffer(data){
+async function handleIncomingOffer(
+  data
+){
 
-  pendingOffer = data.offer;
-  pendingCaller = data.from;
-  pendingCallId = data.callId;
-  pendingCallType = data.callType;
+  pendingOffer =
+    data.offer;
+
+  pendingCaller =
+    data.from;
+
+  pendingCallId =
+    data.callId;
+
+  pendingCallType =
+    data.callType;
 
   incomingCaller.textContent =
     data.from;
@@ -1706,56 +3523,87 @@ async function handleIncomingOffer(data){
     ? "مكالمة فيديو"
     : "مكالمة صوتية";
 
-  incomingCall.style.display = "flex";
+  incomingCall.style.display =
+    "flex";
 
 }
 
-document.getElementById("acceptCallBtn").onclick =
+document.getElementById(
+  "acceptCallBtn"
+).onclick =
   async function(){
 
-    incomingCall.style.display = "none";
+    incomingCall.style.display =
+      "none";
 
-    callPartner = pendingCaller;
-    callId = pendingCallId;
-    callType = pendingCallType;
+    callPartner =
+      pendingCaller;
+
+    callId =
+      pendingCallId;
+
+    callType =
+      pendingCallType;
 
     try{
 
-      await preparePeer(callType);
-
-      await peerConnection.setRemoteDescription(
-        new RTCSessionDescription(pendingOffer)
+      await preparePeer(
+        callType
       );
 
+      await peerConnection
+        .setRemoteDescription(
+          new RTCSessionDescription(
+            pendingOffer
+          )
+        );
+
       for(
-        const candidate of pendingCandidates
+        const candidate of
+        pendingCandidates
       ){
 
         try{
-          await peerConnection.addIceCandidate(candidate);
+
+          await peerConnection
+            .addIceCandidate(
+              candidate
+            );
+
         }catch(e){}
 
       }
 
-      pendingCandidates = [];
+      pendingCandidates =
+        [];
 
       const answer =
-        await peerConnection.createAnswer();
+        await peerConnection
+          .createAnswer();
 
-      await peerConnection.setLocalDescription(answer);
+      await peerConnection
+        .setLocalDescription(
+          answer
+        );
 
       sendWS({
-        type:"call_answer",
-        to:callPartner,
-        callId:callId,
-        answer:answer
+        type:
+          "call_answer",
+        to:
+          callPartner,
+        callId:
+          callId,
+        answer:
+          answer
       });
 
       showActiveCall();
 
     }catch(e){
 
-      alert("تعذر قبول المكالمة");
+      alert(
+        "تعذر قبول المكالمة"
+      );
 
       endCall(false);
 
@@ -1763,83 +3611,130 @@ document.getElementById("acceptCallBtn").onclick =
 
   };
 
-document.getElementById("rejectCallBtn").onclick =
+document.getElementById(
+  "rejectCallBtn"
+).onclick =
   function(){
 
     if(pendingCaller){
 
       sendWS({
-        type:"call_reject",
-        to:pendingCaller,
-        callId:pendingCallId
+        type:
+          "call_reject",
+        to:
+          pendingCaller,
+        callId:
+          pendingCallId
       });
 
     }
 
-    incomingCall.style.display = "none";
+    incomingCall.style.display =
+      "none";
 
-    pendingOffer = null;
-    pendingCaller = "";
-    pendingCallId = "";
-    pendingCallType = "";
-    pendingCandidates = [];
+    pendingOffer =
+      null;
+
+    pendingCaller =
+      "";
+
+    pendingCallId =
+      "";
+
+    pendingCallType =
+      "";
+
+    pendingCandidates =
+      [];
 
   };
 
-async function handleCallAnswer(data){
+async function handleCallAnswer(
+  data
+){
 
-  if(!peerConnection) return;
+  if(!peerConnection){
+    return;
+  }
 
-  if(data.callId !== callId) return;
+  if(
+    data.callId !==
+    callId
+  ){
+
+    return;
+
+  }
 
   try{
 
-    await peerConnection.setRemoteDescription(
-      new RTCSessionDescription(data.answer)
-    );
+    await peerConnection
+      .setRemoteDescription(
+        new RTCSessionDescription(
+          data.answer
+        )
+      );
 
   }catch(e){}
 
 }
 
-async function handleCandidate(data){
+async function handleCandidate(
+  data
+){
 
-  if(data.callId !== callId &&
-     data.callId !== pendingCallId){
+  if(
+    data.callId !== callId &&
+    data.callId !== pendingCallId
+  ){
 
     return;
 
   }
 
   const candidate =
-    new RTCIceCandidate(data.candidate);
+    new RTCIceCandidate(
+      data.candidate
+    );
 
-  if(peerConnection &&
-     peerConnection.remoteDescription){
+  if(
+    peerConnection &&
+    peerConnection.remoteDescription
+  ){
 
     try{
 
-      await peerConnection.addIceCandidate(candidate);
+      await peerConnection
+        .addIceCandidate(
+          candidate
+        );
 
     }catch(e){}
 
   }else{
 
-    pendingCandidates.push(candidate);
+    pendingCandidates.push(
+      candidate
+    );
 
   }
 
 }
 
-document.getElementById("endCallBtn").onclick =
+document.getElementById(
+  "endCallBtn"
+).onclick =
   function(){
 
     if(callPartner){
 
       sendWS({
-        type:"call_end",
-        to:callPartner,
-        callId:callId
+        type:
+          "call_end",
+        to:
+          callPartner,
+        callId:
+          callId
       });
 
     }
@@ -1848,62 +3743,86 @@ document.getElementById("endCallBtn").onclick =
 
   };
 
-document.getElementById("muteBtn").onclick =
+document.getElementById(
+  "muteBtn"
+).onclick =
   function(){
 
-    if(!localStream) return;
+    if(!localStream){
+      return;
+    }
 
     microphoneEnabled =
       !microphoneEnabled;
 
-    localStream.getAudioTracks()
-      .forEach(function(track){
+    localStream
+      .getAudioTracks()
+      .forEach(
+        function(track){
 
-        track.enabled =
-          microphoneEnabled;
+          track.enabled =
+            microphoneEnabled;
 
-      });
+        }
+      );
 
-    document.getElementById("muteBtn")
-      .textContent =
-        microphoneEnabled
-        ? "🎤"
-        : "🔇";
+    document.getElementById(
+      "muteBtn"
+    ).textContent =
+      microphoneEnabled
+      ? "🎤"
+      : "🔇";
 
   };
 
-document.getElementById("cameraBtn").onclick =
+document.getElementById(
+  "cameraBtn"
+).onclick =
   function(){
 
-    if(!localStream) return;
+    if(!localStream){
+      return;
+    }
 
     cameraEnabled =
       !cameraEnabled;
 
-    localStream.getVideoTracks()
-      .forEach(function(track){
+    localStream
+      .getVideoTracks()
+      .forEach(
+        function(track){
 
-        track.enabled =
-          cameraEnabled;
+          track.enabled =
+            cameraEnabled;
 
-      });
+        }
+      );
 
-    document.getElementById("cameraBtn")
-      .textContent =
-        cameraEnabled
-        ? "📷"
-        : "🚫";
+    document.getElementById(
+      "cameraBtn"
+    ).textContent =
+      cameraEnabled
+      ? "📷"
+      : "🚫";
 
   };
 
-function endCall(sendSignal){
+function endCall(
+  sendSignal
+){
 
-  if(sendSignal && callPartner){
+  if(
+    sendSignal &&
+    callPartner
+  ){
 
     sendWS({
-      type:"call_end",
-      to:callPartner,
-      callId:callId
+      type:
+        "call_end",
+      to:
+        callPartner,
+      callId:
+        callId
     });
 
   }
@@ -1918,30 +3837,59 @@ function endCall(sendSignal){
 
   if(localStream){
 
-    localStream.getTracks()
-      .forEach(track=>track.stop());
+    localStream
+      .getTracks()
+      .forEach(
+        track =>
+          track.stop()
+      );
 
   }
 
-  peerConnection = null;
-  localStream = null;
-  remoteStream = null;
+  peerConnection =
+    null;
 
-  callPartner = "";
-  callId = "";
-  callType = "";
+  localStream =
+    null;
 
-  pendingOffer = null;
-  pendingCaller = "";
-  pendingCallId = "";
-  pendingCallType = "";
-  pendingCandidates = [];
+  remoteStream =
+    null;
 
-  remoteVideo.srcObject = null;
-  localVideo.srcObject = null;
+  callPartner =
+    "";
 
-  incomingCall.style.display = "none";
-  activeCall.style.display = "none";
+  callId =
+    "";
+
+  callType =
+    "";
+
+  pendingOffer =
+    null;
+
+  pendingCaller =
+    "";
+
+  pendingCallId =
+    "";
+
+  pendingCallType =
+    "";
+
+  pendingCandidates =
+    [];
+
+  remoteVideo.srcObject =
+    null;
+
+  localVideo.srcObject =
+    null;
+
+  incomingCall.style.display =
+    "none";
+
+  activeCall.style.display =
+    "none";
 
 }
 
@@ -1949,24 +3897,32 @@ function endCall(sendSignal){
    SETTINGS
 ========================================================= */
 
-document.getElementById("settingsBtn").onclick =
+document.getElementById(
+  "settingsBtn"
+).onclick =
   function(){
 
     settingsUsername.textContent =
       currentUser;
 
-    settingsModal.style.display = "flex";
+    settingsModal.style.display =
+      "flex";
 
   };
 
-document.getElementById("closeSettingsBtn").onclick =
+document.getElementById(
+  "closeSettingsBtn"
+).onclick =
   function(){
 
-    settingsModal.style.display = "none";
+    settingsModal.style.display =
+      "none";
 
   };
 
-document.getElementById("deleteAccountBtn").onclick =
+document.getElementById(
+  "deleteAccountBtn"
+).onclick =
   async function(){
 
     const yes =
@@ -1974,25 +3930,40 @@ document.getElementById("deleteAccountBtn").onclick =
         "هل أنت متأكد؟ سيتم حذف الحساب والرسائل نهائيًا."
       );
 
-    if(!yes) return;
+    if(!yes){
+      return;
+    }
 
     try{
 
-      const res = await api("/api/delete-account",{
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify({
-          token:token
-        })
-      });
+      const res =
+        await api(
+          "/api/delete-account",
+          {
+            method:"POST",
+            headers:{
+              "Content-Type":
+                "application/json"
+            },
+            body:JSON.stringify({
+              token:token
+            })
+          }
+        );
 
-      const data = await res.json();
+      const data =
+        await res.json();
 
-      if(!res.ok || !data.ok){
+      if(
+        !res.ok ||
+        !data.ok
+      ){
 
-        alert(data.error || "تعذر حذف الحساب");
+        alert(
+          data.error ||
+          "تعذر حذف الحساب"
+        );
+
         return;
 
       }
@@ -2001,7 +3972,9 @@ document.getElementById("deleteAccountBtn").onclick =
 
     }catch(e){
 
-      alert("تعذر الاتصال بالخادم");
+      alert(
+        "تعذر الاتصال بالخادم"
+      );
 
     }
 
@@ -2011,20 +3984,26 @@ document.getElementById("deleteAccountBtn").onclick =
    LOGOUT
 ========================================================= */
 
-document.getElementById("logoutBtn").onclick =
+document.getElementById(
+  "logoutBtn"
+).onclick =
   async function(){
 
     try{
 
-      await api("/api/logout",{
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify({
-          token:token
-        })
-      });
+      await api(
+        "/api/logout",
+        {
+          method:"POST",
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+          body:JSON.stringify({
+            token:token
+          })
+        }
+      );
 
     }catch(e){}
 
@@ -2035,6 +4014,8 @@ document.getElementById("logoutBtn").onclick =
 function logoutLocal(){
 
   endCall(false);
+
+  closeFilePeer();
 
   if(ws){
 
@@ -2047,25 +4028,36 @@ function logoutLocal(){
   ws = null;
 
   token = "";
+
   currentUser = "";
+
   selectedUser = "";
 
-  localStorage.removeItem("chat_token");
+  localStorage.removeItem(
+    "chat_token"
+  );
 
-  app.style.display = "none";
-  auth.style.display = "flex";
+  app.style.display =
+    "none";
+
+  auth.style.display =
+    "flex";
 
   messages.textContent =
     "اختر مستخدمًا لبدء المحادثة";
 
-  usersBox.innerHTML = "";
+  usersBox.innerHTML =
+    "";
 
   chatTitle.textContent =
     "اختر مستخدمًا";
 
-  chatAvatar.textContent = "?";
+  chatAvatar.textContent =
+    "?";
 
-  settingsModal.style.display = "none";
+  settingsModal.style.display =
+    "none";
+
 }
 
 </script>
@@ -2078,68 +4070,126 @@ function logoutLocal(){
 
 export default {
 
-  async fetch(request, env){
+  async fetch(
+    request,
+    env
+  ){
 
-    const url = new URL(request.url);
+    const url =
+      new URL(request.url);
 
     if(
       url.pathname === "/ws" &&
-      request.headers.get("Upgrade") === "websocket"
+      request.headers.get(
+        "Upgrade"
+      ) === "websocket"
     ){
 
       const id =
-        env.CHAT_ROOM.idFromName("main");
+        env.CHAT_ROOM.idFromName(
+          "main"
+        );
 
       const room =
         env.CHAT_ROOM.get(id);
 
-      return room.fetch(request);
+      return room.fetch(
+        request
+      );
 
     }
 
-    if(url.pathname === "/api/register"){
-      return forward(env,request,"register");
-    }
-
-    if(url.pathname === "/api/login"){
-      return forward(env,request,"login");
-    }
-
-    if(url.pathname === "/api/logout"){
-      return forward(env,request,"logout");
-    }
-
-    if(url.pathname === "/api/me"){
-      return forward(env,request,"me");
-    }
-
-    if(url.pathname === "/api/users"){
-      return forward(env,request,"users");
-    }
-
-    if(url.pathname === "/api/upload"){
-      return forward(env,request,"upload");
-    }
-
-    if(url.pathname === "/api/delete-account"){
-      return forward(env,request,"delete-account");
-    }
-
-    if(url.pathname.startsWith("/api/file/")){
+    if(
+      url.pathname ===
+      "/api/register"
+    ){
 
       return forward(
         env,
         request,
-        "file"
+        "register"
       );
 
     }
+
+    if(
+      url.pathname ===
+      "/api/login"
+    ){
+
+      return forward(
+        env,
+        request,
+        "login"
+      );
+
+    }
+
+    if(
+      url.pathname ===
+      "/api/logout"
+    ){
+
+      return forward(
+        env,
+        request,
+        "logout"
+      );
+
+    }
+
+    if(
+      url.pathname ===
+      "/api/me"
+    ){
+
+      return forward(
+        env,
+        request,
+        "me"
+      );
+
+    }
+
+    if(
+      url.pathname ===
+      "/api/users"
+    ){
+
+      return forward(
+        env,
+        request,
+        "users"
+      );
+
+    }
+
+    if(
+      url.pathname ===
+      "/api/delete-account"
+    ){
+
+      return forward(
+        env,
+        request,
+        "delete-account"
+      );
+
+    }
+
+    /*
+      لا يوجد /api/upload
+      ولا /api/file
+      لأن الملفات تنتقل مباشرة
+      بين المتصفحات.
+    */
 
     return new Response(
       HTML,
       {
         headers:{
-          "Content-Type":"text/html;charset=UTF-8"
+          "Content-Type":
+            "text/html;charset=UTF-8"
         }
       }
     );
@@ -2148,16 +4198,24 @@ export default {
 
 };
 
-async function forward(env,request,action){
+async function forward(
+  env,
+  request,
+  action
+){
 
   const id =
-    env.CHAT_ROOM.idFromName("main");
+    env.CHAT_ROOM.idFromName(
+      "main"
+    );
 
   const room =
     env.CHAT_ROOM.get(id);
 
   const headers =
-    new Headers(request.headers);
+    new Headers(
+      request.headers
+    );
 
   headers.set(
     "X-Chat-Action",
@@ -2167,10 +4225,14 @@ async function forward(env,request,action){
   const req =
     new Request(
       request,
-      {headers}
+      {
+        headers
+      }
     );
 
-  return room.fetch(req);
+  return room.fetch(
+    req
+  );
 
 }
 
@@ -2178,16 +4240,27 @@ async function forward(env,request,action){
    DURABLE OBJECT
 ========================================================= */
 
-export class ChatRoom extends DurableObject {
+export class ChatRoom
+  extends DurableObject {
 
-  constructor(ctx,env){
+  constructor(
+    ctx,
+    env
+  ){
 
-    super(ctx,env);
+    super(
+      ctx,
+      env
+    );
 
-    this.env = env;
-    this.sql = ctx.storage.sql;
+    this.env =
+      env;
 
-    this.connections = new Map();
+    this.sql =
+      ctx.storage.sql;
+
+    this.connections =
+      new Map();
 
     this.setupDatabase();
 
@@ -2246,12 +4319,21 @@ export class ChatRoom extends DurableObject {
       ).toArray();
 
     const names =
-      cols.map(x=>x.name);
+      cols.map(
+        x => x.name
+      );
 
-    if(!names.includes("salt")){
+    if(
+      !names.includes(
+        "salt"
+      )
+    ){
 
       this.sql.exec(
-        "ALTER TABLE accounts ADD COLUMN salt TEXT NOT NULL DEFAULT ''"
+        `
+        ALTER TABLE accounts
+        ADD COLUMN salt TEXT NOT NULL DEFAULT ''
+        `
       );
 
     }
@@ -2266,20 +4348,39 @@ export class ChatRoom extends DurableObject {
       ).toArray();
 
     const names =
-      cols.map(x=>x.name);
+      cols.map(
+        x => x.name
+      );
 
-    if(!names.includes("created_at")){
+    if(
+      !names.includes(
+        "created_at"
+      )
+    ){
 
       this.sql.exec(
-        "ALTER TABLE sessions ADD COLUMN created_at INTEGER NOT NULL DEFAULT 0"
+        `
+        ALTER TABLE sessions
+        ADD COLUMN created_at
+        INTEGER NOT NULL DEFAULT 0
+        `
       );
 
     }
 
-    if(!names.includes("expires_at")){
+    if(
+      !names.includes(
+        "expires_at"
+      )
+    ){
 
       this.sql.exec(
-        "ALTER TABLE sessions ADD COLUMN expires_at INTEGER NOT NULL DEFAULT 9999999999999"
+        `
+        ALTER TABLE sessions
+        ADD COLUMN expires_at
+        INTEGER NOT NULL
+        DEFAULT 9999999999999
+        `
       );
 
     }
@@ -2294,85 +4395,147 @@ export class ChatRoom extends DurableObject {
       ).toArray();
 
     const names =
-      cols.map(x=>x.name);
+      cols.map(
+        x => x.name
+      );
 
-    if(!names.includes("kind")){
+    if(
+      !names.includes(
+        "kind"
+      )
+    ){
 
       this.sql.exec(
-        "ALTER TABLE messages ADD COLUMN kind TEXT NOT NULL DEFAULT 'text'"
+        `
+        ALTER TABLE messages
+        ADD COLUMN kind TEXT
+        NOT NULL DEFAULT 'text'
+        `
       );
 
     }
 
-    if(!names.includes("file_id")){
+    if(
+      !names.includes(
+        "file_id"
+      )
+    ){
 
       this.sql.exec(
-        "ALTER TABLE messages ADD COLUMN file_id TEXT"
+        `
+        ALTER TABLE messages
+        ADD COLUMN file_id TEXT
+        `
       );
 
     }
 
-    if(!names.includes("file_name")){
+    if(
+      !names.includes(
+        "file_name"
+      )
+    ){
 
       this.sql.exec(
-        "ALTER TABLE messages ADD COLUMN file_name TEXT"
+        `
+        ALTER TABLE messages
+        ADD COLUMN file_name TEXT
+        `
       );
 
     }
 
   }
 
-  async fetch(request){
-
-    const url = new URL(request.url);
+  async fetch(
+    request
+  ){
 
     const action =
-      request.headers.get("X-Chat-Action");
+      request.headers.get(
+        "X-Chat-Action"
+      );
 
     if(
-      request.headers.get("Upgrade") === "websocket"
+      request.headers.get(
+        "Upgrade"
+      ) === "websocket"
     ){
 
-      return this.websocket(request);
+      return this.websocket(
+        request
+      );
 
     }
 
-    if(action === "register"){
-      return this.register(request);
+    if(
+      action === "register"
+    ){
+
+      return this.register(
+        request
+      );
+
     }
 
-    if(action === "login"){
-      return this.login(request);
+    if(
+      action === "login"
+    ){
+
+      return this.login(
+        request
+      );
+
     }
 
-    if(action === "logout"){
-      return this.logout(request);
+    if(
+      action === "logout"
+    ){
+
+      return this.logout(
+        request
+      );
+
     }
 
-    if(action === "me"){
-      return this.me(request);
+    if(
+      action === "me"
+    ){
+
+      return this.me(
+        request
+      );
+
     }
 
-    if(action === "users"){
-      return this.users(request);
+    if(
+      action === "users"
+    ){
+
+      return this.users(
+        request
+      );
+
     }
 
-    if(action === "upload"){
-      return this.upload(request);
+    if(
+      action ===
+      "delete-account"
+    ){
+
+      return this.deleteAccount(
+        request
+      );
+
     }
 
-    if(action === "file"){
-      return this.getFile(request);
-    }
-
-    if(action === "delete-account"){
-      return this.deleteAccount(request);
-    }
-
-    return json({
-      ok:false,
-      error:"Not found"
-    },404);
+    return json(
+      {
+        ok:false,
+        error:"Not found"
+      },
+      404
+    );
 
   }
 
@@ -2380,7 +4543,9 @@ export class ChatRoom extends DurableObject {
      REGISTER
   ======================================================= */
 
-  async register(request){
+  async register(
+    request
+  ){
 
     try{
 
@@ -2388,41 +4553,67 @@ export class ChatRoom extends DurableObject {
         await request.json();
 
       const username =
-        String(body.username || "").trim();
+        String(
+          body.username ||
+          ""
+        ).trim();
 
       const password =
-        String(body.password || "");
+        String(
+          body.password ||
+          ""
+        );
 
-      if(username.length < 2){
+      if(
+        username.length < 2
+      ){
 
-        return json({
-          ok:false,
-          error:"اسم المستخدم قصير جدًا"
-        },400);
+        return json(
+          {
+            ok:false,
+            error:
+              "اسم المستخدم قصير جدًا"
+          },
+          400
+        );
 
       }
 
-      if(password.length < 4){
+      if(
+        password.length < 4
+      ){
 
-        return json({
-          ok:false,
-          error:"كلمة المرور قصيرة جدًا"
-        },400);
+        return json(
+          {
+            ok:false,
+            error:
+              "كلمة المرور قصيرة جدًا"
+          },
+          400
+        );
 
       }
 
       const existing =
         this.sql.exec(
-          "SELECT username FROM accounts WHERE username=?",
+          `
+          SELECT username
+          FROM accounts
+          WHERE username=?
+          `,
           username
         ).toArray();
 
       if(existing.length){
 
-        return json({
-          ok:false,
-          error:"اسم المستخدم موجود بالفعل"
-        },409);
+        return json(
+          {
+            ok:false,
+            error:
+              "اسم المستخدم موجود بالفعل"
+          },
+          409
+        );
 
       }
 
@@ -2472,10 +4663,15 @@ export class ChatRoom extends DurableObject {
 
     }catch(e){
 
-      return json({
-        ok:false,
-        error:"حدث خطأ أثناء إنشاء الحساب: " + e.message
-      },500);
+      return json(
+        {
+          ok:false,
+          error:
+            "حدث خطأ أثناء إنشاء الحساب: " +
+            e.message
+        },
+        500
+      );
 
     }
 
@@ -2485,7 +4681,9 @@ export class ChatRoom extends DurableObject {
      LOGIN
   ======================================================= */
 
-  async login(request){
+  async login(
+    request
+  ){
 
     try{
 
@@ -2493,15 +4691,24 @@ export class ChatRoom extends DurableObject {
         await request.json();
 
       const username =
-        String(body.username || "").trim();
+        String(
+          body.username ||
+          ""
+        ).trim();
 
       const password =
-        String(body.password || "");
+        String(
+          body.password ||
+          ""
+        );
 
       const rows =
         this.sql.exec(
           `
-          SELECT username,password_hash,salt
+          SELECT
+            username,
+            password_hash,
+            salt
           FROM accounts
           WHERE username=?
           `,
@@ -2510,14 +4717,19 @@ export class ChatRoom extends DurableObject {
 
       if(!rows.length){
 
-        return json({
-          ok:false,
-          error:"اسم المستخدم أو كلمة المرور غير صحيحة"
-        },401);
+        return json(
+          {
+            ok:false,
+            error:
+              "اسم المستخدم أو كلمة المرور غير صحيحة"
+          },
+          401
+        );
 
       }
 
-      const account = rows[0];
+      const account =
+        rows[0];
 
       const hash =
         await hashPassword(
@@ -2525,12 +4737,19 @@ export class ChatRoom extends DurableObject {
           account.salt
         );
 
-      if(hash !== account.password_hash){
+      if(
+        hash !==
+        account.password_hash
+      ){
 
-        return json({
-          ok:false,
-          error:"اسم المستخدم أو كلمة المرور غير صحيحة"
-        },401);
+        return json(
+          {
+            ok:false,
+            error:
+              "اسم المستخدم أو كلمة المرور غير صحيحة"
+          },
+          401
+        );
 
       }
 
@@ -2560,10 +4779,15 @@ export class ChatRoom extends DurableObject {
 
     }catch(e){
 
-      return json({
-        ok:false,
-        error:"حدث خطأ أثناء تسجيل الدخول: " + e.message
-      },500);
+      return json(
+        {
+          ok:false,
+          error:
+            "حدث خطأ أثناء تسجيل الدخول: " +
+            e.message
+        },
+        500
+      );
 
     }
 
@@ -2573,22 +4797,33 @@ export class ChatRoom extends DurableObject {
      ME
   ======================================================= */
 
-  async me(request){
+  async me(
+    request
+  ){
 
     const url =
-      new URL(request.url);
+      new URL(
+        request.url
+      );
 
     const token =
-      url.searchParams.get("token");
+      url.searchParams.get(
+        "token"
+      );
 
     const username =
-      this.getUserFromToken(token);
+      this.getUserFromToken(
+        token
+      );
 
     if(!username){
 
-      return json({
-        ok:false
-      },401);
+      return json(
+        {
+          ok:false
+        },
+        401
+      );
 
     }
 
@@ -2603,7 +4838,9 @@ export class ChatRoom extends DurableObject {
      LOGOUT
   ======================================================= */
 
-  async logout(request){
+  async logout(
+    request
+  ){
 
     try{
 
@@ -2611,12 +4848,18 @@ export class ChatRoom extends DurableObject {
         await request.json();
 
       const token =
-        String(body.token || "");
+        String(
+          body.token ||
+          ""
+        );
 
       if(token){
 
         this.sql.exec(
-          "DELETE FROM sessions WHERE token=?",
+          `
+          DELETE FROM sessions
+          WHERE token=?
+          `,
           token
         );
 
@@ -2640,39 +4883,61 @@ export class ChatRoom extends DurableObject {
      USERS
   ======================================================= */
 
-  async users(request){
+  async users(
+    request
+  ){
 
     const url =
-      new URL(request.url);
+      new URL(
+        request.url
+      );
 
     const token =
-      url.searchParams.get("token");
+      url.searchParams.get(
+        "token"
+      );
 
     const current =
-      this.getUserFromToken(token);
+      this.getUserFromToken(
+        token
+      );
 
     if(!current){
 
-      return json({
-        ok:false,
-        error:"جلسة غير صالحة"
-      },401);
+      return json(
+        {
+          ok:false,
+          error:
+            "جلسة غير صالحة"
+        },
+        401
+      );
 
     }
 
     const accounts =
       this.sql.exec(
-        "SELECT username FROM accounts ORDER BY username"
+        `
+        SELECT username
+        FROM accounts
+        ORDER BY username
+        `
       ).toArray();
 
     const online =
       this.getOnlineUsernames();
 
     const result =
-      accounts.map(row=>({
-        username:row.username,
-        online:online.has(row.username)
-      }));
+      accounts.map(
+        row => ({
+          username:
+            row.username,
+          online:
+            online.has(
+              row.username
+            )
+        })
+      );
 
     return json({
       ok:true,
@@ -2687,25 +4952,34 @@ export class ChatRoom extends DurableObject {
       new Set();
 
     for(
-      const username of this.connections.keys()
+      const username of
+      this.connections.keys()
     ){
 
-      set.add(username);
+      set.add(
+        username
+      );
 
     }
 
     try{
 
       for(
-        const socket of this.ctx.getWebSockets()
+        const socket of
+        this.ctx.getWebSockets()
       ){
 
         const data =
           socket.deserializeAttachment();
 
-        if(data && data.username){
+        if(
+          data &&
+          data.username
+        ){
 
-          set.add(data.username);
+          set.add(
+            data.username
+          );
 
         }
 
@@ -2718,311 +4992,12 @@ export class ChatRoom extends DurableObject {
   }
 
   /* =======================================================
-     UPLOAD
-  ======================================================= */
-
-  async upload(request){
-
-    const url =
-      new URL(request.url);
-
-    const token =
-      url.searchParams.get("token");
-
-    const username =
-      this.getUserFromToken(token);
-
-    if(!username){
-
-      return json({
-        ok:false,
-        error:"جلسة غير صالحة"
-      },401);
-
-    }
-
-    if(!this.env.FILES){
-
-      return json({
-        ok:false,
-        error:"لم يتم إعداد R2 Bucket باسم FILES"
-      },500);
-
-    }
-
-    const contentLength =
-      Number(
-        request.headers.get("content-length") || 0
-      );
-
-    if(contentLength > MAX_FILE_SIZE + 1024 * 1024){
-
-      return json({
-        ok:false,
-        error:"الملف أكبر من 20 ميجابايت"
-      },413);
-
-    }
-
-    try{
-
-      const form =
-        await request.formData();
-
-      const file =
-        form.get("file");
-
-      const to =
-        String(form.get("to") || "").trim();
-
-      const kind =
-        String(form.get("kind") || "file");
-
-      if(
-        !file ||
-        typeof file.arrayBuffer !== "function"
-      ){
-
-        return json({
-          ok:false,
-          error:"لم يتم اختيار ملف"
-        },400);
-
-      }
-
-      if(!to){
-
-        return json({
-          ok:false,
-          error:"المستخدم غير محدد"
-        },400);
-
-      }
-
-      const target =
-        this.sql.exec(
-          "SELECT username FROM accounts WHERE username=?",
-          to
-        ).toArray();
-
-      if(!target.length){
-
-        return json({
-          ok:false,
-          error:"المستخدم غير موجود"
-        },404);
-
-      }
-
-      if(file.size > MAX_FILE_SIZE){
-
-        return json({
-          ok:false,
-          error:"الحد الأقصى للملف هو 20 ميجابايت"
-        },413);
-
-      }
-
-      const fileId =
-        randomToken();
-
-      const key =
-        "chat/" +
-        fileId;
-
-      await this.env.FILES.put(
-        key,
-        file.stream(),
-        {
-          httpMetadata:{
-            contentType:
-              file.type ||
-              "application/octet-stream",
-
-            contentDisposition:
-              'inline; filename="' +
-              encodeURIComponent(
-                file.name || "file"
-              ) +
-              '"'
-          }
-        }
-      );
-
-      const now =
-        Date.now();
-
-      this.sql.exec(
-        `
-        INSERT INTO messages
-        (
-          sender,
-          receiver,
-          text,
-          kind,
-          file_id,
-          file_name,
-          created_at
-        )
-        VALUES(?,?,?,?,?,?,?)
-        `,
-        username,
-        to,
-        "",
-        kind,
-        key,
-        file.name || "file",
-        now
-      );
-
-      this.sendToUser(
-        to,
-        {
-          type:"message",
-          from:username,
-          sender:username,
-          to:to,
-          kind:kind,
-          fileId:key,
-          fileName:file.name || "file",
-          createdAt:now
-        }
-      );
-
-      return json({
-        ok:true,
-        fileId:key
-      });
-
-    }catch(e){
-
-      return json({
-        ok:false,
-        error:"فشل رفع الملف: " + e.message
-      },500);
-
-    }
-
-  }
-
-  /* =======================================================
-     GET FILE
-  ======================================================= */
-
-  async getFile(request){
-
-    const url =
-      new URL(request.url);
-
-    const token =
-      url.searchParams.get("token");
-
-    const username =
-      this.getUserFromToken(token);
-
-    if(!username){
-
-      return new Response(
-        "Unauthorized",
-        {status:401}
-      );
-
-    }
-
-    if(!this.env.FILES){
-
-      return new Response(
-        "R2 not configured",
-        {status:500}
-      );
-
-    }
-
-    const parts =
-      url.pathname.split("/");
-
-    const fileId =
-      decodeURIComponent(
-        parts.slice(3).join("/")
-      );
-
-    if(!fileId){
-
-      return new Response(
-        "Not found",
-        {status:404}
-      );
-
-    }
-
-    const message =
-      this.sql.exec(
-        `
-        SELECT sender,receiver
-        FROM messages
-        WHERE file_id=?
-        `,
-        fileId
-      ).toArray();
-
-    if(!message.length){
-
-      return new Response(
-        "Not found",
-        {status:404}
-      );
-
-    }
-
-    const row =
-      message[0];
-
-    if(
-      row.sender !== username &&
-      row.receiver !== username
-    ){
-
-      return new Response(
-        "Forbidden",
-        {status:403}
-      );
-
-    }
-
-    const object =
-      await this.env.FILES.get(fileId);
-
-    if(!object){
-
-      return new Response(
-        "File not found",
-        {status:404}
-      );
-
-    }
-
-    const headers =
-      new Headers();
-
-    object.writeHttpMetadata(headers);
-
-    headers.set(
-      "Cache-Control",
-      "private, max-age=3600"
-    );
-
-    return new Response(
-      object.body,
-      {headers}
-    );
-
-  }
-
-  /* =======================================================
      DELETE ACCOUNT
   ======================================================= */
 
-  async deleteAccount(request){
+  async deleteAccount(
+    request
+  ){
 
     try{
 
@@ -3030,78 +5005,71 @@ export class ChatRoom extends DurableObject {
         await request.json();
 
       const token =
-        String(body.token || "");
+        String(
+          body.token ||
+          ""
+        );
 
       const username =
-        this.getUserFromToken(token);
+        this.getUserFromToken(
+          token
+        );
 
       if(!username){
 
-        return json({
-          ok:false,
-          error:"جلسة غير صالحة"
-        },401);
-
-      }
-
-      const files =
-        this.sql.exec(
-          `
-          SELECT file_id
-          FROM messages
-          WHERE sender=? OR receiver=?
-          `,
-          username,
-          username
-        ).toArray();
-
-      if(this.env.FILES){
-
-        for(const row of files){
-
-          if(row.file_id){
-
-            try{
-              await this.env.FILES.delete(
-                row.file_id
-              );
-            }catch(e){}
-
-          }
-
-        }
+        return json(
+          {
+            ok:false,
+            error:
+              "جلسة غير صالحة"
+          },
+          401
+        );
 
       }
 
       this.sql.exec(
         `
         DELETE FROM messages
-        WHERE sender=? OR receiver=?
+        WHERE sender=?
+        OR receiver=?
         `,
         username,
         username
       );
 
       this.sql.exec(
-        "DELETE FROM sessions WHERE username=?",
+        `
+        DELETE FROM sessions
+        WHERE username=?
+        `,
         username
       );
 
       this.sql.exec(
-        "DELETE FROM accounts WHERE username=?",
+        `
+        DELETE FROM accounts
+        WHERE username=?
+        `,
         username
       );
 
       const sockets =
-        this.getSocketsForUser(username);
+        this.getSocketsForUser(
+          username
+        );
 
-      for(const socket of sockets){
+      for(
+        const socket of
+        sockets
+      ){
 
         try{
 
           socket.send(
             JSON.stringify({
-              type:"account_deleted"
+              type:
+                "account_deleted"
             })
           );
 
@@ -3111,7 +5079,9 @@ export class ChatRoom extends DurableObject {
 
       }
 
-      this.connections.delete(username);
+      this.connections.delete(
+        username
+      );
 
       this.broadcastUsersChanged();
 
@@ -3121,10 +5091,15 @@ export class ChatRoom extends DurableObject {
 
     }catch(e){
 
-      return json({
-        ok:false,
-        error:"تعذر حذف الحساب: " + e.message
-      },500);
+      return json(
+        {
+          ok:false,
+          error:
+            "تعذر حذف الحساب: " +
+            e.message
+        },
+        500
+      );
 
     }
 
@@ -3134,22 +5109,32 @@ export class ChatRoom extends DurableObject {
      WEBSOCKET
   ======================================================= */
 
-  async websocket(request){
+  async websocket(
+    request
+  ){
 
     const url =
-      new URL(request.url);
+      new URL(
+        request.url
+      );
 
     const token =
-      url.searchParams.get("token");
+      url.searchParams.get(
+        "token"
+      );
 
     const username =
-      this.getUserFromToken(token);
+      this.getUserFromToken(
+        token
+      );
 
     if(!username){
 
       return new Response(
         "Unauthorized",
-        {status:401}
+        {
+          status:401
+        }
       );
 
     }
@@ -3163,13 +5148,19 @@ export class ChatRoom extends DurableObject {
     const server =
       pair[1];
 
-    this.ctx.acceptWebSocket(server);
+    this.ctx.acceptWebSocket(
+      server
+    );
 
     server.serializeAttachment({
       username
     });
 
-    if(!this.connections.has(username)){
+    if(
+      !this.connections.has(
+        username
+      )
+    ){
 
       this.connections.set(
         username,
@@ -3234,36 +5225,55 @@ export class ChatRoom extends DurableObject {
 
   }
 
-  removeConnection(username,socket){
+  removeConnection(
+    username,
+    socket
+  ){
 
     const set =
-      this.connections.get(username);
+      this.connections.get(
+        username
+      );
 
-    if(!set) return;
+    if(!set){
+      return;
+    }
 
-    set.delete(socket);
+    set.delete(
+      socket
+    );
 
     if(!set.size){
 
-      this.connections.delete(username);
+      this.connections.delete(
+        username
+      );
 
     }
 
   }
 
-  getSocketsForUser(username){
+  getSocketsForUser(
+    username
+  ){
 
     const result =
       new Set();
 
     const set =
-      this.connections.get(username);
+      this.connections.get(
+        username
+      );
 
     if(set){
 
-      for(const socket of set){
+      for(
+        const socket of set
+      ){
 
-        result.add(socket);
+        result.add(
+          socket
+        );
 
       }
 
@@ -3272,7 +5282,8 @@ export class ChatRoom extends DurableObject {
     try{
 
       for(
-        const socket of this.ctx.getWebSockets()
+        const socket of
+        this.ctx.getWebSockets()
       ){
 
         const data =
@@ -3280,10 +5291,13 @@ export class ChatRoom extends DurableObject {
 
         if(
           data &&
-          data.username === username
+          data.username ===
+          username
         ){
 
-          result.add(socket);
+          result.add(
+            socket
+          );
 
         }
 
@@ -3295,17 +5309,28 @@ export class ChatRoom extends DurableObject {
 
   }
 
-  sendToUser(username,data){
+  sendToUser(
+    username,
+    data
+  ){
 
     const sockets =
-      this.getSocketsForUser(username);
+      this.getSocketsForUser(
+        username
+      );
 
     const payload =
-      JSON.stringify(data);
+      JSON.stringify(
+        data
+      );
 
-    let sent = false;
+    let sent =
+      false;
 
-    for(const socket of sockets){
+    for(
+      const socket of
+      sockets
+    ){
 
       try{
 
@@ -3314,8 +5339,12 @@ export class ChatRoom extends DurableObject {
           WebSocket.OPEN
         ){
 
-          socket.send(payload);
-          sent = true;
+          socket.send(
+            payload
+          );
+
+          sent =
+            true;
 
         }
 
@@ -3331,13 +5360,15 @@ export class ChatRoom extends DurableObject {
 
     const payload =
       JSON.stringify({
-        type:"users_changed"
+        type:
+          "users_changed"
       });
 
     try{
 
       for(
-        const socket of this.ctx.getWebSockets()
+        const socket of
+        this.ctx.getWebSockets()
       ){
 
         try{
@@ -3347,7 +5378,9 @@ export class ChatRoom extends DurableObject {
             WebSocket.OPEN
           ){
 
-            socket.send(payload);
+            socket.send(
+              payload
+            );
 
           }
 
@@ -3363,12 +5396,17 @@ export class ChatRoom extends DurableObject {
      SOCKET HANDLER
   ======================================================= */
 
-  onSocketMessage(socket,raw){
+  onSocketMessage(
+    socket,
+    raw
+  ){
 
     try{
 
       const data =
-        JSON.parse(raw);
+        JSON.parse(
+          raw
+        );
 
       const attachment =
         socket.deserializeAttachment();
@@ -3377,9 +5415,14 @@ export class ChatRoom extends DurableObject {
         attachment &&
         attachment.username;
 
-      if(!username) return;
+      if(!username){
+        return;
+      }
 
-      if(data.type === "message"){
+      if(
+        data.type ===
+        "message"
+      ){
 
         this.handleMessage(
           username,
@@ -3388,7 +5431,10 @@ export class ChatRoom extends DurableObject {
 
       }
 
-      else if(data.type === "history"){
+      else if(
+        data.type ===
+        "history"
+      ){
 
         this.handleHistory(
           username,
@@ -3397,25 +5443,45 @@ export class ChatRoom extends DurableObject {
 
       }
 
-      else if(data.type === "typing"){
+      else if(
+        data.type ===
+        "typing"
+      ){
 
         this.sendToUser(
           data.to,
           {
-            type:"typing",
-            from:username,
-            value:!!data.value
+            type:
+              "typing",
+            from:
+              username,
+            value:
+              !!data.value
           }
         );
 
       }
 
       else if(
-        data.type === "call_offer" ||
-        data.type === "call_answer" ||
-        data.type === "call_candidate" ||
-        data.type === "call_reject" ||
-        data.type === "call_end"
+        data.type ===
+          "call_offer" ||
+        data.type ===
+          "call_answer" ||
+        data.type ===
+          "call_candidate" ||
+        data.type ===
+          "call_reject" ||
+        data.type ===
+          "call_end" ||
+
+        data.type ===
+          "file_offer" ||
+        data.type ===
+          "file_answer" ||
+        data.type ===
+          "file_candidate" ||
+        data.type ===
+          "file_error"
       ){
 
         this.handleCallSignal(
@@ -3433,28 +5499,44 @@ export class ChatRoom extends DurableObject {
      MESSAGE
   ======================================================= */
 
-  handleMessage(sender,data){
+  handleMessage(
+    sender,
+    data
+  ){
 
     const receiver =
-      String(data.to || "").trim();
+      String(
+        data.to ||
+        ""
+      ).trim();
 
     const text =
-      String(data.text || "");
+      String(
+        data.text ||
+        ""
+      );
 
-    if(!receiver || !text){
+    if(
+      !receiver ||
+      !text
+    ){
+
       return;
+
     }
 
     const exists =
       this.sql.exec(
-        "SELECT username FROM accounts WHERE username=?",
+        `
+        SELECT username
+        FROM accounts
+        WHERE username=?
+        `,
         receiver
       ).toArray();
 
     if(!exists.length){
-
       return;
-
     }
 
     const now =
@@ -3463,7 +5545,13 @@ export class ChatRoom extends DurableObject {
     this.sql.exec(
       `
       INSERT INTO messages
-      (sender,receiver,text,kind,created_at)
+      (
+        sender,
+        receiver,
+        text,
+        kind,
+        created_at
+      )
       VALUES(?,?,?,?,?)
       `,
       sender,
@@ -3474,13 +5562,20 @@ export class ChatRoom extends DurableObject {
     );
 
     const packet = {
-      type:"message",
-      from:sender,
-      sender:sender,
-      to:receiver,
-      text:text,
-      kind:"text",
-      createdAt:now
+      type:
+        "message",
+      from:
+        sender,
+      sender:
+        sender,
+      to:
+        receiver,
+      text:
+        text,
+      kind:
+        "text",
+      createdAt:
+        now
     };
 
     this.sendToUser(
@@ -3499,12 +5594,20 @@ export class ChatRoom extends DurableObject {
      HISTORY
   ======================================================= */
 
-  handleHistory(username,data){
+  handleHistory(
+    username,
+    data
+  ){
 
     const other =
-      String(data.with || "").trim();
+      String(
+        data.with ||
+        ""
+      ).trim();
 
-    if(!other) return;
+    if(!other){
+      return;
+    }
 
     const rows =
       this.sql.exec(
@@ -3520,9 +5623,15 @@ export class ChatRoom extends DurableObject {
           created_at
         FROM messages
         WHERE
-          (sender=? AND receiver=?)
+          (
+            sender=? AND
+            receiver=?
+          )
           OR
-          (sender=? AND receiver=?)
+          (
+            sender=? AND
+            receiver=?
+          )
         ORDER BY created_at ASC
         LIMIT 500
         `,
@@ -3533,42 +5642,67 @@ export class ChatRoom extends DurableObject {
       ).toArray();
 
     const list =
-      rows.map(row=>({
-        id:row.id,
-        sender:row.sender,
-        receiver:row.receiver,
-        text:row.text || "",
-        kind:row.kind || "text",
-        fileId:row.file_id || "",
-        fileName:row.file_name || "",
-        createdAt:row.created_at
-      }));
+      rows.map(
+        row => ({
+          id:
+            row.id,
+          sender:
+            row.sender,
+          receiver:
+            row.receiver,
+          text:
+            row.text || "",
+          kind:
+            row.kind || "text",
+          fileId:
+            row.file_id || "",
+          fileName:
+            row.file_name || "",
+          createdAt:
+            row.created_at
+        })
+      );
 
     this.sendToUser(
       username,
       {
-        type:"history",
-        with:other,
-        messages:list
+        type:
+          "history",
+        with:
+          other,
+        messages:
+          list
       }
     );
 
   }
 
   /* =======================================================
-     CALL SIGNAL
+     CALL / FILE SIGNALING
   ======================================================= */
 
-  handleCallSignal(sender,data){
+  handleCallSignal(
+    sender,
+    data
+  ){
 
     const target =
-      String(data.to || "").trim();
+      String(
+        data.to ||
+        ""
+      ).trim();
 
-    if(!target) return;
+    if(!target){
+      return;
+    }
 
     const exists =
       this.sql.exec(
-        "SELECT username FROM accounts WHERE username=?",
+        `
+        SELECT username
+        FROM accounts
+        WHERE username=?
+        `,
         target
       ).toArray();
 
@@ -3577,9 +5711,22 @@ export class ChatRoom extends DurableObject {
       this.sendToUser(
         sender,
         {
-          type:"call_error",
-          error:"المستخدم غير موجود",
-          callId:data.callId || ""
+          type:
+            data.type ===
+            "file_offer"
+            ? "file_error"
+            : "call_error",
+
+          error:
+            "المستخدم غير موجود",
+
+          callId:
+            data.callId ||
+            "",
+
+          transferId:
+            data.transferId ||
+            ""
         }
       );
 
@@ -3594,24 +5741,43 @@ export class ChatRoom extends DurableObject {
           {},
           data,
           {
-            from:sender,
-            type:data.type
+            from:
+              sender,
+            type:
+              data.type
           }
         )
       );
 
-    if(!sent &&
-       (
-         data.type === "call_offer"
-       )
+    if(
+      !sent &&
+      (
+        data.type ===
+        "call_offer" ||
+        data.type ===
+        "file_offer"
+      )
     ){
 
       this.sendToUser(
         sender,
         {
-          type:"call_error",
-          error:"المستخدم غير متصل حاليًا",
-          callId:data.callId || ""
+          type:
+            data.type ===
+            "file_offer"
+            ? "file_error"
+            : "call_error",
+
+          error:
+            "المستخدم غير متصل حاليًا",
+
+          callId:
+            data.callId ||
+            "",
+
+          transferId:
+            data.transferId ||
+            ""
         }
       );
 
@@ -3623,9 +5789,13 @@ export class ChatRoom extends DurableObject {
      TOKEN
   ======================================================= */
 
-  getUserFromToken(token){
+  getUserFromToken(
+    token
+  ){
 
-    if(!token) return null;
+    if(!token){
+      return null;
+    }
 
     const rows =
       this.sql.exec(
@@ -3651,12 +5821,19 @@ export class ChatRoom extends DurableObject {
    HELPERS
 ========================================================= */
 
-function json(data,status){
+function json(
+  data,
+  status
+){
 
   return new Response(
-    JSON.stringify(data),
+    JSON.stringify(
+      data
+    ),
     {
-      status:status || 200,
+      status:
+        status || 200,
+
       headers:{
         "Content-Type":
           "application/json;charset=UTF-8"
@@ -3669,28 +5846,54 @@ function json(data,status){
 function randomToken(){
 
   const bytes =
-    new Uint8Array(32);
+    new Uint8Array(
+      32
+    );
 
-  crypto.getRandomValues(bytes);
+  crypto.getRandomValues(
+    bytes
+  );
 
-  return Array.from(bytes)
+  return Array.from(
+    bytes
+  )
     .map(
-      b => b.toString(16).padStart(2,"0")
+      b =>
+        b
+          .toString(16)
+          .padStart(
+            2,
+            "0"
+          )
     )
     .join("");
 
 }
 
-function randomHex(length){
+function randomHex(
+  length
+){
 
   const bytes =
-    new Uint8Array(length);
+    new Uint8Array(
+      length
+    );
 
-  crypto.getRandomValues(bytes);
+  crypto.getRandomValues(
+    bytes
+  );
 
-  return Array.from(bytes)
+  return Array.from(
+    bytes
+  )
     .map(
-      b => b.toString(16).padStart(2,"0")
+      b =>
+        b
+          .toString(16)
+          .padStart(
+            2,
+            "0"
+          )
     )
     .join("");
 
@@ -3702,36 +5905,56 @@ async function hashPassword(
 ){
 
   const salt =
-    hexToBytes(saltHex);
+    hexToBytes(
+      saltHex
+    );
 
   const key =
     await crypto.subtle.importKey(
       "raw",
-      new TextEncoder().encode(password),
+      new TextEncoder()
+        .encode(
+          password
+        ),
       "PBKDF2",
       false,
-      ["deriveBits"]
+      [
+        "deriveBits"
+      ]
     );
 
   const bits =
     await crypto.subtle.deriveBits(
       {
-        name:"PBKDF2",
-        salt:salt,
-        iterations:100000,
-        hash:"SHA-256"
+        name:
+          "PBKDF2",
+
+        salt:
+          salt,
+
+        iterations:
+          100000,
+
+        hash:
+          "SHA-256"
       },
+
       key,
+
       256
     );
 
   return bytesToHex(
-    new Uint8Array(bits)
+    new Uint8Array(
+      bits
+    )
   );
 
 }
 
-function hexToBytes(hex){
+function hexToBytes(
+  hex
+){
 
   const bytes =
     new Uint8Array(
@@ -3739,14 +5962,17 @@ function hexToBytes(hex){
     );
 
   for(
-    let i=0;
-    i<bytes.length;
+    let i = 0;
+    i < bytes.length;
     i++
   ){
 
     bytes[i] =
       parseInt(
-        hex.substr(i * 2,2),
+        hex.substr(
+          i * 2,
+          2
+        ),
         16
       );
 
@@ -3756,12 +5982,22 @@ function hexToBytes(hex){
 
 }
 
-function bytesToHex(bytes){
+function bytesToHex(
+  bytes
+){
 
-  return Array.from(bytes)
+  return Array.from(
+    bytes
+  )
     .map(
-      b => b.toString(16).padStart(2,"0")
+      b =>
+        b
+          .toString(16)
+          .padStart(
+            2,
+            "0"
+          )
     )
     .join("");
 
-   }
+}
